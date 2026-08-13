@@ -45,7 +45,7 @@ const TOC_ITEMS: TocItem[] = [
 
 const PAGE_TITLE = 'File-Based Routing'
 const PAGE_URL = 'https://bini.js.org/docs/file-based-routing'
-const EDIT_URL = 'https://github.com/Binidu01/bini-official/edit/main/src/app/docs/file-based-routing.tsx'
+const EDIT_URL = 'https://github.com/Binidu01/bini-offical/edit/main/src/app/docs/file-based-routing.tsx'
 
 // ────────────────────────────────────────────────────────────────────────────────
 // Code Block Component with Copy

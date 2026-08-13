@@ -30,7 +30,7 @@ const TOC_ITEMS: TocItem[] = [
 
 const PAGE_TITLE = 'Static Export'
 const PAGE_URL = 'https://bini.js.org/docs/static-export'
-const EDIT_URL = 'https://github.com/Binidu01/bini-official/edit/main/src/app/docs/static-export.tsx'
+const EDIT_URL = 'https://github.com/Binidu01/bini-offical/edit/main/src/app/docs/static-export.tsx'
 
 // ────────────────────────────────────────────────────────────────────────────────
 // Code Block Component

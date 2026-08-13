@@ -36,7 +36,7 @@ const TOC_ITEMS: TocItem[] = [
 
 const PAGE_TITLE = 'Catch-All Routes'
 const PAGE_URL = 'https://bini.js.org/docs/catch-all-routes'
-const EDIT_URL = 'https://github.com/Binidu01/bini-official/edit/main/src/app/docs/catch-all-routes.tsx'
+const EDIT_URL = 'https://github.com/Binidu01/bini-offical/edit/main/src/app/docs/catch-all-routes.tsx'
 
 // ────────────────────────────────────────────────────────────────────────────────
 // Code Block Component with Copy
