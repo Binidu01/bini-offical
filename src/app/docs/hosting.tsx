@@ -32,7 +32,7 @@ const TOC_ITEMS: TocItem[] = [
   { id: 'api-routes', label: 'API Routes & Hono' },
   { id: 'cors', label: 'Automatic CORS' },
   { id: 'git-behavior', label: 'Git Push Behavior' },
-  { id: 'troubleshooting', label: 'Troubleshooting' },
+  { id: 'requirements', label: 'Requirements' },
 ]
 
 const PAGE_TITLE = 'Hosting Providers'
@@ -437,15 +437,9 @@ export default app;`}
                   </Note>
                 </motion.section>
 
-                {/* Troubleshooting */}
-                <motion.section id="troubleshooting" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Troubleshooting</h2>
-                  <p className="text-slate-300 mb-2">
-                    <strong className="text-white">Build fails with <code className="text-cyan-400">Cannot read properties of undefined (reading 'readFile')</code></strong>
-                  </p>
-                  <p className="text-slate-300 mb-4">
-                    Your <code className="text-cyan-400">typescript</code> dependency resolved to TypeScript 7.x, which shipped as a Go-native rewrite without a public compiler API. Some hosting-provider build pipelines break on it. Pin <code className="text-cyan-400">typescript</code> to a <code className="text-cyan-400">^6.x</code> release in <code className="text-cyan-400">package.json</code> instead of using <code className="text-cyan-400">latest</code>.
-                  </p>
+                {/* Requirements */}
+                <motion.section id="requirements" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 }} className="scroll-mt-24">
+                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Requirements</h2>
                   <Table
                     headers={['Requirement', 'Version']}
                     rows={[
