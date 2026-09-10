@@ -1,6 +1,6 @@
 // src/pages/docs/api-cors/page.tsx
 import React from 'react'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import {
   ArrowLeft,
   ArrowRight,
@@ -117,7 +117,7 @@ export default function ApiCorsPage() {
               <div className="max-w-4xl min-w-0 flex-1">
 
                 {/* Title + Copy page button */}
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="flex items-start justify-between gap-4 mb-4"
@@ -129,14 +129,14 @@ export default function ApiCorsPage() {
                   <div className="shrink-0 pt-2 hidden sm:block">
                     <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                   </div>
-                </motion.div>
+                </m.div>
                 {/* Copy button on small screens */}
                 <div className="sm:hidden mb-8">
                   <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                 </div>
 
                 {/* What is CORS? */}
-                <motion.section id="what-is-cors" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="scroll-mt-24">
+                <m.section id="what-is-cors" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">What is CORS?</h2>
                   <p className="text-slate-300 mb-4">
                     Cross-Origin Resource Sharing (CORS) is a security feature implemented by browsers that restricts web pages from making requests to a different domain than the one that served the web page. CORS headers allow servers to specify which origins are permitted to access their resources.
@@ -144,10 +144,10 @@ export default function ApiCorsPage() {
                   <p className="text-slate-300 mb-4">
                     Bini.js includes built-in CORS support for API routes, making it easy to build APIs that can be accessed from different origins.
                   </p>
-                </motion.section>
+                </m.section>
 
                 {/* Default Configuration */}
-                <motion.section id="default-config" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
+                <m.section id="default-config" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Default Configuration</h2>
                   <p className="text-slate-300 mb-4">
                     CORS is enabled by default for all API routes in dev and preview. The default configuration includes:
@@ -163,10 +163,10 @@ export default function ApiCorsPage() {
                   <Note>
                     This default configuration works for most development and production scenarios. You can customize it to restrict origins or configure specific headers.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Disabling CORS */}
-                <motion.section id="disabling-cors" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
+                <m.section id="disabling-cors" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Disabling CORS</h2>
                   <p className="text-slate-300 mb-4">
                     Disable CORS by setting <code className="text-cyan-400">cors: false</code> in your <code className="text-cyan-400">biniroute()</code> configuration:
@@ -190,10 +190,10 @@ export default defineConfig({
                   <Note>
                     Disabling CORS is useful for internal APIs or when you're handling CORS at the infrastructure level (e.g., via a reverse proxy or CDN).
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* CORS with Hono */}
-                <motion.section id="cors-with-hono" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
+                <m.section id="cors-with-hono" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">CORS with Hono</h2>
                   <p className="text-slate-300 mb-4">
                     When using Hono for your API routes, you can configure CORS per route or globally using Hono's <code className="text-cyan-400">cors</code> middleware:
@@ -256,10 +256,10 @@ export default app`}
                       ['exposeHeaders', 'string[]', 'Headers exposed to the browser'],
                     ]}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Custom CORS Configuration */}
-                <motion.section id="custom-cors" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
+                <m.section id="custom-cors" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Custom CORS Configuration</h2>
                   <p className="text-slate-300 mb-4">
                     For more granular control, you can implement custom CORS handling in your API routes:
@@ -300,10 +300,10 @@ export default app`}
                   <Note>
                     Custom CORS handling gives you full control over CORS headers and allows you to implement advanced scenarios like dynamic origin validation.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Production Deployment */}
-                <motion.section id="production-deployment" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
+                <m.section id="production-deployment" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Production Deployment</h2>
                   <p className="text-slate-300 mb-4">
                     When deploying to production, the same CORS configuration applies. For platform-specific configuration:
@@ -319,10 +319,10 @@ export default app`}
                   <Note>
                     For production, consider restricting CORS to specific origins rather than using <code>*</code> to improve security.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Previous / Next Navigation */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
+                <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
                   <Link to="/docs/api-dynamic" className="group flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
                     <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                     <div>
@@ -337,7 +337,7 @@ export default app`}
                     </div>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
-                </motion.div>
+                </m.div>
 
               </div>
 

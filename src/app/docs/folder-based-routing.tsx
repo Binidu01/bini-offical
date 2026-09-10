@@ -1,6 +1,6 @@
 // src/pages/docs/folder-based-routing/page.tsx
 import React, { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { m, AnimatePresence } from 'framer-motion'
 import {
   ArrowLeft,
   ArrowRight,
@@ -220,7 +220,7 @@ export default function FolderBasedRoutingPage() {
               <div className="max-w-4xl min-w-0 flex-1">
 
                 {/* Title + Copy page button */}
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="flex items-start justify-between gap-4 mb-4"
@@ -234,14 +234,14 @@ export default function FolderBasedRoutingPage() {
                   <div className="shrink-0 pt-2 hidden sm:block">
                     <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                   </div>
-                </motion.div>
+                </m.div>
                 
                 <div className="sm:hidden mb-8">
                   <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                 </div>
 
                 {/* Overview */}
-                <motion.section 
+                <m.section 
                   id="overview"
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -275,10 +275,10 @@ export default function FolderBasedRoutingPage() {
                       description="Exclude folders with _ prefix"
                     />
                   </div>
-                </motion.section>
+                </m.section>
 
                 {/* Basic Folder Routing */}
-                <motion.section 
+                <m.section 
                   id="basic-folder-routing" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -320,10 +320,10 @@ export default function FolderBasedRoutingPage() {
                   <Callout type="tip">
                     <strong>Both patterns work:</strong> You can mix folder-based and flat file routing. Choose whichever makes your project organization clearer.
                   </Callout>
-                </motion.section>
+                </m.section>
 
                 {/* Nested Routes */}
-                <motion.section 
+                <m.section 
                   id="nested-routes" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -354,10 +354,10 @@ export default function FolderBasedRoutingPage() {
                   <Callout type="info">
                     <strong>Layout inheritance:</strong> Nested routes automatically inherit layouts from parent folders. Each folder can have its own <code>layout.tsx</code> that wraps all routes in that folder.
                   </Callout>
-                </motion.section>
+                </m.section>
 
                 {/* Dynamic Segments */}
-                <motion.section 
+                <m.section 
                   id="dynamic-segments" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -417,10 +417,10 @@ export default function BlogPost() {
                   <Callout type="warning">
                     <strong>Param naming:</strong> Parameter names must match <code>/^[a-zA-Z_][a-zA-Z0-9_]*$/</code> and are validated at scan time.
                   </Callout>
-                </motion.section>
+                </m.section>
 
                 {/* Catch-all Segments */}
-                <motion.section 
+                <m.section 
                   id="catch-all-segments" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -475,10 +475,10 @@ export default function DocsPage() {
 └── api/
     └── [...path].ts        → /api/* (catch-all API route)`}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Optional Catch-all Segments */}
-                <motion.section 
+                <m.section 
                   id="optional-catch-all" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -530,10 +530,10 @@ export default function ShopPage() {
                       ['/shop/clothing/shirts', "['clothing', 'shirts']"],
                     ]}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Route Groups */}
-                <motion.section 
+                <m.section 
                   id="route-groups" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -590,10 +590,10 @@ export default function ShopPage() {
                   <Callout type="tip">
                     <strong>Layout inheritance:</strong> Route groups are great for organizing layouts. Each group can have its own <code>layout.tsx</code> that only applies to routes in that group.
                   </Callout>
-                </motion.section>
+                </m.section>
 
                 {/* Private Folders */}
-                <motion.section 
+                <m.section 
                   id="private-folders" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -635,10 +635,10 @@ export default function ShopPage() {
                     <li>Files starting with <code className="text-cyan-400">_</code> or <code className="text-cyan-400">.</code></li>
                     <li>The <code className="text-cyan-400">api/</code> directory (reserved for API routes)</li>
                   </ul>
-                </motion.section>
+                </m.section>
 
                 {/* Nearest Wins with Folders */}
-                <motion.section 
+                <m.section 
                   id="nearest-wins-folders" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -694,10 +694,10 @@ export default function ShopPage() {
                   <Callout type="info">
                     <strong>Nearest Wins:</strong> A file in a subfolder shadows ancestor files for routes in that subfolder, but doesn't delete them for other routes. This is the same mental model as layouts.
                   </Callout>
-                </motion.section>
+                </m.section>
 
                 {/* Route Priority */}
-                <motion.section 
+                <m.section 
                   id="route-priority" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -736,10 +736,10 @@ export default function ShopPage() {
                   <p className="text-slate-300 mt-4">
                     This ensures predictable routing behavior and prevents conflicts between different route types.
                   </p>
-                </motion.section>
+                </m.section>
 
                 {/* Complete Example */}
-                <motion.section 
+                <m.section 
                   id="complete-example" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -800,10 +800,10 @@ export default function ShopPage() {
                       ['app/api/users/[id].ts', '/api/users/:id', 'API Dynamic'],
                     ]}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Previous / Next Navigation */}
-                <motion.div 
+                <m.div 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
                   transition={{ delay: 0.6 }} 
@@ -823,7 +823,7 @@ export default function ShopPage() {
                     </div>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
-                </motion.div>
+                </m.div>
 
               </div>
 

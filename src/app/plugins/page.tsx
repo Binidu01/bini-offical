@@ -1,6 +1,6 @@
 // src/app/plugins/page.tsx
 import React from 'react'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import { ExternalLink } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Header, Footer } from '../../components/Layout'
@@ -209,21 +209,21 @@ export default function PluginsPage() {
       <div className="relative pt-24 lg:pt-28 pb-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-12">
+          <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Plugins & Packages</h1>
             <p className="text-lg text-slate-400 max-w-2xl mx-auto">
               The complete Bini.js ecosystem — everything you need to build full-stack React apps for web, desktop, and mobile from one codebase.
             </p>
-          </motion.div>
+          </m.div>
 
           {/* Note */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+          <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
             <Note>
               Bini.js is built on Vite and aims to provide out-of-the-box support for common web development patterns.
               Before searching for a plugin, check out the <Link to="/docs" className="text-cyan-400 hover:underline">documentation</Link>.
               Many cases where a plugin would be needed in other projects — routing, API routes, env handling, native app wiring — are already covered by the official Bini.js packages below.
             </Note>
-          </motion.div>
+          </m.div>
 
           {/* Core Framework */}
           <Section title="Core Framework">

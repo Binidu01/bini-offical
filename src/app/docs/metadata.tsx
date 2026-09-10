@@ -1,6 +1,6 @@
 // src/pages/docs/metadata/page.tsx
 import React from 'react'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import {
   ArrowLeft,
   ArrowRight,
@@ -107,7 +107,7 @@ export default function MetadataPage() {
               <div className="max-w-4xl min-w-0 flex-1">
 
                 {/* Title + Copy page button */}
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="flex items-start justify-between gap-4 mb-4"
@@ -119,14 +119,14 @@ export default function MetadataPage() {
                   <div className="shrink-0 pt-2 hidden sm:block">
                     <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                   </div>
-                </motion.div>
+                </m.div>
                 {/* Copy button on small screens */}
                 <div className="sm:hidden mb-8">
                   <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                 </div>
 
                 {/* What is Metadata? */}
-                <motion.section id="what-is-metadata" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="scroll-mt-24">
+                <m.section id="what-is-metadata" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">What is Metadata?</h2>
                   <p className="text-slate-300 mb-4">
                     Metadata provides information about your webpage to search engines, social media platforms, and browsers. In Bini.js, you can export a <code className="text-cyan-400">metadata</code> object from any layout to control page titles, descriptions, Open Graph tags, Twitter cards, and icons.
@@ -134,10 +134,10 @@ export default function MetadataPage() {
                   <p className="text-slate-300 mb-4">
                     Metadata is essential for SEO and social sharing, helping your pages look great when shared on platforms like Twitter, Facebook, and LinkedIn.
                   </p>
-                </motion.section>
+                </m.section>
 
                 {/* Basic Metadata */}
-                <motion.section id="basic-metadata" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
+                <m.section id="basic-metadata" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Basic Metadata</h2>
                   <p className="text-slate-300 mb-4">
                     Export a <code className="text-cyan-400">metadata</code> object from your root layout or any nested layout:
@@ -177,10 +177,10 @@ export default function RootLayout() {
                       ['canonical', 'Canonical URL for SEO'],
                     ]}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Open Graph */}
-                <motion.section id="open-graph" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
+                <m.section id="open-graph" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Open Graph</h2>
                   <p className="text-slate-300 mb-4">
                     Open Graph tags control how your page appears when shared on social media platforms like Facebook, LinkedIn, and Slack.
@@ -225,10 +225,10 @@ export default function AboutPage() {
                       ['locale', 'Language locale'],
                     ]}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Twitter Cards */}
-                <motion.section id="twitter-cards" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
+                <m.section id="twitter-cards" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Twitter Cards</h2>
                   <p className="text-slate-300 mb-4">
                     Twitter Cards control how your page appears when shared on Twitter/X.
@@ -267,10 +267,10 @@ export default function BlogPost() {
                       ['images', 'Array of image URLs for the card'],
                     ]}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Default Images */}
-                <motion.section id="default-images" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
+                <m.section id="default-images" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Default Images</h2>
                   <p className="text-slate-300 mb-4">
                     Bini.js comes with default images pre-configured. Just replace these files in your <code className="text-cyan-400">public/</code> directory:
@@ -292,10 +292,10 @@ export default function BlogPost() {
                       <strong className="text-white">Tip:</strong> For best results, use images that are at least 1200x630 pixels for Open Graph images.
                     </p>
                   </div>
-                </motion.section>
+                </m.section>
 
                 {/* Icons */}
-                <motion.section id="icons" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
+                <m.section id="icons" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Icons</h2>
                   <p className="text-slate-300 mb-4">
                     Define favicons, Apple touch icons, and other icons for your application.
@@ -332,10 +332,10 @@ export default function RootLayout() {
                       ['apple', 'Apple touch icons (array of icon objects)'],
                     ]}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Nested Metadata */}
-                <motion.section id="nested-metadata" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
+                <m.section id="nested-metadata" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Nested Metadata</h2>
                   <p className="text-slate-300 mb-4">
                     Nested layouts can export their own metadata. Page titles are automatically combined using the template defined in the root layout.
@@ -366,10 +366,10 @@ export const metadata = {
                   <p className="text-slate-300 mt-4">
                     When nested layouts export metadata, the <code className="text-cyan-400">title</code> is automatically combined with the root layout's template. Other fields like <code className="text-cyan-400">description</code>, <code className="text-cyan-400">openGraph</code>, and <code className="text-cyan-400">twitter</code> override ancestor values.
                   </p>
-                </motion.section>
+                </m.section>
 
                 {/* Previous / Next Navigation */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
+                <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
                   <Link to="/docs/notfound" className="group flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
                     <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                     <div>
@@ -384,7 +384,7 @@ export const metadata = {
                     </div>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
-                </motion.div>
+                </m.div>
 
               </div>
 

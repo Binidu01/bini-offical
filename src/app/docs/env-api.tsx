@@ -1,6 +1,6 @@
 // src/pages/docs/env-api/page.tsx
 import React from 'react'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import {
   ArrowLeft,
   ArrowRight,
@@ -117,7 +117,7 @@ export default function EnvApiPage() {
               <div className="max-w-4xl min-w-0 flex-1">
 
                 {/* Title + Copy page button */}
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="flex items-start justify-between gap-4 mb-4"
@@ -129,13 +129,13 @@ export default function EnvApiPage() {
                   <div className="shrink-0 pt-2 hidden sm:block">
                     <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                   </div>
-                </motion.div>
+                </m.div>
                 <div className="sm:hidden mb-8">
                   <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                 </div>
 
                 {/* Overview */}
-                <motion.section id="overview" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="scroll-mt-24">
+                <m.section id="overview" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Overview</h2>
                   <p className="text-slate-300 mb-4">
                     In API routes, environment variables are read using <code className="text-cyan-400">getEnv(c, key)</code> and <code className="text-cyan-400">requireEnv(c, key)</code>. Both read from the Hono request context via <code className="text-cyan-400">hono/adapter</code> — this is what makes them work on every runtime.
@@ -146,10 +146,10 @@ export default function EnvApiPage() {
                   <Note>
                     <strong>Always pass c explicitly.</strong> Cast it once at the top of the handler as <code>const ctx = c as any</code>, then use <code>ctx</code> throughout. No <code>process.env</code> fallbacks — every read is request-scoped.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Basic Usage */}
-                <motion.section id="basic-usage" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
+                <m.section id="basic-usage" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Basic Usage</h2>
                   <CodeBlock 
                     code={`// src/app/api/hello.ts
@@ -181,10 +181,10 @@ app.get('/hello', (c) => {
 export default app`}
                     filename="src/app/api/hello.ts"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Required vs Optional */}
-                <motion.section id="required-vs-optional" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
+                <m.section id="required-vs-optional" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Required vs Optional</h2>
                   <p className="text-slate-300 mb-4">
                     Use <code className="text-cyan-400">requireEnv</code> for variables your app cannot run without. Use <code className="text-cyan-400">getEnv</code> with <code className="text-cyan-400">??</code> for optional configuration.
@@ -221,10 +221,10 @@ export default app`}
                       ['getEnv(ctx, key) ?? default', 'Optional config — fallback to default', 'Returns undefined if missing'],
                     ]}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Complete Example */}
-                <motion.section id="complete-example" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
+                <m.section id="complete-example" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Complete Example</h2>
                   <p className="text-slate-300 mb-4">
                     A full API endpoint that uses environment variables for configuration:
@@ -294,10 +294,10 @@ app.post('/email/send', async (c) => {
 export default app`}
                     filename="src/app/api/email.ts"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Error Handling */}
-                <motion.section id="error-handling" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
+                <m.section id="error-handling" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Error Handling</h2>
                   <p className="text-slate-300 mb-4">
                     Always handle errors from <code className="text-cyan-400">requireEnv</code> gracefully:
@@ -333,10 +333,10 @@ export default app`}
                     code={`[bini-env] error  Missing required environment variable: "API_KEY"
   -> Set it in your platform's env config or hosting dashboard.`}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Production Notes */}
-                <motion.section id="production-notes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
+                <m.section id="production-notes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Production Notes</h2>
                   <ul className="space-y-3 text-slate-300 mb-6">
                     <li className="flex items-start gap-2">
@@ -359,10 +359,10 @@ export default app`}
                   <Note>
                     The same API code runs unchanged across all platforms. bini-env reads from the correct source on every platform automatically.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Previous / Next Navigation */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
+                <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
                   <Link to="/docs/env-prefixes" className="group flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
                     <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                     <div>
@@ -377,7 +377,7 @@ export default app`}
                     </div>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
-                </motion.div>
+                </m.div>
 
               </div>
 

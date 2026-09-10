@@ -1,6 +1,6 @@
 // src/pages/docs/api-hono/page.tsx
 import React from 'react'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import {
   ArrowLeft,
   ArrowRight,
@@ -125,7 +125,7 @@ export default function ApiHonoPage() {
               <div className="max-w-4xl min-w-0 flex-1">
 
                 {/* Title + Copy page button */}
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="flex items-start justify-between gap-4 mb-4"
@@ -137,24 +137,24 @@ export default function ApiHonoPage() {
                   <div className="shrink-0 pt-2 hidden sm:block">
                     <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                   </div>
-                </motion.div>
+                </m.div>
                 {/* Copy button on small screens */}
                 <div className="sm:hidden mb-8">
                   <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                 </div>
 
                 {/* Overview */}
-                <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+                <m.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
                   <p className="text-slate-300 mb-6">
                     Hono is a fast, lightweight web framework that works everywhere. Bini.js integrates Hono seamlessly with <strong>file-based API routing</strong> — your file structure defines your API routes.
                   </p>
                   <Note>
                     Hono is the <strong>recommended</strong> approach for complex APIs in Bini.js. It provides routing, middleware, validation, and excellent TypeScript support — all with zero-config file-based routing.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* File-Based API Routing */}
-                <motion.section id="file-based-routing" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
+                <m.section id="file-based-routing" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">File-Based API Routing</h2>
                   <p className="text-slate-300 mb-4">
                     Your API route is determined by the <strong>file path</strong> inside <code className="text-cyan-400">src/app/api/</code>. The file name becomes the route segment:
@@ -172,10 +172,10 @@ export default function ApiHonoPage() {
                   <Note>
                     There are <strong>no root / API routes</strong>. Every API file maps to a named route based on its filename. Write your Hono routes <strong>without</strong> the <code>/api</code> prefix — bini-router strips it in dev/preview and mounts the app under <code>/api</code> in production.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Basic Hono App */}
-                <motion.section id="basic-hono-app" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
+                <m.section id="basic-hono-app" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Basic Hono App</h2>
                   <p className="text-slate-300 mb-4">
                     Create a Hono app in <code className="text-cyan-400">src/app/api/</code> and default export it:
@@ -197,10 +197,10 @@ app.all('/hello', (c) => {
 export default app`}
                     filename="src/app/api/hello.ts"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Routing with Hono */}
-                <motion.section id="routing-with-hono" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
+                <m.section id="routing-with-hono" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Routing with Hono</h2>
                   <p className="text-slate-300 mb-4">
                     Hono provides a powerful routing system with path parameters, query parameters, and more:
@@ -230,10 +230,10 @@ export default app`}
                       ['DELETE', '/users/:id', '/api/users/123'],
                     ]}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Dynamic API Routes */}
-                <motion.section id="dynamic-api-routes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
+                <m.section id="dynamic-api-routes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Dynamic API Routes</h2>
                   <p className="text-slate-300 mb-4">
                     Use <code className="text-cyan-400">[param]</code> in filenames for dynamic segments:
@@ -256,10 +256,10 @@ app.all('*', (c) => c.json({ path: c.req.path }))
 export default app`}
                     filename="src/app/api/[...catch].ts"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Middleware */}
-                <motion.section id="middleware" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
+                <m.section id="middleware" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Middleware</h2>
                   <p className="text-slate-300 mb-4">
                     Hono has built-in middleware for common tasks:
@@ -290,10 +290,10 @@ export default app`}
                       ['prettyJSON', 'Pretty JSON responses'],
                     ]}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Request Handling */}
-                <motion.section id="request-handling" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
+                <m.section id="request-handling" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Request Handling</h2>
                   <p className="text-slate-300 mb-4">
                     Hono provides convenient methods for accessing request data:
@@ -324,10 +324,10 @@ app.all('/echo', async (c) => {
 export default app`}
                     filename="src/app/api/echo.ts"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Response Handling */}
-                <motion.section id="response-handling" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
+                <m.section id="response-handling" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Response Handling</h2>
                   <p className="text-slate-300 mb-4">
                     Hono provides flexible response methods:
@@ -348,10 +348,10 @@ app.get('/error', (c) => c.json({ error: 'Error' }, 500))
 export default app`}
                     filename="src/app/api/responses.ts"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Validation */}
-                <motion.section id="validation" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="scroll-mt-24">
+                <m.section id="validation" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Validation</h2>
                   <p className="text-slate-300 mb-4">
                     Validate incoming requests with Zod:
@@ -380,10 +380,10 @@ export default app`}
                   <Note>
                     Install <code>zod</code> and <code>@hono/zod-validator</code> for powerful request validation with TypeScript inference.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Environment Variables */}
-                <motion.section id="environment-variables" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="scroll-mt-24">
+                <m.section id="environment-variables" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Environment Variables</h2>
                   <p className="text-slate-300 mb-4">
                     Use <code className="text-cyan-400">getEnv()</code> and <code className="text-cyan-400">requireEnv()</code> from <code className="text-cyan-400">bini-env</code>:
@@ -408,10 +408,10 @@ export default app`}
                   <Note>
                     Cast <code>c</code> once at the top of your handler with <code>const ctx = c as any</code>. Then use <code>requireEnv(ctx, 'KEY')</code> for required vars and <code>getEnv(ctx, 'KEY') ?? 'default'</code> for optional ones.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Error Handling */}
-                <motion.section id="error-handling" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="scroll-mt-24">
+                <m.section id="error-handling" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Error Handling</h2>
                   <p className="text-slate-300 mb-4">
                     Handle errors gracefully with Hono's error handling:
@@ -443,10 +443,10 @@ app.get('/robust/users/:id', (c) => {
 export default app`}
                     filename="src/app/api/robust.ts"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Nested Routes */}
-                <motion.section id="nested-routes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 }} className="scroll-mt-24">
+                <m.section id="nested-routes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Nested Routes</h2>
                   <p className="text-slate-300 mb-4">
                     Organize complex APIs with nested sub-routers:
@@ -471,10 +471,10 @@ app.route('/', posts)
 export default app`}
                     filename="src/app/api/index.ts"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* When to Use Hono */}
-                <motion.section id="when-to-use-hono" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }} className="scroll-mt-24">
+                <m.section id="when-to-use-hono" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">When to Use Hono</h2>
                   <Table 
                     headers={['Scenario', 'Recommendation']}
@@ -487,10 +487,10 @@ export default app`}
                       ['Quick prototypes', <span className="flex items-center gap-1"><XCircle className="w-3.5 h-3.5 text-rose-400" /> Plain handler</span>],
                     ]}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Previous / Next Navigation */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.75 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
+                <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.75 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
                   <Link to="/docs/api-plain" className="group flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
                     <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                     <div>
@@ -505,7 +505,7 @@ export default app`}
                     </div>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
-                </motion.div>
+                </m.div>
 
               </div>
 

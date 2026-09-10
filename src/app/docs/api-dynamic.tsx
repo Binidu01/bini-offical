@@ -1,6 +1,6 @@
 // src/pages/docs/api-dynamic/page.tsx
 import React from 'react'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import {
   ArrowLeft,
   ArrowRight,
@@ -120,7 +120,7 @@ export default function ApiDynamicPage() {
               <div className="max-w-4xl min-w-0 flex-1">
 
                 {/* Title + Copy page button */}
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="flex items-start justify-between gap-4 mb-4"
@@ -132,24 +132,24 @@ export default function ApiDynamicPage() {
                   <div className="shrink-0 pt-2 hidden sm:block">
                     <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                   </div>
-                </motion.div>
+                </m.div>
                 {/* Copy button on small screens */}
                 <div className="sm:hidden mb-8">
                   <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                 </div>
 
                 {/* Overview */}
-                <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+                <m.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
                   <p className="text-slate-300 mb-6">
                     Dynamic API routes allow you to create endpoints that match patterns rather than exact paths. Use square brackets in your file names to define dynamic segments — the file path determines the route.
                   </p>
                   <Note>
                     <strong>File-based routing:</strong> Like all Bini.js API routes, dynamic routes follow file-based routing. There are no root <code>/</code> API routes — the filename becomes the route segment. Write your Hono routes <strong>without</strong> the <code>/api</code> prefix.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* File Structure */}
-                <motion.section id="file-structure" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
+                <m.section id="file-structure" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">File Structure</h2>
                   <p className="text-slate-300 mb-4">
                     Dynamic segments are created using square brackets in file or folder names:
@@ -174,10 +174,10 @@ export default function ApiDynamicPage() {
                       ['[[...slug]]', 'Catch-all (optional)', '/api/docs, /api/docs/a/b'],
                     ]}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Single Dynamic Parameter */}
-                <motion.section id="single-parameter" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
+                <m.section id="single-parameter" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Single Dynamic Parameter</h2>
                   <p className="text-slate-300 mb-4">
                     Use <code className="text-cyan-400">[name]</code> in the filename for a single dynamic segment:
@@ -221,10 +221,10 @@ export default async function handler(request: Request) {
 }`}
                     filename="src/app/api/posts/[id].ts"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Multiple Dynamic Parameters */}
-                <motion.section id="multiple-parameters" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
+                <m.section id="multiple-parameters" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Multiple Dynamic Parameters</h2>
                   <p className="text-slate-300 mb-4">
                     Combine multiple dynamic segments in a single route:
@@ -251,10 +251,10 @@ export default app`}
                       ['/api/posts/lifestyle/tips', '{ category: "lifestyle", slug: "tips" }'],
                     ]}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Catch-all Routes */}
-                <motion.section id="catch-all-routes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
+                <m.section id="catch-all-routes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Catch-all Routes</h2>
                   <p className="text-slate-300 mb-4">
                     Use <code className="text-cyan-400">[...name]</code> in the filename to match any number of segments:
@@ -297,10 +297,10 @@ app.all('*', (c) => {
 export default app`}
                     filename="src/app/api/[...catch].ts"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Optional Catch-all */}
-                <motion.section id="optional-catch-all" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
+                <m.section id="optional-catch-all" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Optional Catch-all</h2>
                   <p className="text-slate-300 mb-4">
                     Use <code className="text-cyan-400">[[...name]]</code> to make the catch-all optional:
@@ -332,10 +332,10 @@ export default app`}
                       ['/api/docs/api/reference', 'api/reference'],
                     ]}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Nested Dynamic Routes */}
-                <motion.section id="nested-dynamic" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
+                <m.section id="nested-dynamic" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Nested Dynamic Routes</h2>
                   <p className="text-slate-300 mb-4">
                     Combine static and dynamic segments for complex routing:
@@ -355,10 +355,10 @@ app.get('/orgs/:orgId/repos/:repoId/issues/:issueId', (c) => {
 export default app`}
                     filename="src/app/api/orgs/[orgId]/repos/[repoId]/issues/[issueId].ts"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Query Parameters */}
-                <motion.section id="query-parameters" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
+                <m.section id="query-parameters" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Query Parameters</h2>
                   <p className="text-slate-300 mb-4">
                     Combine dynamic path parameters with query parameters:
@@ -380,10 +380,10 @@ app.get('/posts/:id/comments', (c) => {
 export default app`}
                     filename="src/app/api/posts/[id]/comments.ts"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Route Priority */}
-                <motion.section id="route-priority" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="scroll-mt-24">
+                <m.section id="route-priority" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Route Priority</h2>
                   <p className="text-slate-300 mb-4">
                     When multiple routes could match a URL, Bini.js resolves them in this order:
@@ -405,10 +405,10 @@ export default app`}
                   <Note>
                     Routes are sorted by priority and then by path length (shortest first). Static routes always win over dynamic ones.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Complete Example */}
-                <motion.section id="complete-example" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="scroll-mt-24">
+                <m.section id="complete-example" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Complete Example</h2>
                   <p className="text-slate-300 mb-4">
                     A full-featured store API with dynamic routing:
@@ -455,10 +455,10 @@ app.all('/store/*', (c) => c.json({ error: 'Not Found' }, 404))
 export default app`}
                     filename="src/app/api/store/[[...path]].ts"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Previous / Next Navigation */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
+                <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
                   <Link to="/docs/api-hono" className="group flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
                     <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                     <div>
@@ -473,7 +473,7 @@ export default app`}
                     </div>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
-                </motion.div>
+                </m.div>
 
               </div>
 

@@ -1,6 +1,6 @@
 // src/pages/docs/css-modules/page.tsx
 import React from 'react'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import {
   ArrowLeft,
   ArrowRight,
@@ -120,7 +120,7 @@ export default function CSSModulesPage() {
               <div className="max-w-4xl min-w-0 flex-1">
 
                 {/* Title + Copy page button */}
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="flex items-start justify-between gap-4 mb-4"
@@ -132,24 +132,24 @@ export default function CSSModulesPage() {
                   <div className="shrink-0 pt-2 hidden sm:block">
                     <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                   </div>
-                </motion.div>
+                </m.div>
                 {/* Copy button on small screens */}
                 <div className="sm:hidden mb-8">
                   <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                 </div>
 
                 {/* Overview */}
-                <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+                <m.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
                   <p className="text-slate-300 mb-6">
                     CSS Modules allow you to write component-scoped CSS without worrying about naming conflicts. Vite processes <code className="text-cyan-400">.module.css</code> files automatically — no configuration needed.
                   </p>
                   <Note>
                     <strong>Zero Configuration:</strong> Vite handles CSS Modules natively. Any file ending in <code>.module.css</code> is automatically processed as a CSS Module.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Basic Usage */}
-                <motion.section id="basic-usage" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
+                <m.section id="basic-usage" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Basic Usage</h2>
                   <p className="text-slate-300 mb-4">
                     Create a <code className="text-cyan-400">.module.css</code> file and import it in your component:
@@ -188,10 +188,10 @@ export function Button({ variant = 'primary', children }) {
 }`}
                     filename="Button.tsx"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Combining Classes */}
-                <motion.section id="combining-classes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
+                <m.section id="combining-classes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Combining Classes</h2>
                   <p className="text-slate-300 mb-4">
                     Combine multiple CSS Module classes using template literals:
@@ -230,10 +230,10 @@ export function Card({ featured, size = 'normal', children }) {
                   <Note>
                     Use the <code>clsx</code> or <code>classnames</code> library for cleaner conditional class composition.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Using clsx */}
-                <motion.section id="using-clsx" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
+                <m.section id="using-clsx" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Using clsx for Cleaner Code</h2>
                   <p className="text-slate-300 mb-4">
                     Install <code className="text-cyan-400">clsx</code> for cleaner conditional classes:
@@ -259,10 +259,10 @@ export function Card({ featured, size = 'normal', children }) {
 }`}
                     filename="Card.tsx"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Global vs Local */}
-                <motion.section id="global-vs-local" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
+                <m.section id="global-vs-local" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Global vs Local Scope</h2>
                   <p className="text-slate-300 mb-4">
                     CSS Modules are locally scoped by default. Use <code className="text-cyan-400">:global</code> to target global selectors:
@@ -283,10 +283,10 @@ export function Card({ featured, size = 'normal', children }) {
 }`}
                     filename="Container.module.css"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Composing Classes */}
-                <motion.section id="composing-classes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
+                <m.section id="composing-classes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Composing Classes</h2>
                   <p className="text-slate-300 mb-4">
                     Use <code className="text-cyan-400">composes</code> to reuse styles from other classes:
@@ -312,10 +312,10 @@ export function Card({ featured, size = 'normal', children }) {
 }`}
                     filename="Form.module.css"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* CSS Variables */}
-                <motion.section id="css-variables" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
+                <m.section id="css-variables" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">CSS Variables in Modules</h2>
                   <p className="text-slate-300 mb-4">
                     Use CSS variables for dynamic styling within modules:
@@ -348,10 +348,10 @@ export function Progress({ value, max = 100 }) {
 }`}
                     filename="Progress.tsx"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Animations */}
-                <motion.section id="animations" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
+                <m.section id="animations" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Animations</h2>
                   <p className="text-slate-300 mb-4">
                     Define animations in CSS Modules:
@@ -383,10 +383,10 @@ export function Spinner() {
 }`}
                     filename="Spinner.tsx"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Media Queries */}
-                <motion.section id="media-queries" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="scroll-mt-24">
+                <m.section id="media-queries" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Media Queries</h2>
                   <p className="text-slate-300 mb-4">
                     Write responsive styles with media queries:
@@ -412,10 +412,10 @@ export function Spinner() {
 }`}
                     filename="Grid.module.css"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Complete Example */}
-                <motion.section id="complete-example" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="scroll-mt-24">
+                <m.section id="complete-example" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Complete Example</h2>
                   <p className="text-slate-300 mb-4">
                     A full-featured modal component using CSS Modules:
@@ -480,10 +480,10 @@ export function Modal({ isOpen, onClose, title, children }) {
 }`}
                     filename="Modal.tsx"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Previous / Next Navigation */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
+                <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
                   <Link to="/docs/tailwind" className="group flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
                     <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                     <div>
@@ -498,7 +498,7 @@ export function Modal({ isOpen, onClose, title, children }) {
                     </div>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
-                </motion.div>
+                </m.div>
 
               </div>
 

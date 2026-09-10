@@ -1,6 +1,6 @@
 // src/pages/docs/api-plain/page.tsx
 import React from 'react'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import {
   ArrowLeft,
   ArrowRight,
@@ -124,7 +124,7 @@ export default function ApiPlainPage() {
               <div className="max-w-4xl min-w-0 flex-1">
 
                 {/* Title + Copy page button */}
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="flex items-start justify-between gap-4 mb-4"
@@ -136,24 +136,24 @@ export default function ApiPlainPage() {
                   <div className="shrink-0 pt-2 hidden sm:block">
                     <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                   </div>
-                </motion.div>
+                </m.div>
                 {/* Copy button on small screens */}
                 <div className="sm:hidden mb-8">
                   <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                 </div>
 
                 {/* Overview */}
-                <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+                <m.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
                   <p className="text-slate-300 mb-6">
                     Plain function handlers are the simplest way to create API routes in Bini.js. They're perfect for simple endpoints that don't need complex routing or middleware.
                   </p>
                   <Note>
                     <strong>File-based routing:</strong> Your file path determines the API route. A file at <code>src/app/api/hello.ts</code> is served at <code>/api/hello</code>. There are no root <code>/</code> API routes — every file maps to a named route based on its filename.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Basic Handler */}
-                <motion.section id="basic-handler" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
+                <m.section id="basic-handler" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Basic Handler</h2>
                   <p className="text-slate-300 mb-4">
                     Export a default function that receives the <code className="text-cyan-400">Request</code> object. The function name doesn't matter — only the file path determines the route:
@@ -168,10 +168,10 @@ export default function handler(req: Request) {
                   <p className="text-slate-300 mt-4">
                     This creates an endpoint at <code className="text-cyan-400">/api/hello</code> that responds to all HTTP methods.
                   </p>
-                </motion.section>
+                </m.section>
 
                 {/* Route Mapping */}
-                <motion.section id="route-mapping" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }} className="scroll-mt-24">
+                <m.section id="route-mapping" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Route Mapping</h2>
                   <p className="text-slate-300 mb-4">
                     Your file structure directly maps to API routes:
@@ -187,10 +187,10 @@ export default function handler(req: Request) {
                       ['src/app/api/[...catch].ts', '/api/*'],
                     ]}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Handling Methods */}
-                <motion.section id="handling-methods" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
+                <m.section id="handling-methods" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Handling HTTP Methods</h2>
                   <p className="text-slate-300 mb-4">
                     Check <code className="text-cyan-400">request.method</code> to handle different HTTP verbs:
@@ -224,10 +224,10 @@ export default function handler(request: Request) {
                       ['DELETE', 'Remove data'],
                     ]}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Reading Request */}
-                <motion.section id="reading-request" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
+                <m.section id="reading-request" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Reading Request Data</h2>
                   <p className="text-slate-300 mb-4">
                     Access different parts of the incoming request:
@@ -249,10 +249,10 @@ export default async function handler(request: Request) {
 }`}
                     filename="src/app/api/echo.ts"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Sending Responses */}
-                <motion.section id="sending-responses" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
+                <m.section id="sending-responses" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Sending Responses</h2>
                   <p className="text-slate-300 mb-4">
                     Return different types of responses:
@@ -279,10 +279,10 @@ export default function handler(request: Request) {
 }`}
                     filename="src/app/api/responses.ts"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Dynamic Routes */}
-                <motion.section id="dynamic-routes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
+                <m.section id="dynamic-routes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Dynamic Routes</h2>
                   <p className="text-slate-300 mb-4">
                     For dynamic routes, parameters are passed via the <code className="text-cyan-400">x-bini-params</code> header:
@@ -302,10 +302,10 @@ export default async function handler(request: Request) {
 }`}
                     filename="src/app/api/posts/[id].ts"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Catch-all */}
-                <motion.section id="catch-all" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
+                <m.section id="catch-all" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Catch-all Routes</h2>
                   <p className="text-slate-300 mb-4">
                     Handle all unmatched API routes with <code className="text-cyan-400">[...catch]</code>:
@@ -322,10 +322,10 @@ export default function handler(request: Request) {
 }`}
                     filename="src/app/api/[...catch].ts"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Environment Variables */}
-                <motion.section id="environment-variables" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
+                <m.section id="environment-variables" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Environment Variables</h2>
                   <p className="text-slate-300 mb-4">
                     Use <code className="text-cyan-400">getEnv()</code> and <code className="text-cyan-400">requireEnv()</code> — both are auto-imported in API routes:
@@ -353,10 +353,10 @@ export default function handler(request: Request) {
                       ['requireEnv(key)', 'string', 'Throws immediately if missing or empty'],
                     ]}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Error Handling */}
-                <motion.section id="error-handling" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="scroll-mt-24">
+                <m.section id="error-handling" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Error Handling</h2>
                   <p className="text-slate-300 mb-4">
                     Properly handle errors in your API routes:
@@ -391,10 +391,10 @@ export default async function handler(request: Request) {
 }`}
                     filename="src/app/api/safe.ts"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* When to Use */}
-                <motion.section id="when-to-use" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="scroll-mt-24">
+                <m.section id="when-to-use" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">When to Use Plain Handlers</h2>
                   <Table 
                     headers={['Scenario', 'Recommendation']}
@@ -411,10 +411,10 @@ export default async function handler(request: Request) {
                   <Note>
                     Start with plain handlers for simple endpoints. Switch to Hono when you need middleware, complex routing, or better organization.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Complete Example */}
-                <motion.section id="complete-example" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="scroll-mt-24">
+                <m.section id="complete-example" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Complete Example</h2>
                   <p className="text-slate-300 mb-4">
                     A full-featured plain function handler with validation, error handling, and multiple methods:
@@ -485,10 +485,10 @@ export default async function handler(request: Request) {
 }`}
                     filename="src/app/api/todos.ts"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Previous / Next Navigation */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
+                <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
                   <Link to="/docs/api-routes" className="group flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
                     <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                     <div>
@@ -503,7 +503,7 @@ export default async function handler(request: Request) {
                     </div>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
-                </motion.div>
+                </m.div>
 
               </div>
 

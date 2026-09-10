@@ -1,6 +1,6 @@
 // src/pages/docs/og-twitter/page.tsx
 import React from 'react'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import {
   ArrowLeft,
   ArrowRight,
@@ -105,7 +105,7 @@ export default function OgTwitterPage() {
               <div className="max-w-4xl min-w-0 flex-1">
 
                 {/* Title + Copy page button */}
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="flex items-start justify-between gap-4 mb-4"
@@ -117,14 +117,14 @@ export default function OgTwitterPage() {
                   <div className="shrink-0 pt-2 hidden sm:block">
                     <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                   </div>
-                </motion.div>
+                </m.div>
                 {/* Copy button on small screens */}
                 <div className="sm:hidden mb-8">
                   <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                 </div>
 
                 {/* Open Graph Overview */}
-                <motion.section id="open-graph-overview" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="scroll-mt-24">
+                <m.section id="open-graph-overview" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Open Graph Overview</h2>
                   <p className="text-slate-300 mb-4">
                     Open Graph tags control how your page appears when shared on social media platforms like Facebook, LinkedIn, Slack, and others. Bini.js allows you to define Open Graph metadata directly in your layouts and pages.
@@ -162,10 +162,10 @@ export default function AboutPage() {
 }`}
                     filename="app/about/page.tsx"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Open Graph Fields */}
-                <motion.section id="open-graph-fields" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
+                <m.section id="open-graph-fields" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Open Graph Fields</h2>
                   <Table 
                     headers={['Field', 'Type', 'Description']}
@@ -191,10 +191,10 @@ export default function AboutPage() {
                       ['alt', 'string', 'Alt text for the image'],
                     ]}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Twitter Cards Overview */}
-                <motion.section id="twitter-cards-overview" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
+                <m.section id="twitter-cards-overview" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Twitter Cards Overview</h2>
                   <p className="text-slate-300 mb-4">
                     Twitter Cards control how your page appears when shared on Twitter/X. Bini.js supports all Twitter Card types including summary, summary_large_image, app, and player.
@@ -218,10 +218,10 @@ export default function BlogPost() {
 }`}
                     filename="app/blog/[slug]/page.tsx"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Twitter Card Fields */}
-                <motion.section id="twitter-card-fields" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
+                <m.section id="twitter-card-fields" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Twitter Card Fields</h2>
                   <Table 
                     headers={['Field', 'Type', 'Description']}
@@ -242,10 +242,10 @@ export default function BlogPost() {
                     <li><code className="text-cyan-400">app</code> — Card for mobile apps</li>
                     <li><code className="text-cyan-400">player</code> — Card for video/audio content</li>
                   </ul>
-                </motion.section>
+                </m.section>
 
                 {/* Complete Example */}
-                <motion.section id="complete-example" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
+                <m.section id="complete-example" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Complete Example</h2>
                   <p className="text-slate-300 mb-4">
                     Here's a comprehensive example combining Open Graph and Twitter Cards for optimal social sharing:
@@ -296,10 +296,10 @@ export default function BlogPost() {
                       <strong className="text-white">Note:</strong> For best results, use images that are at least 1200x630 pixels. This ensures your content looks great on all platforms.
                     </p>
                   </div>
-                </motion.section>
+                </m.section>
 
                 {/* Previous / Next Navigation */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
+                <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
                   <Link to="/docs/metadata" className="group flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
                     <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                     <div>
@@ -314,7 +314,7 @@ export default function BlogPost() {
                     </div>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
-                </motion.div>
+                </m.div>
 
               </div>
 

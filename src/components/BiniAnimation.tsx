@@ -1,7 +1,7 @@
-import { motion, AnimatePresence } from 'framer-motion'
+import { m, AnimatePresence } from 'framer-motion'
 import { Check, Zap, Rocket, Box, FileCode, FileJson, FileText, Globe } from 'lucide-react'
 import React, { useState, useEffect, useRef } from 'react'
-import { 
+import {
   siApple,
   siLinux,
   siAndroid
@@ -9,13 +9,13 @@ import {
 
 // ─── Windows Icon (custom SVG) ─────────────────────────────────────────────
 const WindowsIcon = ({ className = '', size = 20 }: { className?: string; size?: number }) => (
-  <svg 
-    xmlns="http://www.w3.org/2000/svg" 
-    shapeRendering="geometricPrecision" 
-    textRendering="geometricPrecision" 
-    imageRendering="optimizeQuality" 
-    fillRule="evenodd" 
-    clipRule="evenodd" 
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    shapeRendering="geometricPrecision"
+    textRendering="geometricPrecision"
+    imageRendering="optimizeQuality"
+    fillRule="evenodd"
+    clipRule="evenodd"
     viewBox="0 0 512 512.02"
     width={size}
     height={size}
@@ -159,36 +159,12 @@ const MERGE_DOTS_MOBILE = [
 
 // ─── Deployment platforms ────────────────────────────────────────────────────
 const DEPLOY_PLATFORMS = [
-  {
-    name: 'Windows',
-    icon: 'windows',
-    color: 'cyan',
-  },
-  {
-    name: 'macOS',
-    icon: siApple,
-    color: 'purple',
-  },
-  {
-    name: 'Linux',
-    icon: siLinux,
-    color: 'amber',
-  },
-  {
-    name: 'iOS',
-    icon: siApple,
-    color: 'blue',
-  },
-  {
-    name: 'Android',
-    icon: siAndroid,
-    color: 'emerald',
-  },
-  {
-    name: 'Web',
-    icon: 'web',
-    color: 'rose',
-  },
+  { name: 'Windows', icon: 'windows', color: 'cyan' },
+  { name: 'macOS', icon: siApple, color: 'purple' },
+  { name: 'Linux', icon: siLinux, color: 'amber' },
+  { name: 'iOS', icon: siApple, color: 'blue' },
+  { name: 'Android', icon: siAndroid, color: 'emerald' },
+  { name: 'Web', icon: 'web', color: 'rose' },
 ]
 
 // ─── Vite build output ────────────────────────────────────────────────────────
@@ -224,6 +200,21 @@ function useIsMobile() {
   return isMobile
 }
 
+// ─── Reduced-motion hook ─────────────────────────────────────────────────────
+function usePrefersReducedMotion() {
+  const [prefersReduced, setPrefersReduced] = useState(false)
+
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+    setPrefersReduced(mq.matches)
+    const handler = (e: MediaQueryListEvent) => setPrefersReduced(e.matches)
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [])
+
+  return prefersReduced
+}
+
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 function FileChip({
@@ -242,7 +233,7 @@ function FileChip({
   const c = COLOR[color]
 
   return (
-    <motion.div
+    <m.div
       initial={{ x: position.x, y: position.y, opacity: 0, scale: 0.92 }}
       animate={
         toCenter
@@ -259,7 +250,7 @@ function FileChip({
     >
       <span className={`size-1 sm:size-1.5 rounded-full ${c.pill} opacity-80`} />
       {label}
-    </motion.div>
+    </m.div>
   )
 }
 
@@ -267,7 +258,7 @@ function CoreNode({ pulse }: { pulse: boolean }) {
   const isMobile = useIsMobile()
 
   return (
-    <motion.div
+    <m.div
       initial={{ scale: 0.85, opacity: 0 }}
       animate={{ scale: pulse ? 1.04 : 1, opacity: 1 }}
       exit={{ scale: 0.7, opacity: 0, transition: { duration: 0.3 } }}
@@ -276,10 +267,10 @@ function CoreNode({ pulse }: { pulse: boolean }) {
     >
       <div className="relative flex flex-col items-center justify-center w-full h-full rounded-xl sm:rounded-2xl bg-[#0c1017] border-2 border-cyan-500/60 backdrop-blur-lg overflow-hidden">
         <div className="relative z-10 flex items-center justify-center">
-          <img src="/logo.svg" alt="Bini.js" className={`${isMobile ? 'w-8 h-8' : 'w-12 h-12'} object-contain`} />
+          <img src="/logo.svg" alt="Bini.js" width={48} height={48} className={`${isMobile ? 'w-8 h-8' : 'w-12 h-12'} object-contain`} />
         </div>
       </div>
-    </motion.div>
+    </m.div>
   )
 }
 
@@ -302,7 +293,7 @@ function AnimatedLine({
 
   return (
     <>
-      <motion.line
+      <m.line
         x1={x1}
         y1={y1}
         x2={x2}
@@ -313,7 +304,7 @@ function AnimatedLine({
         animate={{ pathLength: 1, opacity: 0.3 }}
         transition={{ delay, duration: 0.7, ease: easeSmooth }}
       />
-      <motion.line
+      <m.line
         x1={x1}
         y1={y1}
         x2={x2}
@@ -323,7 +314,7 @@ function AnimatedLine({
         animate={{ pathLength: 1 }}
         transition={{ delay: delay + 0.3, duration: 0.8, ease: easeSmooth }}
       />
-      <motion.circle
+      <m.circle
         r="4"
         className={`fill-${color}-400`}
         initial={{ opacity: 0 }}
@@ -367,7 +358,7 @@ function RouteNode({
   const isMobile = useIsMobile()
 
   return (
-    <motion.div
+    <m.div
       initial={{ scale: 0.9, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       transition={{ delay, duration: 0.4, ease: easeOut }}
@@ -375,7 +366,7 @@ function RouteNode({
       style={{ top, left }}
     >
       {label}
-    </motion.div>
+    </m.div>
   )
 }
 
@@ -383,32 +374,32 @@ function ApiPhase() {
   const isMobile = useIsMobile()
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, scale: 0.97 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.97 }}
       transition={{ duration: 0.45, ease: easeSmooth }}
       className={`absolute flex flex-col items-center gap-4 sm:gap-7 ${isMobile ? 'w-72' : 'w-95'}`}
     >
-      <motion.div
+      <m.div
         initial={{ y: -12, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.1, duration: 0.45, ease: easeOut }}
         className="px-5 sm:px-8 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl bg-emerald-500/10 border-2 border-emerald-500/60 text-[11px] sm:text-[13px] font-bold text-emerald-400 backdrop-blur-sm font-mono"
       >
         Hono API Gateway
-      </motion.div>
+      </m.div>
       <div className="flex gap-3 sm:gap-5">
         {[
           { m: 'GET', c: 'emerald' },
           { m: 'POST', c: 'blue' },
           { m: 'PUT', c: 'amber' },
           { m: 'DELETE', c: 'rose' },
-        ].map(({ m, c }, i) => {
+        ].map(({ m: method, c }, i) => {
           const col = COLOR[c]
           return (
-            <motion.span
-              key={m}
+            <m.span
+              key={method}
               initial={{ scale: 0.85, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{
@@ -418,8 +409,8 @@ function ApiPhase() {
               }}
               className={`px-2.5 sm:px-3.5 py-0.5 sm:py-1 rounded-md sm:rounded-lg text-[8px] sm:text-[10px] font-bold tracking-widest backdrop-blur-sm border ${col.bg} ${col.border} ${col.text} font-mono`}
             >
-              {m}
-            </motion.span>
+              {method}
+            </m.span>
           )
         })}
       </div>
@@ -431,7 +422,7 @@ function ApiPhase() {
         ].map(({ path, method, color }, i) => {
           const col = COLOR[color]
           return (
-            <motion.div
+            <m.div
               key={path}
               initial={{ x: -16, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
@@ -442,7 +433,7 @@ function ApiPhase() {
                 {method}
               </span>
               <span className="text-[9px] sm:text-[11px] text-slate-400 font-mono truncate">{isMobile ? path.replace('/api/', '') : path}</span>
-              <motion.span
+              <m.span
                 className={`ml-auto size-1 sm:size-1.5 rounded-full ${col.pill}`}
                 animate={{ opacity: [0.3, 1, 0.3] }}
                 transition={{
@@ -451,11 +442,11 @@ function ApiPhase() {
                   delay: i * 0.3,
                 }}
               />
-            </motion.div>
+            </m.div>
           )
         })}
       </div>
-    </motion.div>
+    </m.div>
   )
 }
 
@@ -464,7 +455,7 @@ function ViteBuildPhase({ complete }: { complete: boolean }) {
   const output = isMobile ? VITE_OUTPUT_MOBILE : VITE_OUTPUT
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -14 }}
@@ -476,7 +467,7 @@ function ViteBuildPhase({ complete }: { complete: boolean }) {
           <Zap className="size-3 sm:size-4 text-emerald-400" />
           <span className="text-[9px] sm:text-[12px] font-semibold">
             <span className="text-emerald-400">vite</span>
-            <span className="text-slate-400"> v8.0.8 </span>
+            <span className="text-slate-400"> v8.2.2 </span>
             <span className="text-slate-500">{isMobile ? 'building...' : 'building client environment for production...'}</span>
           </span>
         </div>
@@ -506,7 +497,7 @@ function ViteBuildPhase({ complete }: { complete: boolean }) {
             }
 
             return (
-              <motion.div
+              <m.div
                 key={item.file}
                 initial={{ opacity: 0, x: -8 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -527,13 +518,13 @@ function ViteBuildPhase({ complete }: { complete: boolean }) {
                     </span>
                   )}
                 </span>
-              </motion.div>
+              </m.div>
             )
           })}
         </div>
 
         {complete && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8, duration: 0.3 }}
@@ -544,10 +535,10 @@ function ViteBuildPhase({ complete }: { complete: boolean }) {
               <span className="text-emerald-400">✓ built in </span>
               <span className="text-emerald-400 font-bold">330ms</span>
             </span>
-          </motion.div>
+          </m.div>
         )}
       </div>
-    </motion.div>
+    </m.div>
   )
 }
 
@@ -576,7 +567,7 @@ function PlatformCard({
   }
 
   return (
-    <motion.div
+    <m.div
       initial={{ x: xOffset, opacity: 0, scale: 0.95 }}
       animate={{ x: 0, opacity: 1, scale: 1 }}
       transition={{ delay: groupDelay + index * 0.06, duration: 0.35, ease: easeOut }}
@@ -591,7 +582,7 @@ function PlatformCard({
           {platform.name}
         </span>
       </div>
-    </motion.div>
+    </m.div>
   )
 }
 
@@ -601,14 +592,14 @@ function DeployPhase() {
   const row2 = DEPLOY_PLATFORMS.slice(3, 6)
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, scale: 0.96 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.96 }}
       transition={{ duration: 0.5, ease: easeSmooth }}
       className={`absolute ${isMobile ? 'w-80' : 'w-140'} -mt-4`}
     >
-      <motion.div
+      <m.div
         initial={{ y: -16, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.15, duration: 0.4, ease: easeOut }}
@@ -617,7 +608,7 @@ function DeployPhase() {
         <span className="inline-flex items-center gap-1.5 sm:gap-2 px-4 sm:px-6 py-1.5 sm:py-2 rounded-full bg-linear-to-r from-purple-500/20 to-blue-500/20 border border-purple-500/40 text-[10px] sm:text-xs font-bold text-purple-300 font-mono">
           {isMobile ? 'Deploy Everywhere' : 'One Codebase · Deploy Everywhere'}
         </span>
-      </motion.div>
+      </m.div>
 
       <div className="flex flex-col gap-3 sm:gap-4">
         <div className="grid grid-cols-3 gap-3 sm:gap-4">
@@ -632,7 +623,7 @@ function DeployPhase() {
           ))}
         </div>
 
-        <motion.div
+        <m.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.55, duration: 0.3 }}
@@ -643,7 +634,7 @@ function DeployPhase() {
             Native & Web
           </span>
           <div className="h-px flex-1 bg-slate-800" />
-        </motion.div>
+        </m.div>
 
         <div className="grid grid-cols-3 gap-3 sm:gap-4">
           {row2.map((platform, i) => (
@@ -657,7 +648,23 @@ function DeployPhase() {
           ))}
         </div>
       </div>
-    </motion.div>
+    </m.div>
+  )
+}
+
+// ─── Static fallback for reduced motion ──────────────────────────────────────
+function StaticFallback() {
+  return (
+    <div className="relative w-full flex items-center justify-center min-h-110 sm:min-h-150 select-none">
+      <div className="flex flex-col items-center gap-4">
+        <div className="flex flex-col items-center justify-center size-27 rounded-2xl bg-[#0c1017] border-2 border-cyan-500/60">
+          <img src="/logo.svg" alt="Bini.js" width={48} height={48} className="w-12 h-12 object-contain" />
+        </div>
+        <span className="text-xs font-mono tracking-[0.14em] uppercase text-cyan-400/70">
+          Bini.js
+        </span>
+      </div>
+    </div>
   )
 }
 
@@ -677,9 +684,12 @@ export function BiniAnimation() {
   const [isRestarting, setIsRestarting] = useState(false)
 
   const isMobile = useIsMobile()
+  const prefersReducedMotion = usePrefersReducedMotion()
   const filePositions = isMobile ? FILE_POSITIONS_MOBILE : FILE_POSITIONS
   const mergeDots = isMobile ? MERGE_DOTS_MOBILE : MERGE_DOTS
 
+  const containerRef = useRef<HTMLDivElement>(null)
+  const isPlayingRef = useRef(false)
   const timeouts = useRef<ReturnType<typeof setTimeout>[]>([])
   const intervals = useRef<ReturnType<typeof setInterval>[]>([])
 
@@ -690,6 +700,7 @@ export function BiniAnimation() {
   }
 
   function resetAll() {
+    isPlayingRef.current = false
     timeouts.current.forEach(clearTimeout)
     intervals.current.forEach(clearInterval)
     timeouts.current = []
@@ -709,7 +720,11 @@ export function BiniAnimation() {
   }
 
   async function play() {
+    if (isPlayingRef.current) return
+    isPlayingRef.current = true
     resetAll()
+    isPlayingRef.current = true
+
     await new Promise((r) => later(r as () => void, 200))
 
     setPhaseLabel('Raw codebase')
@@ -784,16 +799,42 @@ export function BiniAnimation() {
     }, 2500)
   }
 
+  // ── Pause when off-screen, play immediately when visible ───────────────────
   useEffect(() => {
-    play()
+    if (prefersReducedMotion) return
+
+    const el = containerRef.current
+    if (!el) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          play()               // ← starts immediately, no delay
+        } else {
+          resetAll()           // ← pause when off-screen
+        }
+      },
+      { threshold: 0.1 }
+    )
+
+    observer.observe(el)
+
     return () => {
+      observer.disconnect()
       timeouts.current.forEach(clearTimeout)
       intervals.current.forEach(clearInterval)
     }
-  }, [isMobile])
+  }, [isMobile, prefersReducedMotion])
+
+  if (prefersReducedMotion) {
+    return <StaticFallback />
+  }
 
   return (
-    <div className={`relative w-full flex items-center justify-center select-none overflow-hidden ${isMobile ? 'min-h-110' : 'min-h-150'}`}>
+    <div
+      ref={containerRef}
+      className={`relative w-full flex items-center justify-center select-none overflow-hidden ${isMobile ? 'min-h-110' : 'min-h-150'}`}
+    >
       <style>{`
         @keyframes flow {
           0% { offset-distance: 0%; opacity: 0; }
@@ -808,7 +849,7 @@ export function BiniAnimation() {
 
       <AnimatePresence mode="wait">
         {phaseLabel && (
-          <motion.div
+          <m.div
             key={phaseLabel}
             initial={{ opacity: 0, y: 10, filter: 'blur(4px)' }}
             animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
@@ -817,14 +858,14 @@ export function BiniAnimation() {
             className={`absolute ${isMobile ? 'bottom-4' : 'bottom-7'} left-0 right-0 flex justify-center z-20 pointer-events-none`}
           >
             <span className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full border border-cyan-500/25 bg-cyan-500/10 backdrop-blur-md text-[8px] sm:text-[10px] font-semibold tracking-[0.14em] uppercase text-cyan-400 font-mono">
-              <motion.span
+              <m.span
                 className="size-1 sm:size-1.5 rounded-full bg-cyan-400"
                 animate={{ opacity: [0.4, 1, 0.4] }}
                 transition={{ duration: 1.5, repeat: Infinity }}
               />
               {phaseLabel}
             </span>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
 
@@ -847,21 +888,21 @@ export function BiniAnimation() {
 
         <AnimatePresence>
           {routeVisible && (
-            <motion.div
+            <m.div
               initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.96 }}
               transition={{ duration: 0.45, ease: easeSmooth }}
               className={`absolute ${isMobile ? 'w-70 h-60' : 'w-105 h-80'}`}
             >
-              <motion.div
+              <m.div
                 initial={{ y: -12, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.1, duration: 0.45, ease: easeOut }}
                 className={`absolute left-1/2 -translate-x-1/2 ${isMobile ? 'top-2' : 'top-4'} px-4 sm:px-6 py-1.5 sm:py-2 rounded-xl sm:rounded-2xl bg-cyan-500/10 border-2 border-cyan-500/70 text-xs sm:text-sm font-bold text-cyan-400 backdrop-blur-sm font-mono`}
               >
                 /
-              </motion.div>
+              </m.div>
 
               <svg className="absolute inset-0 w-full h-full z-10">
                 <AnimatedLine x1="50%" y1={isMobile ? 40 : 52} x2="18%" y2={isMobile ? 100 : 140} delay={0.45} color="cyan" />
@@ -909,7 +950,7 @@ export function BiniAnimation() {
                 textClass="text-amber-400"
                 delay={0.9}
               />
-            </motion.div>
+            </m.div>
           )}
         </AnimatePresence>
 
@@ -926,7 +967,7 @@ export function BiniAnimation() {
             mergeDots.map((d, i) => {
               const col = COLOR[d.color]
               return (
-                <motion.div
+                <m.div
                   key={i}
                   initial={{ x: d.x, y: d.y, opacity: 1, scale: 1 }}
                   animate={{ x: 0, y: 0, opacity: 0, scale: 0.3 }}

@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from 'framer-motion'
+import { m, AnimatePresence } from 'framer-motion'
 import {
   ArrowRight,
   Copy,
@@ -388,7 +388,7 @@ const Home = () => {
       >
         <SectionDivider />
         <div className="max-w-7xl mx-auto">
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -402,7 +402,7 @@ const Home = () => {
             <p className="text-lg text-slate-400 max-w-2xl mx-auto">
               Every tool is carefully chosen and pre-configured so you can focus on building.
             </p>
-          </motion.div>
+          </m.div>
 
           <div className="min-h-130 lg:min-h-150 w-full flex items-center justify-center">
             <FoundationAnimation />
@@ -414,7 +414,7 @@ const Home = () => {
       <section className="relative py-20 sm:py-24 lg:py-28 px-4 sm:px-6 lg:px-8 bg-black overflow-x-clip">
         <SectionDivider />
         <div className="max-w-7xl mx-auto">
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -427,14 +427,14 @@ const Home = () => {
               Most starters give you a bundler and call it a day. Bini.js gives you a framework —
               wired together and configured correctly from the first commit.
             </p>
-          </motion.div>
+          </m.div>
 
           <div className="grid md:grid-cols-2 gap-6">
             {WHY_BINI.map((item, i) => {
               const Icon = item.icon
               const col = COLOR[item.color as keyof typeof COLOR]
               return (
-                <motion.div
+                <m.div
                   key={i}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -458,7 +458,7 @@ const Home = () => {
                       </div>
                     </div>
                   </div>
-                </motion.div>
+                </m.div>
               )
             })}
           </div>
@@ -469,7 +469,7 @@ const Home = () => {
       <section className="relative py-20 sm:py-24 lg:py-28 px-4 sm:px-6 lg:px-8 bg-black overflow-x-clip">
         <SectionDivider />
         <div className="max-w-7xl mx-auto">
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -484,13 +484,13 @@ const Home = () => {
               Complexity stays invisible. You write normal React and normal web APIs — the
               framework handles the rest.
             </p>
-          </motion.div>
+          </m.div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {DIFFERENTIATORS.map((item, i) => {
               const Icon = item.icon
               return (
-                <motion.div
+                <m.div
                   key={i}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -503,7 +503,7 @@ const Home = () => {
                   </div>
                   <h3 className="text-base font-semibold text-white mb-2">{item.title}</h3>
                   <p className="text-sm text-slate-400 leading-relaxed">{item.desc}</p>
-                </motion.div>
+                </m.div>
               )
             })}
           </div>
@@ -514,7 +514,7 @@ const Home = () => {
       <section className="relative py-20 sm:py-24 lg:py-28 px-4 sm:px-6 lg:px-8 bg-black overflow-x-clip">
         <SectionDivider />
         <div className="max-w-7xl mx-auto">
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -529,7 +529,7 @@ const Home = () => {
               <code className="text-cyan-400 font-mono text-base">--platform</code> picks the
               target — each scaffold gets exactly the dependencies, scripts, and config it needs.
             </p>
-          </motion.div>
+          </m.div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {PLATFORMS.map((platform, i) => {
@@ -538,7 +538,7 @@ const Home = () => {
               const isHovered = hoveredPlatform === platform.name
               
               return (
-                <motion.div
+                <m.div
                   key={platform.name}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -565,7 +565,7 @@ const Home = () => {
 
                   <AnimatePresence>
                     {isHovered && (
-                      <motion.div
+                      <m.div
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
@@ -582,10 +582,10 @@ const Home = () => {
                             </div>
                           ))}
                         </div>
-                      </motion.div>
+                      </m.div>
                     )}
                   </AnimatePresence>
-                </motion.div>
+                </m.div>
               )
             })}
           </div>
@@ -596,7 +596,7 @@ const Home = () => {
       <section className="relative py-8 sm:py-10 lg:py-12 px-4 sm:px-6 lg:px-8 bg-black overflow-x-clip">
         <SectionDivider />
         <div className="max-w-7xl mx-auto">
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -610,7 +610,7 @@ const Home = () => {
             <p className="text-lg text-slate-400 max-w-2xl mx-auto">
               Every package is purpose-built and works seamlessly together — or standalone.
             </p>
-          </motion.div>
+          </m.div>
 
           <PluginAnimation />
         </div>
@@ -620,7 +620,7 @@ const Home = () => {
       <section className="relative py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-black overflow-x-clip">
         <SectionDivider />
         <div className="max-w-7xl mx-auto">
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -644,7 +644,7 @@ const Home = () => {
               <Heart className="w-4 h-4" />
               Become a sponsor
             </a>
-          </motion.div>
+          </m.div>
         </div>
       </section>
 
@@ -652,7 +652,7 @@ const Home = () => {
       <section className="relative py-20 sm:py-24 px-4 sm:px-6 lg:px-8 overflow-x-clip">
         <SectionDivider />
         <div className="max-w-4xl mx-auto text-center">
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -709,7 +709,7 @@ const Home = () => {
                 </span>
               </a>
             </div>
-          </motion.div>
+          </m.div>
         </div>
       </section>
 

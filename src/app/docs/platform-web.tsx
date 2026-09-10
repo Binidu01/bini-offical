@@ -1,6 +1,6 @@
 // src/pages/docs/platform-web/page.tsx
 import React from 'react'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import {
   ArrowLeft,
   ArrowRight,
@@ -129,7 +129,7 @@ export default function PlatformWebPage() {
               <div className="max-w-4xl min-w-0 flex-1">
 
                 {/* Title + Copy page button */}
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="flex items-start justify-between gap-4 mb-4"
@@ -141,14 +141,14 @@ export default function PlatformWebPage() {
                   <div className="shrink-0 pt-2 hidden sm:block">
                     <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                   </div>
-                </motion.div>
+                </m.div>
                 {/* Copy button on small screens */}
                 <div className="sm:hidden mb-8">
                   <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                 </div>
 
                 {/* Web Overview */}
-                <motion.section id="web-overview" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="scroll-mt-24">
+                <m.section id="web-overview" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Web Overview</h2>
                   <p className="text-slate-300 mb-4">
                     Web is the default platform target in Bini.js. It's a standard Vite + React SPA with file-based routing, pre-rendering support, and a Hono API layer. Your application runs in the browser and can be deployed to any hosting platform.
@@ -170,10 +170,10 @@ export default function PlatformWebPage() {
                       <p className="text-slate-400 text-xs">Static HTML with <code className="text-cyan-400">bini-ssg</code></p>
                     </div>
                   </div>
-                </motion.section>
+                </m.section>
 
                 {/* Windows */}
-                <motion.section id="windows" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
+                <m.section id="windows" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Windows</h2>
                   <p className="text-slate-300 mb-4">
                     Create a web application on Windows using the CLI. Web is the default platform, so you don't need to specify it.
@@ -209,10 +209,10 @@ export default function PlatformWebPage() {
                   <Note>
                     Web is the default platform on Windows. All commands work the same way as on other operating systems.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* macOS */}
-                <motion.section id="macos" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
+                <m.section id="macos" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">macOS</h2>
                   <p className="text-slate-300 mb-4">
                     Create a web application on macOS using the CLI. Web is the default platform, so you don't need to specify it.
@@ -248,10 +248,10 @@ export default function PlatformWebPage() {
                   <Note>
                     Web is the default platform on macOS. All commands work the same way as on other operating systems.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Linux */}
-                <motion.section id="linux" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
+                <m.section id="linux" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Linux</h2>
                   <p className="text-slate-300 mb-4">
                     Create a web application on Linux using the CLI. Web is the default platform, so you don't need to specify it.
@@ -287,10 +287,10 @@ export default function PlatformWebPage() {
                   <Note>
                     Web is the default platform on Linux. All commands work the same way as on other operating systems.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Development Server */}
-                <motion.section id="development-server" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
+                <m.section id="development-server" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Development Server</h2>
                   <p className="text-slate-300 mb-4">
                     Start the development server with HMR (Hot Module Replacement):
@@ -308,10 +308,10 @@ export default function PlatformWebPage() {
                     <li>Environment variables from <code className="text-cyan-400">.env</code> files</li>
                     <li>Error overlay with <code className="text-cyan-400">bini-overlay</code></li>
                   </ul>
-                </motion.section>
+                </m.section>
 
                 {/* Production Server */}
-                <motion.section id="production-server" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
+                <m.section id="production-server" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Production Server</h2>
                   <p className="text-slate-300 mb-4">
                     Build and serve your application in production mode:
@@ -330,10 +330,10 @@ npm start`}
                     <li>Graceful shutdown</li>
                     <li>Configurable timeouts and body limits</li>
                   </ul>
-                </motion.section>
+                </m.section>
 
                 {/* Pre-rendering */}
-                <motion.section id="prerendering" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
+                <m.section id="prerendering" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Pre-rendering</h2>
                   <p className="text-slate-300 mb-4">
                     Every route is pre-rendered to static HTML during <code className="text-cyan-400">npm run build</code>. There is no separate export command or export mode — <code className="text-cyan-400">bini-ssg</code> drives pre-rendering as part of the same build.
@@ -424,10 +424,10 @@ if (window.__BINI_SHELL__) {
   hydrateRoot(root, <App />)
 }`}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Deployment */}
-                <motion.section id="deployment" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
+                <m.section id="deployment" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Deployment</h2>
                   <p className="text-slate-300 mb-4">
                     <code className="text-cyan-400">bini-deploy</code> is bundled into every scaffold and exposed as <code className="text-cyan-400">npm run deploy</code>.
@@ -483,10 +483,10 @@ export default defineConfig({
 })`}
                     filename="vite.config.ts"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Previous / Next Navigation */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
+                <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
                   <Link to="/docs/css-modules" className="group flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
                     <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                     <div>
@@ -501,7 +501,7 @@ export default defineConfig({
                     </div>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
-                </motion.div>
+                </m.div>
 
               </div>
 

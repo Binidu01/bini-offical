@@ -1,4 +1,5 @@
 import React from 'react'
+import { LazyMotion, domAnimation } from 'framer-motion'
 
 import './globals.css'
 
@@ -105,5 +106,9 @@ keywords: [
 
 // Root layout — wraps every page.
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return <React.Fragment>{children}</React.Fragment>
+  return (
+    <LazyMotion features={domAnimation}>
+      {children}
+    </LazyMotion>
+  )
 }

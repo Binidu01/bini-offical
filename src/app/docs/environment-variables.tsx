@@ -1,6 +1,6 @@
 // src/pages/docs/environment-variables/page.tsx
 import React from 'react'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import {
   ArrowLeft,
   ArrowRight,
@@ -121,7 +121,7 @@ export default function EnvironmentVariablesPage() {
               <div className="max-w-4xl min-w-0 flex-1">
 
                 {/* Title + Copy page button */}
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="flex items-start justify-between gap-4 mb-4"
@@ -133,23 +133,23 @@ export default function EnvironmentVariablesPage() {
                   <div className="shrink-0 pt-2 hidden sm:block">
                     <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                   </div>
-                </motion.div>
+                </m.div>
                 <div className="sm:hidden mb-8">
                   <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                 </div>
 
                 {/* Overview */}
-                <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+                <m.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
                   <p className="text-slate-300 mb-6">
                     <code className="text-cyan-400">bini-env</code> is <strong className="text-white">installed and configured by default</strong> in every Bini.js project. It reads env vars from the Hono request context, so variables are always resolved from the correct runtime binding — no platform-specific code needed.
                   </p>
                   <Note>
                     <strong>Hono-native:</strong> <code>getEnv(c, key)</code> / <code>requireEnv(c, key)</code> read directly from the Hono request context. Zero dotenv — no <code>.env</code> parsing at runtime; vars come from the host platform. Vite handles <code>.env</code> loading during development.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Quick Start */}
-                <motion.section id="quick-start" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
+                <m.section id="quick-start" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Quick Start</h2>
                   
                   <h3 className="text-lg font-semibold text-white mt-6 mb-3">1. Register the Vite plugin</h3>
@@ -198,10 +198,10 @@ export default app`}
                   <Note>
                     That's it — no manual <code>loadEnv</code> loop in <code>vite.config.ts</code> needed. Your secret just needs to exist in <code>.env</code> with no prefix, and <code>requireEnv</code> will find it during dev and preview.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Usage Pattern */}
-                <motion.section id="usage-pattern" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
+                <m.section id="usage-pattern" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Usage Pattern</h2>
                   <p className="text-slate-300 mb-4">
                     Always pass <code>c</code> explicitly. Cast it once at the top of the handler, then use <code>ctx</code> throughout.
@@ -237,10 +237,10 @@ export default app`}
 requireEnv(ctx, 'KEY')            // throws if missing
 getEnv(ctx, 'KEY') ?? 'default'   // optional with default`}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Environment Prefixes */}
-                <motion.section id="environment-prefixes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
+                <m.section id="environment-prefixes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Environment Prefixes</h2>
                   
                   <h3 className="text-lg font-semibold text-white mt-6 mb-3">BINI_ — Client-side vars</h3>
@@ -296,10 +296,10 @@ const dbUrl = requireEnv(ctx, 'DATABASE_URL')`}
                   <Note>
                     <strong>Critical:</strong> Never put secrets in <code>BINI_*</code> or <code>VITE_*</code> variables — both are exposed to the browser. Use un-prefixed variables for secrets and read them with <code>getEnv(ctx, key)</code> inside API route handlers only.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Platform Support */}
-                <motion.section id="platform-support" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
+                <m.section id="platform-support" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Platform Support</h2>
                   <p className="text-slate-300 mb-4">
                     <code>getEnv</code> and <code>requireEnv</code> delegate to Hono's <code>env(c)</code> adapter, which reads from the correct source on every supported platform automatically. Your code never changes regardless of where it deploys.
@@ -318,10 +318,10 @@ const dbUrl = requireEnv(ctx, 'DATABASE_URL')`}
                   <Note>
                     <strong>Cloudflare note:</strong> Secrets set via <code>wrangler secret put</code> are only available inside the fetch handler via <code>c.env</code>. <code>getEnv(ctx, key)</code> reads them correctly as long as you pass <code>c</code>.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* How It Works */}
-                <motion.section id="how-it-works" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
+                <m.section id="how-it-works" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">How It Works</h2>
                   <p className="text-slate-300 mb-4">
                     The <code>biniEnv()</code> plugin does three things:
@@ -362,10 +362,10 @@ const dbUrl = requireEnv(ctx, 'DATABASE_URL')`}
                   <Note>
                     <strong>Precedence:</strong> A value already present in <code>process.env</code> (set by your OS, shell, or CI) always wins. <code>.env</code> file values only fill in variables that aren't already set.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* API Reference */}
-                <motion.section id="api-reference" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
+                <m.section id="api-reference" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">API Reference</h2>
                   
                   <h3 className="text-lg font-semibold text-white mt-6 mb-3">getEnv(c, key)</h3>
@@ -446,10 +446,10 @@ function readDbConfig(c: HonoContext) {
   }
 }`}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Security Best Practices */}
-                <motion.section id="security" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
+                <m.section id="security" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Security Best Practices</h2>
                   
                   <h3 className="text-lg font-semibold text-white mt-6 mb-3">Rule 1: Never Prefix Secrets</h3>
@@ -472,10 +472,10 @@ VITE_GA_ID=UA-XXXXX`}
                   <p className="text-slate-300">
                     An empty value (<code>API_KEY=</code>) is skipped by the <code>process.env</code> mirror, so <code>requireEnv</code> will correctly throw instead of silently succeeding with an empty string.
                   </p>
-                </motion.section>
+                </m.section>
 
                 {/* Performance */}
-                <motion.section id="performance" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="scroll-mt-24">
+                <m.section id="performance" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Performance</h2>
                   <Table 
                     headers={['Metric', 'Dev', 'Prod']}
@@ -488,10 +488,10 @@ VITE_GA_ID=UA-XXXXX`}
                   <p className="text-slate-300 mt-4">
                     No dotenv. No per-request disk reads. <code>getEnv</code> is a direct call to Hono's adapter on every invocation — request-scoped and correct.
                   </p>
-                </motion.section>
+                </m.section>
 
                 {/* Troubleshooting */}
-                <motion.section id="troubleshooting" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="scroll-mt-24">
+                <m.section id="troubleshooting" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Troubleshooting</h2>
                   <Table 
                     headers={['Problem', 'Solution']}
@@ -506,10 +506,10 @@ VITE_GA_ID=UA-XXXXX`}
                       ['Types not found', 'Add /// <reference types="vite/client" /> to your tsconfig.json or entry file.'],
                     ]}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Complete Example */}
-                <motion.section id="complete-example" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="scroll-mt-24">
+                <m.section id="complete-example" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Complete Example</h2>
                   <CodeBlock 
                     code={`# .env
@@ -547,10 +547,10 @@ app.get('/config', (c) => {
 export default app`}
                     filename="src/app/api/config.ts"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Previous / Next Navigation */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
+                <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
                   <Link to="/docs/api-cors" className="group flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
                     <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                     <div>
@@ -565,7 +565,7 @@ export default app`}
                     </div>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
-                </motion.div>
+                </m.div>
 
               </div>
 

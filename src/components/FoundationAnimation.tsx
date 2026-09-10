@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from 'framer-motion'
+import { m, AnimatePresence } from 'framer-motion'
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { siReact, siVite, siTauri } from 'simple-icons'
 import type { SimpleIcon as SimpleIconType } from 'simple-icons'
@@ -87,13 +87,15 @@ function segLen(ax: number, ay: number, bx: number, by: number) {
 }
 
 // ─── Chip diagonal sweep ────────────────────────────────────────
-function ChipSweepLight() {
+function ChipSweepLight({ paused }: { paused: boolean }) {
+  if (paused) return null
+
   return (
     <div
       className="absolute inset-0 pointer-events-none overflow-hidden rounded-2xl"
       style={{ zIndex: 10 }}
     >
-      <motion.div
+      <m.div
         style={{
           position: 'absolute',
           width: '220%',
@@ -123,12 +125,14 @@ function LightRay({
   duration = 1.8,
   delay = 0,
   glowIntensity = 4,
+  paused = false,
 }: {
   wire: WireGeo
   color: string
   duration?: number
   delay?: number
   glowIntensity?: number
+  paused?: boolean
 }) {
   const pathRef = useRef<SVGPathElement>(null)
   const [len, setLen] = useState(wire.totalLength || 200)
@@ -144,7 +148,7 @@ function LightRay({
   const travel = len + dashLen * 2
 
   return (
-    <motion.path
+    <m.path
       ref={pathRef}
       d={wire.d}
       fill="none"
@@ -153,13 +157,17 @@ function LightRay({
       strokeLinecap="round"
       strokeLinejoin="round"
       strokeDasharray={`${dashLen} ${len + dashLen}`}
-      animate={{ strokeDashoffset: [travel, -travel] }}
-      transition={{
-        duration,
-        delay,
-        repeat: Infinity,
-        ease: 'linear',
-      }}
+      animate={paused ? {} : { strokeDashoffset: [travel, -travel] }}
+      transition={
+        paused
+          ? {}
+          : {
+              duration,
+              delay,
+              repeat: Infinity,
+              ease: 'linear',
+            }
+      }
       style={{ filter: `drop-shadow(0 0 ${glowIntensity}px ${color})` }}
     />
   )
@@ -181,6 +189,39 @@ function useIsMobile() {
   return isMobile
 }
 
+// ─── Reduced-motion hook ────────────────────────────────────────
+function usePrefersReducedMotion() {
+  const [prefersReduced, setPrefersReduced] = useState(false)
+
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+    setPrefersReduced(mq.matches)
+    const handler = (e: MediaQueryListEvent) => setPrefersReduced(e.matches)
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [])
+
+  return prefersReduced
+}
+
+// ─── Visibility hook — pause when off-screen ───────────────────
+function useIsVisible(ref: React.RefObject<HTMLElement | null>) {
+  const [isVisible, setIsVisible] = useState(false)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const io = new IntersectionObserver(
+      ([entry]) => setIsVisible(entry.isIntersecting),
+      { threshold: 0.1 }
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [ref])
+
+  return isVisible
+}
+
 // ─── Main component ───────────────────────────────────────────
 export function FoundationAnimation() {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -191,6 +232,11 @@ export function FoundationAnimation() {
 
   const [geo, setGeo] = useState<Geo | null>(null)
   const isMobile = useIsMobile()
+  const prefersReducedMotion = usePrefersReducedMotion()
+  const isVisible = useIsVisible(containerRef)
+
+  // Pause infinite animations when off-screen or when reduced motion is requested
+  const paused = !isVisible || prefersReducedMotion
 
   useEffect(() => {
     const measure = () => {
@@ -307,7 +353,7 @@ export function FoundationAnimation() {
               )
             })}
 
-            {TOOLS.map((tool, i) => {
+            {!prefersReducedMotion && TOOLS.map((tool, i) => {
               const w = getWire(tool)
               if (!w) return null
               return (
@@ -318,6 +364,7 @@ export function FoundationAnimation() {
                   duration={1.6 + i * 0.25}
                   delay={i * 0.5}
                   glowIntensity={2}
+                  paused={paused}
                 />
               )
             })}
@@ -358,7 +405,7 @@ export function FoundationAnimation() {
           </div>
 
           {/* Chip - smaller on mobile */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, scale: 0.88 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, ease: [0.34, 1.56, 0.64, 1] }}
@@ -367,12 +414,12 @@ export function FoundationAnimation() {
           >
             <div className="flex gap-0.5 mb-0.5">
               {[...Array(3)].map((_, i) => (
-                <motion.div
+                <m.div
                   key={i}
                   className="w-px h-2 rounded-full"
                   style={{ background: i === 1 ? '#a855f7' : 'rgb(71 85 105)' }}
-                  animate={{ opacity: i === 1 ? [0.4, 0.8, 0.4] : [0.15, 0.4, 0.15] }}
-                  transition={{ duration: 2.5, repeat: Infinity, delay: i * 0.13 }}
+                  animate={prefersReducedMotion ? {} : { opacity: i === 1 ? [0.4, 0.8, 0.4] : [0.15, 0.4, 0.15] }}
+                  transition={prefersReducedMotion ? {} : { duration: 2.5, repeat: Infinity, delay: i * 0.13 }}
                 />
               ))}
             </div>
@@ -380,17 +427,17 @@ export function FoundationAnimation() {
             <div className="relative flex items-center">
               <div className="flex flex-col gap-0.5 mr-1">
                 {[...Array(3)].map((_, i) => (
-                  <motion.div
+                  <m.div
                     key={i}
                     className="h-px w-2 rounded-full"
                     style={{ background: i === 1 ? '#00e5ff' : 'rgb(71 85 105)' }}
-                    animate={{ opacity: i === 1 ? [0.4, 0.8, 0.4] : [0.15, 0.4, 0.15] }}
-                    transition={{ duration: 2.2, repeat: Infinity, delay: i * 0.18 }}
+                    animate={prefersReducedMotion ? {} : { opacity: i === 1 ? [0.4, 0.8, 0.4] : [0.15, 0.4, 0.15] }}
+                    transition={prefersReducedMotion ? {} : { duration: 2.2, repeat: Infinity, delay: i * 0.18 }}
                   />
                 ))}
               </div>
 
-              <motion.div
+              <m.div
                 ref={chipRef}
                 className="relative w-14 h-14 rounded-lg flex items-center justify-center overflow-hidden"
                 style={{
@@ -399,7 +446,7 @@ export function FoundationAnimation() {
                   boxShadow: '0 8px 16px rgba(0,0,0,0.35)',
                 }}
               >
-                <ChipSweepLight />
+                <ChipSweepLight paused={paused} />
 
                 <svg className="absolute inset-0 w-full h-full opacity-[0.1]" viewBox="0 0 128 128">
                   <line x1="64" y1="0" x2="64" y2="28" stroke="#a855f7" strokeWidth="1.5" />
@@ -417,18 +464,20 @@ export function FoundationAnimation() {
                 <img
                   src="/logo.svg"
                   alt="Bini.js"
+                  width={24}
+                  height={24}
                   className="relative w-6 h-6 object-contain z-10"
                 />
-              </motion.div>
+              </m.div>
 
               <div className="flex flex-col gap-0.5 ml-1">
                 {[...Array(3)].map((_, i) => (
-                  <motion.div
+                  <m.div
                     key={i}
                     className="h-px w-2 rounded-full"
                     style={{ background: i === 1 ? '#f97316' : 'rgb(71 85 105)' }}
-                    animate={{ opacity: i === 1 ? [0.4, 0.8, 0.4] : [0.15, 0.4, 0.15] }}
-                    transition={{ duration: 2.2, repeat: Infinity, delay: i * 0.18 + 0.5 }}
+                    animate={prefersReducedMotion ? {} : { opacity: i === 1 ? [0.4, 0.8, 0.4] : [0.15, 0.4, 0.15] }}
+                    transition={prefersReducedMotion ? {} : { duration: 2.2, repeat: Infinity, delay: i * 0.18 + 0.5 }}
                   />
                 ))}
               </div>
@@ -436,16 +485,16 @@ export function FoundationAnimation() {
 
             <div className="flex gap-0.5 mt-0.5">
               {[...Array(3)].map((_, i) => (
-                <motion.div
+                <m.div
                   key={i}
                   className="w-px h-2 rounded-full"
                   style={{ background: i === 1 ? '#ffc131' : 'rgb(71 85 105)' }}
-                  animate={{ opacity: i === 1 ? [0.4, 0.8, 0.4] : [0.15, 0.4, 0.15] }}
-                  transition={{ duration: 2.5, repeat: Infinity, delay: i * 0.13 + 0.9 }}
+                  animate={prefersReducedMotion ? {} : { opacity: i === 1 ? [0.4, 0.8, 0.4] : [0.15, 0.4, 0.15] }}
+                  transition={prefersReducedMotion ? {} : { duration: 2.5, repeat: Infinity, delay: i * 0.13 + 0.9 }}
                 />
               ))}
             </div>
-          </motion.div>
+          </m.div>
 
           {/* Right card - mini */}
           <div style={{ gridColumn: 3, gridRow: 2 }}>
@@ -525,7 +574,7 @@ export function FoundationAnimation() {
             )
           })}
 
-          {TOOLS.map((tool, i) => {
+          {!prefersReducedMotion && TOOLS.map((tool, i) => {
             const w = getWire(tool)
             if (!w) return null
             return (
@@ -536,6 +585,7 @@ export function FoundationAnimation() {
                 duration={1.6 + i * 0.25}
                 delay={i * 0.5}
                 glowIntensity={4}
+                paused={paused}
               />
             )
           })}
@@ -576,7 +626,7 @@ export function FoundationAnimation() {
         </div>
 
         {/* Chip */}
-        <motion.div
+        <m.div
           initial={{ opacity: 0, scale: 0.88 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, ease: [0.34, 1.56, 0.64, 1] }}
@@ -585,12 +635,12 @@ export function FoundationAnimation() {
         >
           <div className="flex gap-1.5 mb-1.5">
             {[...Array(5)].map((_, i) => (
-              <motion.div
+              <m.div
                 key={i}
                 className="w-px h-4 rounded-full"
                 style={{ background: i === 2 ? '#a855f7' : 'rgb(71 85 105)' }}
-                animate={{ opacity: i === 2 ? [0.4, 0.8, 0.4] : [0.15, 0.4, 0.15] }}
-                transition={{ duration: 2.5, repeat: Infinity, delay: i * 0.13 }}
+                animate={prefersReducedMotion ? {} : { opacity: i === 2 ? [0.4, 0.8, 0.4] : [0.15, 0.4, 0.15] }}
+                transition={prefersReducedMotion ? {} : { duration: 2.5, repeat: Infinity, delay: i * 0.13 }}
               />
             ))}
           </div>
@@ -598,17 +648,17 @@ export function FoundationAnimation() {
           <div className="relative flex items-center">
             <div className="flex flex-col gap-2 mr-2">
               {[...Array(5)].map((_, i) => (
-                <motion.div
+                <m.div
                   key={i}
                   className="h-px w-4 rounded-full"
                   style={{ background: i === 2 ? '#00e5ff' : 'rgb(71 85 105)' }}
-                  animate={{ opacity: i === 2 ? [0.4, 0.8, 0.4] : [0.15, 0.4, 0.15] }}
-                  transition={{ duration: 2.2, repeat: Infinity, delay: i * 0.18 }}
+                  animate={prefersReducedMotion ? {} : { opacity: i === 2 ? [0.4, 0.8, 0.4] : [0.15, 0.4, 0.15] }}
+                  transition={prefersReducedMotion ? {} : { duration: 2.2, repeat: Infinity, delay: i * 0.18 }}
                 />
               ))}
             </div>
 
-            <motion.div
+            <m.div
               ref={chipRef}
               className="relative w-32 h-32 rounded-2xl flex items-center justify-center overflow-hidden"
               style={{
@@ -617,7 +667,7 @@ export function FoundationAnimation() {
                 boxShadow: '0 20px 40px rgba(0,0,0,0.35)',
               }}
             >
-              <ChipSweepLight />
+              <ChipSweepLight paused={paused} />
 
               <svg className="absolute inset-0 w-full h-full opacity-[0.1]" viewBox="0 0 128 128">
                 <line x1="64" y1="0" x2="64" y2="28" stroke="#a855f7" strokeWidth="1.5" />
@@ -635,18 +685,20 @@ export function FoundationAnimation() {
               <img
                 src="/logo.svg"
                 alt="Bini.js"
+                width={56}
+                height={56}
                 className="relative w-14 h-14 object-contain z-10"
               />
-            </motion.div>
+            </m.div>
 
             <div className="flex flex-col gap-2 ml-2">
               {[...Array(5)].map((_, i) => (
-                <motion.div
+                <m.div
                   key={i}
                   className="h-px w-4 rounded-full"
                   style={{ background: i === 2 ? '#f97316' : 'rgb(71 85 105)' }}
-                  animate={{ opacity: i === 2 ? [0.4, 0.8, 0.4] : [0.15, 0.4, 0.15] }}
-                  transition={{ duration: 2.2, repeat: Infinity, delay: i * 0.18 + 0.5 }}
+                  animate={prefersReducedMotion ? {} : { opacity: i === 2 ? [0.4, 0.8, 0.4] : [0.15, 0.4, 0.15] }}
+                  transition={prefersReducedMotion ? {} : { duration: 2.2, repeat: Infinity, delay: i * 0.18 + 0.5 }}
                 />
               ))}
             </div>
@@ -654,16 +706,16 @@ export function FoundationAnimation() {
 
           <div className="flex gap-1.5 mt-1.5">
             {[...Array(5)].map((_, i) => (
-              <motion.div
+              <m.div
                 key={i}
                 className="w-px h-4 rounded-full"
                 style={{ background: i === 2 ? '#ffc131' : 'rgb(71 85 105)' }}
-                animate={{ opacity: i === 2 ? [0.4, 0.8, 0.4] : [0.15, 0.4, 0.15] }}
-                transition={{ duration: 2.5, repeat: Infinity, delay: i * 0.13 + 0.9 }}
+                animate={prefersReducedMotion ? {} : { opacity: i === 2 ? [0.4, 0.8, 0.4] : [0.15, 0.4, 0.15] }}
+                transition={prefersReducedMotion ? {} : { duration: 2.5, repeat: Infinity, delay: i * 0.13 + 0.9 }}
               />
             ))}
           </div>
-        </motion.div>
+        </m.div>
 
         {/* Right card */}
         <div style={{ gridColumn: 3, gridRow: 2 }}>
@@ -710,7 +762,7 @@ function ToolCard({
     { x: 3 }
 
   return (
-    <motion.div
+    <m.div
       ref={cardRef}
       initial={{ opacity: 0, ...initialOffset }}
       animate={{ opacity: 1, x: 0, y: 0 }}
@@ -758,7 +810,7 @@ function ToolCard({
           </div>
         ))}
       </div>
-    </motion.div>
+    </m.div>
   )
 }
 
@@ -779,7 +831,7 @@ function MiniToolCard({
     { x: 8 }
 
   return (
-    <motion.div
+    <m.div
       ref={cardRef}
       initial={{ opacity: 0, ...initialOffset }}
       animate={{ opacity: 1, x: 0, y: 0 }}
@@ -809,6 +861,6 @@ function MiniToolCard({
           {tool.label}
         </span>
       </div>
-    </motion.div>
+    </m.div>
   )
 }

@@ -1,6 +1,6 @@
 // src/pages/docs/hosting/page.tsx
 import React from 'react'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import { ArrowLeft } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Header } from '../../components/Layout'
@@ -155,7 +155,7 @@ export default function HostingPage() {
               <div className="max-w-4xl min-w-0 flex-1">
 
                 {/* Title + Copy page button */}
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="flex items-start justify-between gap-4 mb-4"
@@ -167,33 +167,33 @@ export default function HostingPage() {
                   <div className="shrink-0 pt-2 hidden sm:block">
                     <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                   </div>
-                </motion.div>
+                </m.div>
                 {/* Copy button on small screens */}
                 <div className="sm:hidden mb-8">
                   <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                 </div>
 
                 {/* Overview */}
-                <motion.section id="overview" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="scroll-mt-24">
+                <m.section id="overview" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="scroll-mt-24">
                   <p className="text-slate-300 mb-4">
                     <code className="text-cyan-400">bini-deploy</code> scans your project, generates the right hosting configuration for your target provider, and pushes it straight to GitHub — no YAML spelunking, no platform-specific docs to read first.
                   </p>
                   <p className="text-slate-300 mb-6">
                     It's bundled into every Bini.js scaffold and exposed as <code className="text-cyan-400">npm run deploy</code>. This page covers the <strong className="text-white">web hosting providers</strong> it supports. For desktop and mobile targets, see <Link to="/docs/deploying" className="text-cyan-400 hover:underline">Deployment Overview</Link>.
                   </p>
-                </motion.section>
+                </m.section>
 
                 {/* Installation */}
-                <motion.section id="installation" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
+                <m.section id="installation" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Installation</h2>
                   <p className="text-slate-300 mb-4">
                     Already included in every Bini.js scaffold. To add it to an existing project:
                   </p>
                   <CodeBlock code={`npm install --save-dev bini-deploy`} />
-                </motion.section>
+                </m.section>
 
                 {/* Supported Providers */}
-                <motion.section id="supported-providers" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
+                <m.section id="supported-providers" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Supported Providers</h2>
                   <Table
                     headers={['Provider', 'Runtime', 'Config generated']}
@@ -240,10 +240,10 @@ export default function HostingPage() {
                       [<code className="text-cyan-400">--yes, -y</code>, 'skip interactive prompts and use the flags provided'],
                     ]}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Node.js */}
-                <motion.section id="node" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
+                <m.section id="node" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2 flex items-center gap-2">
                     <SimpleIcon icon={siNodedotjs} className="text-green-400" size={20} />
                     Node.js
@@ -258,10 +258,10 @@ export default function HostingPage() {
                   <p className="text-slate-300 mt-4">
                     Works out of the box on Railway, Render, Fly.io, or a bare VPS with <code className="text-cyan-400">pm2</code>. See <Link to="/docs/production-server" className="text-cyan-400 hover:underline">Production Server</Link> for the full runtime reference.
                   </p>
-                </motion.section>
+                </m.section>
 
                 {/* Netlify */}
-                <motion.section id="netlify" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
+                <m.section id="netlify" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2 flex items-center gap-2">
                     <SimpleIcon icon={siNetlify} className="text-cyan-400" size={20} />
                     Netlify
@@ -294,10 +294,10 @@ export default function HostingPage() {
                   <Note>
                     Edge Functions run on <strong className="text-white">Deno, not Node</strong> — packages depending on Node built-ins (<code>fs</code>, <code>nodemailer</code>) won't work there.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Vercel */}
-                <motion.section id="vercel" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
+                <m.section id="vercel" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2 flex items-center gap-2">
                     <SimpleIcon icon={siVercel} className="text-white" size={20} />
                     Vercel
@@ -315,10 +315,10 @@ export default function HostingPage() {
                   <Note>
                     Vercel reads <code>api/index.ts</code> before running your build — bini-deploy commits it for you, so it's already there when CI runs. It imports <code>hono</code> as an npm package, so bini-deploy checks it's installed and tells you the exact install command if it's missing.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Cloudflare Workers */}
-                <motion.section id="cloudflare" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
+                <m.section id="cloudflare" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2 flex items-center gap-2">
                     <SimpleIcon icon={siCloudflare} className="text-orange-400" size={20} />
                     Cloudflare Workers
@@ -340,10 +340,10 @@ export default function HostingPage() {
                   <Note>
                     Like Vercel, the worker entry imports <code>hono</code> as an npm package — bini-deploy verifies it's installed before generating the entry file.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Deno Deploy */}
-                <motion.section id="deno-deploy" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
+                <m.section id="deno-deploy" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2 flex items-center gap-2">
                     <SimpleIcon icon={siDeno} className="text-white" size={20} />
                     Deno Deploy
@@ -365,10 +365,10 @@ export default function HostingPage() {
                   <Note>
                     Deno Deploy also reads its entry file before building — same reasoning as Vercel above. Deno and Netlify both import <code>hono</code> directly from a URL, so no local install check is needed for these two.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* API Routes & Hono */}
-                <motion.section id="api-routes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="scroll-mt-24">
+                <m.section id="api-routes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">API Routes & Hono</h2>
                   <p className="text-slate-300 mb-4">
                     Every provider mounts the same file-based routes from <code className="text-cyan-400">src/app/api/</code>, dynamic segments and catch-alls included:
@@ -412,18 +412,18 @@ export default app;`}
                   <Note>
                     <strong>ESM projects:</strong> since Bini.js projects ship with <code>"type": "module"</code>, Node's native ESM loader requires relative imports to include their file extension. bini-deploy's generated imports already include <code>.js</code>, but if your route files import local helpers (e.g. <code>./utils</code>), include the extension there too (<code>./utils.js</code>) or the deployed function will crash with <code>ERR_MODULE_NOT_FOUND</code> even though the build succeeds.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Automatic CORS */}
-                <motion.section id="cors" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="scroll-mt-24">
+                <m.section id="cors" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Automatic CORS</h2>
                   <p className="text-slate-300 mb-2">
                     API routes get permissive CORS headers out of the box on every non-Node hosting adapter — Netlify, Vercel, Cloudflare, and Deno — so your frontend can call them without extra setup.
                   </p>
-                </motion.section>
+                </m.section>
 
                 {/* Git Push Behavior */}
-                <motion.section id="git-behavior" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="scroll-mt-24">
+                <m.section id="git-behavior" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Git Push Behavior</h2>
                   <ul className="space-y-2 text-slate-300 mb-4 list-disc list-inside">
                     <li><strong className="text-white">Existing remote</strong> — used without modification</li>
@@ -435,10 +435,10 @@ export default app;`}
                   <Note>
                     This means you can run <code>bini-deploy</code> multiple times without accidentally pushing to the wrong repository.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Requirements */}
-                <motion.section id="requirements" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 }} className="scroll-mt-24">
+                <m.section id="requirements" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Requirements</h2>
                   <Table
                     headers={['Requirement', 'Version']}
@@ -449,10 +449,10 @@ export default app;`}
                       ['GitHub repository', 'created ahead of time, to push to'],
                     ]}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Previous Navigation (this is the last page in Deployment) */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }} className="flex items-center justify-start pt-8 mt-8 border-t border-slate-800">
+                <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }} className="flex items-center justify-start pt-8 mt-8 border-t border-slate-800">
                   <Link to="/docs/static-export" className="group flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
                     <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                     <div>
@@ -460,7 +460,7 @@ export default app;`}
                       <div className="text-sm font-medium">Static Export</div>
                     </div>
                   </Link>
-                </motion.div>
+                </m.div>
 
               </div>
 

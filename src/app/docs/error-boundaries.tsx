@@ -1,6 +1,6 @@
 // src/pages/docs/error-boundaries/page.tsx
 import React from 'react'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import {
   ArrowLeft,
   ArrowRight,
@@ -107,7 +107,7 @@ export default function ErrorBoundariesPage() {
               <div className="max-w-4xl min-w-0 flex-1">
 
                 {/* Title + Copy page button */}
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="flex items-start justify-between gap-4 mb-4"
@@ -119,14 +119,14 @@ export default function ErrorBoundariesPage() {
                   <div className="shrink-0 pt-2 hidden sm:block">
                     <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                   </div>
-                </motion.div>
+                </m.div>
                 {/* Copy button on small screens */}
                 <div className="sm:hidden mb-8">
                   <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                 </div>
 
                 {/* What are Error Boundaries? */}
-                <motion.section id="what-are-error-boundaries" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="scroll-mt-24">
+                <m.section id="what-are-error-boundaries" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">What are Error Boundaries?</h2>
                   <p className="text-slate-300 mb-4">
                     Error boundaries are React components that catch JavaScript errors in their child component tree, log those errors, and display a fallback UI instead of the component tree that crashed. In Bini.js, you can create error boundaries using the <code className="text-cyan-400">error.tsx</code> file.
@@ -134,10 +134,10 @@ export default function ErrorBoundariesPage() {
                   <p className="text-slate-300 mb-4">
                     Error boundaries catch errors during rendering, in lifecycle methods, and in constructors of the whole tree below them.
                   </p>
-                </motion.section>
+                </m.section>
 
                 {/* Creating an Error Boundary */}
-                <motion.section id="creating-error-boundary" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
+                <m.section id="creating-error-boundary" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Creating an Error Boundary</h2>
                   <p className="text-slate-300 mb-4">
                     Create an <code className="text-cyan-400">error.tsx</code> file in any folder to define an error boundary for that route and its children.
@@ -171,10 +171,10 @@ export default function DashboardError({ error, reset }: { error: Error; reset: 
 }`}
                     filename="app/dashboard/error.tsx"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Error Props */}
-                <motion.section id="error-props" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
+                <m.section id="error-props" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Error Props</h2>
                   <p className="text-slate-300 mb-4">
                     The <code className="text-cyan-400">error.tsx</code> component receives two props:
@@ -218,10 +218,10 @@ export default function DashboardError({
 }`}
                     filename="app/dashboard/error.tsx"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Nested Error Boundaries */}
-                <motion.section id="nested-error-boundaries" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
+                <m.section id="nested-error-boundaries" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Nested Error Boundaries</h2>
                   <p className="text-slate-300 mb-4">
                     You can create nested error boundaries by placing <code className="text-cyan-400">error.tsx</code> in subdirectories. Each error boundary only catches errors in its subtree.
@@ -252,10 +252,10 @@ export default function DashboardError({
                       ['/about', 'app/error.tsx (global)'],
                     ]}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Nearest Wins Resolution */}
-                <motion.section id="nearest-wins" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
+                <m.section id="nearest-wins" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Nearest Wins Resolution</h2>
                   <p className="text-slate-300 mb-4">
                     Error boundaries use <strong className="text-white">"nearest wins"</strong> resolution. The closest <code className="text-cyan-400">error.tsx</code> to the route where the error occurred is used.
@@ -283,10 +283,10 @@ export default function DashboardError({
                     <li>If not found, check each parent folder (going up)</li>
                     <li>If still not found, use the built-in fallback</li>
                   </ol>
-                </motion.section>
+                </m.section>
 
                 {/* Error with Layout */}
-                <motion.section id="error-with-layout" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
+                <m.section id="error-with-layout" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Error with Layout</h2>
                   <p className="text-slate-300 mb-4">
                     Error boundaries are rendered inside the layout hierarchy. Layouts remain visible when an error occurs in a child route.
@@ -303,10 +303,10 @@ export default function DashboardError({
                   <p className="text-slate-300 mt-4">
                     This allows you to keep navigation, headers, and sidebars visible even when an error occurs in the main content area.
                   </p>
-                </motion.section>
+                </m.section>
 
                 {/* Built-in Fallback */}
-                <motion.section id="built-in-fallback" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
+                <m.section id="built-in-fallback" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Built-in Fallback</h2>
                   <p className="text-slate-300 mb-4">
                     If no <code className="text-cyan-400">error.tsx</code> exists in the hierarchy, Bini.js uses a built-in fallback:
@@ -319,10 +319,10 @@ export default function DashboardError({
                   <p className="text-slate-300">
                     Creating custom error boundaries is recommended for production applications to provide a better user experience.
                   </p>
-                </motion.section>
+                </m.section>
 
                 {/* Previous / Next Navigation */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
+                <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
                   <Link to="/docs/load" className="group flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
                     <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                     <div>
@@ -337,7 +337,7 @@ export default function DashboardError({
                     </div>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
-                </motion.div>
+                </m.div>
 
               </div>
 

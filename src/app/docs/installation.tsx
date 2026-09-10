@@ -1,6 +1,6 @@
 // src/pages/docs/installation/page.tsx
 import React, { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { m, AnimatePresence } from 'framer-motion'
 import {
   CheckCircle,
   AlertTriangle,
@@ -124,7 +124,7 @@ function DynamicTerminal() {
         
         <div className="p-4">
           <AnimatePresence mode="wait">
-            <motion.div
+            <m.div
               key={activeTab}
               initial={{ opacity: 0, x: 4 }}
               animate={{ opacity: 1, x: 0 }}
@@ -133,7 +133,7 @@ function DynamicTerminal() {
               className="text-slate-200 font-mono text-sm whitespace-pre"
             >
               {tabs.find(t => t.id === activeTab)?.command}
-            </motion.div>
+            </m.div>
           </AnimatePresence>
         </div>
       </div>
@@ -365,7 +365,7 @@ export default function InstallationPage() {
               <div className="max-w-4xl min-w-0 flex-1">
 
                 {/* Title + Copy page button */}
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="flex items-start justify-between gap-4 mb-4"
@@ -377,7 +377,7 @@ export default function InstallationPage() {
                   <div className="shrink-0 pt-2 hidden sm:block">
                     <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                   </div>
-                </motion.div>
+                </m.div>
                 
                 {/* Copy button on small screens */}
                 <div className="sm:hidden mb-8">
@@ -385,7 +385,7 @@ export default function InstallationPage() {
                 </div>
 
                 {/* Quick start */}
-                <motion.section 
+                <m.section 
                   id="quick-start" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -404,10 +404,10 @@ export default function InstallationPage() {
                   <Callout type="tip">
                     <strong>Pro tip:</strong> The default setup enables TypeScript, Tailwind CSS, Oxlint, App Router, with import alias <code>@/*</code>.
                   </Callout>
-                </motion.section>
+                </m.section>
 
                 {/* Native Platform Support Section */}
-                <motion.section 
+                <m.section 
                   id="native-platform-support" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -440,10 +440,10 @@ export default function InstallationPage() {
                       description="Android & iOS — native apps"
                     />
                   </div>
-                </motion.section>
+                </m.section>
 
                 {/* System requirements */}
-                <motion.section 
+                <m.section 
                   id="system-requirements" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -462,10 +462,10 @@ export default function InstallationPage() {
                     <li>For desktop builds: <span className="text-white">Windows</span> (C++ Build Tools), <span className="text-white">macOS</span> (Xcode CLT), <span className="text-white">Linux</span> (WebKitGTK)</li>
                     <li>For mobile builds: <span className="text-white">Android</span> (JDK 17, Android Studio), <span className="text-white">iOS</span> (Xcode, CocoaPods)</li>
                   </ul>
-                </motion.section>
+                </m.section>
 
                 {/* Supported browsers */}
-                <motion.section 
+                <m.section 
                   id="supported-browsers" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -480,10 +480,10 @@ export default function InstallationPage() {
                     <li>Firefox 111+</li>
                     <li>Safari 16.4+</li>
                   </ul>
-                </motion.section>
+                </m.section>
 
                 {/* Create with the CLI */}
-                <motion.section 
+                <m.section 
                   id="create-with-cli" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -506,10 +506,10 @@ export default function InstallationPage() {
                   <Callout type="success">
                     <strong>Done!</strong> After the prompts, <code>create-bini-app</code> will create a folder with your project name and install the required dependencies.
                   </Callout>
-                </motion.section>
+                </m.section>
 
                 {/* Run the development server */}
-                <motion.section 
+                <m.section 
                   id="run-dev-server" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -522,10 +522,10 @@ export default function InstallationPage() {
                     <li>Visit <code className="text-cyan-400">http://localhost:3000</code> to view your application.</li>
                     <li>Edit the <code className="text-cyan-400">app/page.tsx</code> file and save it to see the updated result in your browser.</li>
                   </ol>
-                </motion.section>
+                </m.section>
 
                 {/* CLI Flags */}
-                <motion.section 
+                <m.section 
                   id="cli-flags" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -557,10 +557,10 @@ export default function InstallationPage() {
                       ['--help, -h', 'Show help'],
                     ]} 
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Set up TypeScript */}
-                <motion.section 
+                <m.section 
                   id="setup-typescript" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -576,10 +576,10 @@ export default function InstallationPage() {
                   <p className="text-slate-300 mb-4">
                     Bini.js comes with built-in TypeScript support. To add TypeScript to your project, rename a file to <code className="text-cyan-400">.ts</code> / <code className="text-cyan-400">.tsx</code> and run <code className="text-cyan-400">npm run dev</code>. Bini.js will automatically install the necessary dependencies and add a <code className="text-cyan-400">tsconfig.json</code> file with the recommended config options.
                   </p>
-                </motion.section>
+                </m.section>
 
                 {/* Set up linting */}
-                <motion.section 
+                <m.section 
                   id="setup-linting" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -603,10 +603,10 @@ export default function InstallationPage() {
                     <li><code className="text-cyan-400">npm run format</code>: Runs Oxfmt (Prettier-compatible).</li>
                     <li><code className="text-cyan-400">npm run check</code>: Runs both lint and format.</li>
                   </ul>
-                </motion.section>
+                </m.section>
 
                 {/* Set up Absolute Imports */}
-                <motion.section 
+                <m.section 
                   id="setup-absolute-imports" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -642,10 +642,10 @@ export default function InstallationPage() {
                     code={`// vite.config.ts\nimport { defineConfig } from 'vite'\nimport react from '@vitejs/plugin-react'\nimport { biniroute } from 'bini-router'\nimport path from 'path'\n\nexport default defineConfig({\n  plugins: [react(), biniroute()],\n  resolve: {\n    alias: {\n      '@': path.resolve(__dirname, './src'),\n    },\n  },\n})`}
                     filename="vite.config.ts"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Previous / Next Navigation */}
-                <motion.div 
+                <m.div 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
                   transition={{ delay: 0.55 }} 
@@ -665,7 +665,7 @@ export default function InstallationPage() {
                     </div>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
-                </motion.div>
+                </m.div>
 
               </div>
 

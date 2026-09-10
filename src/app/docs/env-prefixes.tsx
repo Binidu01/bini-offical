@@ -1,6 +1,6 @@
 // src/pages/docs/env-prefixes/page.tsx
 import React from 'react'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import {
   ArrowLeft,
   ArrowRight,
@@ -118,7 +118,7 @@ export default function EnvPrefixesPage() {
               <div className="max-w-4xl min-w-0 flex-1">
 
                 {/* Title + Copy page button */}
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="flex items-start justify-between gap-4 mb-4"
@@ -130,13 +130,13 @@ export default function EnvPrefixesPage() {
                   <div className="shrink-0 pt-2 hidden sm:block">
                     <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                   </div>
-                </motion.div>
+                </m.div>
                 <div className="sm:hidden mb-8">
                   <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                 </div>
 
                 {/* What are Prefixes? */}
-                <motion.section id="what-are-prefixes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="scroll-mt-24">
+                <m.section id="what-are-prefixes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">What are Prefixes?</h2>
                   <p className="text-slate-300 mb-4">
                     Environment variable prefixes determine which variables are exposed to the browser and which are kept server-side. The prefix tells Vite and Bini.js how to handle each variable.
@@ -147,10 +147,10 @@ export default function EnvPrefixesPage() {
                   <Note>
                     <strong>Fixed prefixes:</strong> The prefix list in <code>bini-env</code> v2 is fixed to <code>['BINI_', 'VITE_']</code>. There is no option to add custom prefixes.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* BINI_ Prefix */}
-                <motion.section id="bini-prefix" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
+                <m.section id="bini-prefix" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">BINI_ Prefix</h2>
                   <p className="text-slate-300 mb-4">
                     <code className="text-cyan-400">BINI_</code> is the default prefix for client-side environment variables in Bini.js. These variables are exposed to the browser via <code className="text-cyan-400">import.meta.env</code>.
@@ -181,10 +181,10 @@ export default function HomePage() {
                   <Note>
                     <strong>Important:</strong> <code>BINI_*</code> variables are bundled into your client-side JavaScript. Never put secrets in <code>BINI_*</code> variables.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* VITE_ Prefix */}
-                <motion.section id="vite-prefix" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
+                <m.section id="vite-prefix" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">VITE_ Prefix</h2>
                   <p className="text-slate-300 mb-4">
                     <code className="text-cyan-400">VITE_</code> is Vite's standard prefix for client-side environment variables. Any variable starting with <code>VITE_</code> is exposed to the browser.
@@ -210,10 +210,10 @@ export default function HomePage() {
                   <Note>
                     <strong>Note:</strong> <code>VITE_*</code> and <code>BINI_*</code> work exactly the same way. Both are exposed to the browser. Choose whichever you prefer.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* No Prefix */}
-                <motion.section id="no-prefix" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
+                <m.section id="no-prefix" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">No Prefix (Secrets)</h2>
                   <p className="text-slate-300 mb-4">
                     Variables without a prefix are <strong className="text-white">never</strong> exposed to the browser. They are only accessible server-side via <code className="text-cyan-400">getEnv(ctx, key)</code> in API routes.
@@ -254,10 +254,10 @@ export default app`}
                   <Note>
                     <strong>Critical:</strong> Variables without a prefix are the only way to keep secrets secure. Never use <code>BINI_*</code> or <code>VITE_*</code> for sensitive data.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Client-Side Access */}
-                <motion.section id="client-access" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
+                <m.section id="client-access" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Client-Side Access</h2>
                   <p className="text-slate-300 mb-4">
                     Client-side variables are accessed via <code className="text-cyan-400">import.meta.env</code> in any component:
@@ -288,10 +288,10 @@ export const metadata = {
                   <Note>
                     <code>import.meta.env</code> is available in all client-side code including pages, components, and MDX files.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Server-Side Access */}
-                <motion.section id="server-access" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
+                <m.section id="server-access" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Server-Side Access</h2>
                   <p className="text-slate-300 mb-4">
                     Server-side variables are accessed via <code className="text-cyan-400">getEnv(ctx, key)</code> and <code className="text-cyan-400">requireEnv(ctx, key)</code> in API routes:
@@ -335,10 +335,10 @@ export default app`}
                       ['requireEnv(ctx, key)', 'API routes', 'All variables (throws if missing)'],
                     ]}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* getEnv vs requireEnv */}
-                <motion.section id="getenv-vs-requireenv" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
+                <m.section id="getenv-vs-requireenv" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">getEnv vs requireEnv</h2>
                   <p className="text-slate-300 mb-4">
                     Both <code className="text-cyan-400">getEnv</code> and <code className="text-cyan-400">requireEnv</code> read environment variables from the Hono request context, but they behave differently:
@@ -377,10 +377,10 @@ const smtpPass = requireEnv(ctx, 'SMTP_PASS')`}
   -> Set it in your platform's env config or hosting dashboard.`}
                     />
                   </div>
-                </motion.section>
+                </m.section>
 
                 {/* Security Best Practices */}
-                <motion.section id="security-best-practices" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
+                <m.section id="security-best-practices" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Security Best Practices</h2>
                   <ul className="space-y-3 text-slate-300 mb-6">
                     <li className="flex items-start gap-2">
@@ -412,10 +412,10 @@ const smtpPass = requireEnv(ctx, 'SMTP_PASS')`}
                       <span><strong className="text-white">Keep .env in .gitignore</strong> — Never commit environment files with secrets.</span>
                     </li>
                   </ul>
-                </motion.section>
+                </m.section>
 
                 {/* Previous / Next Navigation */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
+                <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
                   <Link to="/docs/environment-variables" className="group flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
                     <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                     <div>
@@ -430,7 +430,7 @@ const smtpPass = requireEnv(ctx, 'SMTP_PASS')`}
                     </div>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
-                </motion.div>
+                </m.div>
 
               </div>
 

@@ -1,6 +1,6 @@
 // src/pages/docs/tailwind/page.tsx
 import React from 'react'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import {
   ArrowLeft,
   ArrowRight,
@@ -119,7 +119,7 @@ export default function TailwindPage() {
               <div className="max-w-4xl min-w-0 flex-1">
 
                 {/* Title + Copy page button */}
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="flex items-start justify-between gap-4 mb-4"
@@ -131,24 +131,24 @@ export default function TailwindPage() {
                   <div className="shrink-0 pt-2 hidden sm:block">
                     <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                   </div>
-                </motion.div>
+                </m.div>
                 {/* Copy button on small screens */}
                 <div className="sm:hidden mb-8">
                   <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                 </div>
 
                 {/* Overview */}
-                <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+                <m.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
                   <p className="text-slate-300 mb-6">
                     Tailwind CSS v4 is the default styling option in Bini.js. It's pre-configured using the official Vite plugin — no PostCSS configuration needed.
                   </p>
                   <Note>
                     <strong>Zero Configuration:</strong> Bini.js uses the <code>@tailwindcss/vite</code> plugin. Everything works out of the box — no <code>postcss.config.js</code> or <code>tailwind.config.js</code> required.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Setup */}
-                <motion.section id="setup" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
+                <m.section id="setup" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Setup</h2>
                   <p className="text-slate-300 mb-4">
                     When you create a new Bini.js project with Tailwind, everything is configured automatically:
@@ -174,10 +174,10 @@ export default defineConfig({
 @import 'tailwindcss';`}
                     filename="app/globals.css"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Basic Usage */}
-                <motion.section id="basic-usage" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
+                <m.section id="basic-usage" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Basic Usage</h2>
                   <p className="text-slate-300 mb-4">
                     Use Tailwind's utility classes directly in your components:
@@ -201,10 +201,10 @@ export default function HomePage() {
 }`}
                     filename="app/page.tsx"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Tailwind v4 Features */}
-                <motion.section id="v4-features" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
+                <m.section id="v4-features" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Tailwind CSS v4 Features</h2>
                   <Table 
                     headers={['Feature', 'Description']}
@@ -215,10 +215,10 @@ export default function HomePage() {
                       ['Simplified setup', 'Just @import "tailwindcss" — that\'s it'],
                     ]}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Theming */}
-                <motion.section id="theming" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
+                <m.section id="theming" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Theming with CSS Variables</h2>
                   <p className="text-slate-300 mb-4">
                     Tailwind v4 uses CSS variables for theming:
@@ -246,10 +246,10 @@ export function Card({ children }) {
 }`}
                     filename="Card.tsx"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Responsive */}
-                <motion.section id="responsive" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
+                <m.section id="responsive" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Responsive Design</h2>
                   <p className="text-slate-300 mb-4">
                     Use Tailwind's responsive prefixes to adapt your layout:
@@ -283,10 +283,10 @@ export default function ResponsivePage() {
                       ['2xl', '1536px'],
                     ]}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Dark Mode */}
-                <motion.section id="dark-mode" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
+                <m.section id="dark-mode" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Dark Mode</h2>
                   <p className="text-slate-300 mb-4">
                     Use the <code className="text-cyan-400">dark:</code> variant for dark mode:
@@ -307,10 +307,10 @@ export function ThemeToggle() {
 }`}
                     filename="ThemeToggle.tsx"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Custom Utilities */}
-                <motion.section id="custom-utilities" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
+                <m.section id="custom-utilities" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Custom Utilities</h2>
                   <p className="text-slate-300 mb-4">
                     Create custom utilities using <code className="text-cyan-400">@utility</code>:
@@ -348,10 +348,10 @@ export function FeatureCard() {
   )
 }`}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Common Patterns */}
-                <motion.section id="common-patterns" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="scroll-mt-24">
+                <m.section id="common-patterns" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Common Patterns</h2>
                   
                   <h3 className="text-lg font-semibold text-white mt-6 mb-3">Container</h3>
@@ -387,10 +387,10 @@ export function FeatureCard() {
   Secondary
 </button>`}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Previous / Next Navigation */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
+                <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
                   <Link to="/docs/css" className="group flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
                     <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                     <div>
@@ -405,7 +405,7 @@ export function FeatureCard() {
                     </div>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
-                </motion.div>
+                </m.div>
 
               </div>
 

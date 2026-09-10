@@ -1,6 +1,6 @@
 // src/pages/docs/production-server/page.tsx
 import React from 'react'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import {
   ArrowLeft,
   ArrowRight,
@@ -173,7 +173,7 @@ export default function ProductionServerPage() {
               <div className="max-w-4xl min-w-0 flex-1">
 
                 {/* Title + Copy page button */}
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="flex items-start justify-between gap-4 mb-4"
@@ -185,14 +185,14 @@ export default function ProductionServerPage() {
                   <div className="shrink-0 pt-2 hidden sm:block">
                     <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                   </div>
-                </motion.div>
+                </m.div>
                 {/* Copy button on small screens */}
                 <div className="sm:hidden mb-8">
                   <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                 </div>
 
                 {/* Overview */}
-                <motion.section id="overview" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="scroll-mt-24">
+                <m.section id="overview" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="scroll-mt-24">
                   <p className="text-slate-300 mb-4">
                     <code className="text-cyan-400">bini-server</code> is the default production server for the Node.js hosting target. It streams your built <code className="text-cyan-400">dist/</code> folder, serves <code className="text-cyan-400">/api/*</code> routes directly from <code className="text-cyan-400">src/app/api/</code>, and adds everything <code className="text-cyan-400">vite preview</code> intentionally leaves out — ETag caching, timeouts, graceful shutdown, and configurable body limits.
                   </p>
@@ -202,10 +202,10 @@ export default function ProductionServerPage() {
                   <Note>
                     <strong>Requirements:</strong> Node.js <code>≥ 20.19.0</code>, a built <code>dist/</code> folder, and API handlers under <code>src/app/api/</code> (if your app uses any).
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Features */}
-                <motion.section id="features" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
+                <m.section id="features" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Features</h2>
 
                   <h3 className="text-lg font-semibold text-white mt-2 mb-3">Core</h3>
@@ -236,19 +236,19 @@ export default function ProductionServerPage() {
                     <FeatureCard emoji="📦" title="Zero dependencies" description="Only Node.js built-in modules — nothing to audit or update." />
                     <FeatureCard emoji="🔧" title="Flexible config" description="Every setting supports BINI_*, VITE_*, or no-prefix env vars." />
                   </div>
-                </motion.section>
+                </m.section>
 
                 {/* Installation */}
-                <motion.section id="installation" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
+                <m.section id="installation" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Installation</h2>
                   <p className="text-slate-300 mb-4">
                     Every Bini.js web scaffold already includes <code className="text-cyan-400">bini-server</code>. To add it to an existing project:
                   </p>
                   <CodeBlock code={`npm install bini-server`} />
-                </motion.section>
+                </m.section>
 
                 {/* Usage */}
-                <motion.section id="usage" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
+                <m.section id="usage" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Usage</h2>
 
                   <h3 className="text-lg font-semibold text-white mt-2 mb-3">1. Add scripts to package.json</h3>
@@ -276,10 +276,10 @@ npm start       # Serve in production`}
   ➜  Network: http://192.168.1.5:3000/
   ➜  press h + enter to show help`}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Keyboard Shortcuts */}
-                <motion.section id="keyboard-shortcuts" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
+                <m.section id="keyboard-shortcuts" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Keyboard Shortcuts</h2>
                   <p className="text-slate-300 mb-4">
                     While the server is running, type a key and press enter:
@@ -295,10 +295,10 @@ npm start       # Serve in production`}
                   <Note>
                     Keyboard shortcuts are automatically disabled in non-interactive environments, like Render or CI/CD.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Environment Variables */}
-                <motion.section id="environment-variables" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
+                <m.section id="environment-variables" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Environment Variables</h2>
 
                   <h3 className="text-lg font-semibold text-white mt-2 mb-3">Auto-detected .env files</h3>
@@ -351,10 +351,10 @@ PORT=3001 BINI_CORS_ENABLED=false bini-server
 # Or with the VITE prefix
 VITE_PORT=3000 VITE_CORS_ENABLED=false bini-server`}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Project Structure */}
-                <motion.section id="project-structure" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
+                <m.section id="project-structure" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Project Structure</h2>
                   <CodeBlock
                     code={`my-app/
@@ -375,10 +375,10 @@ VITE_PORT=3000 VITE_CORS_ENABLED=false bini-server`}
 ├── package.json
 └── vite.config.ts`}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* API Routes */}
-                <motion.section id="api-routes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
+                <m.section id="api-routes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">API Routes</h2>
 
                   <h3 className="text-lg font-semibold text-white mt-2 mb-3">Supported formats</h3>
@@ -419,10 +419,10 @@ export default (req: Request) => {
   return Response.json({ id: params.id });
 };`}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* CORS */}
-                <motion.section id="cors" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="scroll-mt-24">
+                <m.section id="cors" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">CORS</h2>
                   <p className="text-slate-300 mb-4">CORS is enabled by default with these headers:</p>
                   <CodeBlock
@@ -433,10 +433,10 @@ Access-Control-Allow-Headers: Content-Type,Authorization,X-Request-ID`}
                   <p className="text-slate-300 mb-2">
                     Disable it with <code className="text-cyan-400">CORS_ENABLED=false</code>, <code className="text-cyan-400">BINI_CORS_ENABLED=false</code>, or <code className="text-cyan-400">VITE_CORS_ENABLED=false</code>.
                   </p>
-                </motion.section>
+                </m.section>
 
                 {/* Static File Serving */}
-                <motion.section id="static-file-serving" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="scroll-mt-24">
+                <m.section id="static-file-serving" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Static File Serving</h2>
 
                   <h3 className="text-lg font-semibold text-white mt-2 mb-3">Supported MIME types</h3>
@@ -464,10 +464,10 @@ Access-Control-Allow-Headers: Content-Type,Authorization,X-Request-ID`}
                     <li>Handles <code className="text-cyan-400">If-None-Match</code> for 304 Not Modified responses</li>
                     <li>Uses an MD5 hash (16 chars) for efficient caching</li>
                   </ul>
-                </motion.section>
+                </m.section>
 
                 {/* vs vite preview */}
-                <motion.section id="vs-vite-preview" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="scroll-mt-24">
+                <m.section id="vs-vite-preview" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">vs vite preview</h2>
                   <Table
                     headers={['Feature', 'vite preview', 'bini-server']}
@@ -488,10 +488,10 @@ Access-Control-Allow-Headers: Content-Type,Authorization,X-Request-ID`}
                       ['Production use', <span className="text-amber-400">⚠️ Not recommended</span>, <span className="text-emerald-400">✅ Production-ready</span>],
                     ]}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Security */}
-                <motion.section id="security" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 }} className="scroll-mt-24">
+                <m.section id="security" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Security</h2>
                   <Table
                     headers={['Feature', 'Default', 'Configurable']}
@@ -556,10 +556,10 @@ BODY_SIZE_LIMIT=5242880  # 5MB`}
 BODY_SIZE_LIMIT=1073741824  # 1GB
 BODY_TIMEOUT_SECS=300  # 5 minutes`}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Deployment */}
-                <motion.section id="deployment" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }} className="scroll-mt-24">
+                <m.section id="deployment" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2 flex items-center gap-2">
                     <SimpleIcon icon={siNodedotjs} className="text-green-400" size={20} />
                     Deployment
@@ -617,10 +617,10 @@ CMD ["npm", "start"]`}
                     code={`[processes]
   app = "npm start"`}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* API Reference */}
-                <motion.section id="api-reference" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.75 }} className="scroll-mt-24">
+                <m.section id="api-reference" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.75 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">API Reference</h2>
 
                   <h3 className="text-lg font-semibold text-white mt-2 mb-3">Environment variable priority</h3>
@@ -649,10 +649,10 @@ CMD ["npm", "start"]`}
                   <p className="text-slate-300">
                     <code className="text-cyan-400">GET</code>, <code className="text-cyan-400">POST</code>, <code className="text-cyan-400">PUT</code>, <code className="text-cyan-400">PATCH</code>, <code className="text-cyan-400">DELETE</code>, <code className="text-cyan-400">OPTIONS</code> (CORS preflight), and <code className="text-cyan-400">HEAD</code> (with ETag support).
                   </p>
-                </motion.section>
+                </m.section>
 
                 {/* Previous / Next Navigation */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
+                <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
                   <Link to="/docs/deploying" className="group flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
                     <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                     <div>
@@ -667,7 +667,7 @@ CMD ["npm", "start"]`}
                     </div>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
-                </motion.div>
+                </m.div>
 
               </div>
 

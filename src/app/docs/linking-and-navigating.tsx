@@ -1,6 +1,6 @@
 // src/pages/docs/linking-and-navigating/page.tsx
 import React from 'react'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import {
   ArrowLeft,
   ArrowRight,
@@ -108,7 +108,7 @@ export default function LinkingAndNavigatingPage() {
               <div className="max-w-4xl min-w-0 flex-1">
 
                 {/* Title + Copy page button */}
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="flex items-start justify-between gap-4 mb-4"
@@ -120,21 +120,21 @@ export default function LinkingAndNavigatingPage() {
                   <div className="shrink-0 pt-2 hidden sm:block">
                     <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                   </div>
-                </motion.div>
+                </m.div>
                 {/* Copy button on small screens */}
                 <div className="sm:hidden mb-8">
                   <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                 </div>
 
                 {/* Overview */}
-                <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+                <m.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
                   <p className="text-slate-300 mb-6">
                     Bini.js provides built-in navigation components and hooks that enable fast, client-side transitions between routes without full page reloads.
                   </p>
-                </motion.section>
+                </m.section>
 
                 {/* Link Component */}
-                <motion.section id="link-component" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
+                <m.section id="link-component" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Link Component</h2>
                   <p className="text-slate-300 mb-4">
                     The <code className="text-cyan-400">&lt;Link&gt;</code> component is the primary way to navigate between routes. It's auto-imported in all pages and layouts, so you can use it without any import statements.
@@ -163,10 +163,10 @@ export default function Home() {
                       ['children', 'ReactNode', 'The content inside the link'],
                     ]}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* NavLink Component */}
-                <motion.section id="navlink-component" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
+                <m.section id="navlink-component" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">NavLink Component</h2>
                   <p className="text-slate-300 mb-4">
                     <code className="text-cyan-400">&lt;NavLink&gt;</code> is a special version of <code className="text-cyan-400">&lt;Link&gt;</code> that adds styling attributes when it matches the current route. Perfect for navigation menus.
@@ -212,10 +212,10 @@ export default function Navigation() {
                       ['caseSensitive', 'boolean', 'Match case-sensitively'],
                     ]}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* useNavigate Hook */}
-                <motion.section id="usenavigate-hook" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
+                <m.section id="usenavigate-hook" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">useNavigate Hook</h2>
                   <p className="text-slate-300 mb-4">
                     The <code className="text-cyan-400">useNavigate</code> hook returns a function that lets you navigate programmatically. It's auto-imported in all pages and layouts.
@@ -264,10 +264,10 @@ navigate(-1)
 // Go forward
 navigate(1)`}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* useParams Hook */}
-                <motion.section id="useparams-hook" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
+                <m.section id="useparams-hook" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">useParams Hook</h2>
                   <p className="text-slate-300 mb-4">
                     The <code className="text-cyan-400">useParams</code> hook returns an object of key/value pairs of the dynamic route parameters from the current URL.
@@ -302,10 +302,10 @@ export default function ShopCategory() {
 }`}
                     filename="app/shop/[...slug]/page.tsx"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* useLocation Hook */}
-                <motion.section id="uselocation-hook" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
+                <m.section id="uselocation-hook" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">useLocation Hook</h2>
                   <p className="text-slate-300 mb-4">
                     The <code className="text-cyan-400">useLocation</code> hook returns the current location object. Useful for accessing the current pathname, search params, and state.
@@ -339,10 +339,10 @@ export default function Breadcrumbs() {
 }`}
                     filename="app/components/Breadcrumbs.tsx"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* useSearchParams Hook */}
-                <motion.section id="usesearchparams-hook" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
+                <m.section id="usesearchparams-hook" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">useSearchParams Hook</h2>
                   <p className="text-slate-300 mb-4">
                     The <code className="text-cyan-400">useSearchParams</code> hook reads and updates the query string. It returns a <code className="text-cyan-400">URLSearchParams</code> object and a setter function.
@@ -379,10 +379,10 @@ export default function ShopPage() {
 }`}
                     filename="app/shop/page.tsx"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Programmatic Navigation */}
-                <motion.section id="programmatic-navigation" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
+                <m.section id="programmatic-navigation" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Programmatic Navigation</h2>
                   <p className="text-slate-300 mb-4">
                     Common patterns for programmatic navigation in Bini.js:
@@ -418,10 +418,10 @@ navigate('/checkout', { state: { cartItems } })
 const location = useLocation()
 const { cartItems } = location.state || {}`}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Navigation with Query Parameters */}
-                <motion.section id="navigation-query-params" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="scroll-mt-24">
+                <m.section id="navigation-query-params" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Navigation with Query Parameters</h2>
                   <p className="text-slate-300 mb-4">
                     Combine <code className="text-cyan-400">Link</code> and <code className="text-cyan-400">useSearchParams</code> for powerful filtering and pagination:
@@ -459,10 +459,10 @@ export default function ProductsPage() {
 }`}
                     filename="app/products/page.tsx"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Best Practices */}
-                <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="scroll-mt-24">
+                <m.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Best Practices</h2>
                   <ul className="space-y-2 text-slate-300 mb-6 list-disc list-inside">
                     <li>Use <code className="text-cyan-400">&lt;Link&gt;</code> for standard navigation links</li>
@@ -472,10 +472,10 @@ export default function ProductsPage() {
                     <li>Use <code className="text-cyan-400">useSearchParams</code> for managing query strings and filters</li>
                     <li>All navigation hooks and components are auto-imported — no need to write import statements</li>
                   </ul>
-                </motion.section>
+                </m.section>
 
                 {/* Previous / Next Navigation */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
+                <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
                   <Link to="/docs/layouts-and-pages" className="group flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
                     <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                     <div>
@@ -490,7 +490,7 @@ export default function ProductsPage() {
                     </div>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
-                </motion.div>
+                </m.div>
 
               </div>
 

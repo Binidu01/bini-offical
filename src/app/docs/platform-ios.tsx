@@ -1,6 +1,6 @@
 // src/pages/docs/platform-ios/page.tsx
 import React from 'react'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import {
   ArrowLeft,
   ArrowRight,
@@ -224,7 +224,7 @@ export default function PlatformIosPage() {
               <div className="max-w-4xl min-w-0 flex-1">
 
                 {/* Title + Copy page button */}
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="flex items-start justify-between gap-4 mb-4"
@@ -236,14 +236,14 @@ export default function PlatformIosPage() {
                   <div className="shrink-0 pt-2 hidden sm:block">
                     <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                   </div>
-                </motion.div>
+                </m.div>
                 {/* Copy button on small screens */}
                 <div className="sm:hidden mb-8">
                   <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                 </div>
 
                 {/* iOS Overview */}
-                <motion.section id="ios-overview" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="scroll-mt-24">
+                <m.section id="ios-overview" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">iOS Overview</h2>
                   <p className="text-slate-300 mb-4">
                     Bini.js allows you to build native iOS mobile applications using Tauri. Your React app runs inside a WKWebView with full access to native iOS APIs and features.
@@ -273,10 +273,10 @@ export default function PlatformIosPage() {
                   <Note>
                     iOS apps are built using Tauri's iOS backend. Your app runs in a native WKWebView with full system access.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Requirements */}
-                <motion.section id="requirements" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
+                <m.section id="requirements" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Requirements</h2>
                   <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-4 mb-4">
                     <p className="text-amber-400 text-sm font-medium">
@@ -303,10 +303,10 @@ export default function PlatformIosPage() {
                   <Note>
                     iOS development is only supported on macOS for local development. Windows and Linux users can use GitHub Actions.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* macOS */}
-                <motion.section id="macos" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
+                <m.section id="macos" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">macOS</h2>
                   <p className="text-slate-300 mb-4">
                     Build iOS apps natively on macOS using Xcode and the CLI.
@@ -341,10 +341,10 @@ npm run ios:build`}
                   <Note>
                     iOS development requires macOS with Xcode. All iOS development commands work on macOS.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Windows */}
-                <motion.section id="windows" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
+                <m.section id="windows" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Windows</h2>
                   <p className="text-slate-300 mb-4">
                     Build iOS apps from Windows using GitHub Actions. This is the recommended approach for cross-platform builds.
@@ -353,10 +353,10 @@ npm run ios:build`}
                   <Note>
                     GitHub Actions runs on macOS runners to build native iOS applications. This works from Windows.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Linux */}
-                <motion.section id="linux" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
+                <m.section id="linux" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Linux</h2>
                   <p className="text-slate-300 mb-4">
                     Build iOS apps from Linux using GitHub Actions. This is the recommended approach for cross-platform builds.
@@ -365,10 +365,10 @@ npm run ios:build`}
                   <Note>
                     GitHub Actions with <code>macos-latest</code> runners is the official Tauri-recommended approach for building iOS apps from Linux.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Creating an iOS App */}
-                <motion.section id="creating-ios-app" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
+                <m.section id="creating-ios-app" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Creating an iOS App</h2>
                   <p className="text-slate-300 mb-4">
                     Create a new Bini.js project targeting iOS:
@@ -400,10 +400,10 @@ npm run ios:build`}
 npm install
 pod install --project-directory=src-tauri/gen/ios`}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Development */}
-                <motion.section id="development" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
+                <m.section id="development" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Development</h2>
                   <p className="text-slate-300 mb-4">
                     Run your iOS app on the simulator or a connected device:
@@ -429,10 +429,10 @@ pod install --project-directory=src-tauri/gen/ios`}
                       <li>Run <code className="text-cyan-400">npm run ios</code></li>
                     </ol>
                   </div>
-                </motion.section>
+                </m.section>
 
                 {/* Building */}
-                <motion.section id="building" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
+                <m.section id="building" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Building</h2>
                   <p className="text-slate-300 mb-4">
                     Build your iOS app for distribution:
@@ -453,10 +453,10 @@ pod install --project-directory=src-tauri/gen/ios`}
                   <Note>
                     The build output is a native iOS app that runs on iOS 13.0 and above.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Code Signing */}
-                <motion.section id="code-signing" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="scroll-mt-24">
+                <m.section id="code-signing" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Code Signing</h2>
                   <p className="text-slate-300 mb-4">
                     iOS code signing is managed by Xcode. Configure signing in <code className="text-cyan-400">src-tauri/gen/ios/</code>:
@@ -484,10 +484,10 @@ pod install --project-directory=src-tauri/gen/ios`}
                   <Note>
                     For App Store distribution, you need an Apple Developer account and provisioning profiles. Development builds use Xcode's automatic signing.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Deployment */}
-                <motion.section id="deployment" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="scroll-mt-24">
+                <m.section id="deployment" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Deployment</h2>
                   <p className="text-slate-300 mb-4">
                     Deploy your iOS project by pushing to GitHub:
@@ -509,10 +509,10 @@ pod install --project-directory=src-tauri/gen/ios`}
                   <Note>
                     Store submission is manual. After building your app, upload it to App Store Connect for TestFlight or App Store distribution.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Previous / Next Navigation */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
+                <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
                   <Link to="/docs/platform-android" className="group flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
                     <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                     <div>
@@ -527,7 +527,7 @@ pod install --project-directory=src-tauri/gen/ios`}
                     </div>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
-                </motion.div>
+                </m.div>
 
               </div>
 

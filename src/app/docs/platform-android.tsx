@@ -1,6 +1,6 @@
 // src/pages/docs/platform-android/page.tsx
 import React from 'react'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import {
   ArrowLeft,
   ArrowRight,
@@ -132,7 +132,7 @@ export default function PlatformAndroidPage() {
               <div className="max-w-4xl min-w-0 flex-1">
 
                 {/* Title + Copy page button */}
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="flex items-start justify-between gap-4 mb-4"
@@ -144,14 +144,14 @@ export default function PlatformAndroidPage() {
                   <div className="shrink-0 pt-2 hidden sm:block">
                     <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                   </div>
-                </motion.div>
+                </m.div>
                 {/* Copy button on small screens */}
                 <div className="sm:hidden mb-8">
                   <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                 </div>
 
                 {/* Android Overview */}
-                <motion.section id="android-overview" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="scroll-mt-24">
+                <m.section id="android-overview" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Android Overview</h2>
                   <p className="text-slate-300 mb-4">
                     Bini.js allows you to build native Android mobile applications using Tauri. Your React app runs inside a WebView with full access to native Android APIs and features.
@@ -181,10 +181,10 @@ export default function PlatformAndroidPage() {
                   <Note>
                     Android apps are built using Tauri's Android backend. Your app runs in a native WebView with full system access.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Requirements */}
-                <motion.section id="requirements" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
+                <m.section id="requirements" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Requirements</h2>
                   <p className="text-slate-300 mb-4">
                     Before building Android apps, make sure you have the following installed:
@@ -205,10 +205,10 @@ export default function PlatformAndroidPage() {
                   <Note>
                     Set <code>ANDROID_HOME</code> to your Android SDK path (e.g., <code>~/Library/Android/sdk</code> on macOS, <code>%USERPROFILE%\AppData\Local\Android\Sdk</code> on Windows).
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Windows */}
-                <motion.section id="windows" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
+                <m.section id="windows" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Windows</h2>
                   <p className="text-slate-300 mb-4">
                     Build Android apps natively on Windows using the CLI with Android Studio installed.
@@ -242,10 +242,10 @@ npm run android:build`}
                   <Note>
                     All Android development commands work the same way on Windows, macOS, and Linux.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* macOS */}
-                <motion.section id="macos" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
+                <m.section id="macos" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">macOS</h2>
                   <p className="text-slate-300 mb-4">
                     Build Android apps natively on macOS using the CLI with Android Studio installed.
@@ -279,10 +279,10 @@ npm run android:build`}
                   <Note>
                     All Android development commands work the same way on macOS, Windows, and Linux.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Linux */}
-                <motion.section id="linux" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
+                <m.section id="linux" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Linux</h2>
                   <p className="text-slate-300 mb-4">
                     Build Android apps natively on Linux using the CLI with Android Studio installed.
@@ -316,10 +316,10 @@ npm run android:build`}
                   <Note>
                     All Android development commands work the same way on Linux, Windows, and macOS.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Creating an Android App */}
-                <motion.section id="creating-android-app" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
+                <m.section id="creating-android-app" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Creating an Android App</h2>
                   <p className="text-slate-300 mb-4">
                     Create a new Bini.js project targeting Android:
@@ -346,10 +346,10 @@ npm run android:build`}
                   <p className="text-slate-300 mt-4">
                     The project structure includes Android-specific configuration in <code className="text-cyan-400">src-tauri/gen/android/</code>.
                   </p>
-                </motion.section>
+                </m.section>
 
                 {/* Development */}
-                <motion.section id="development" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
+                <m.section id="development" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Development</h2>
                   <p className="text-slate-300 mb-4">
                     Run your Android app on an emulator or connected device:
@@ -376,10 +376,10 @@ npm run android:build`}
                       <li>Run <code className="text-cyan-400">npm run android</code></li>
                     </ol>
                   </div>
-                </motion.section>
+                </m.section>
 
                 {/* Building */}
-                <motion.section id="building" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
+                <m.section id="building" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Building</h2>
                   <p className="text-slate-300 mb-4">
                     Build a release APK or AAB for distribution:
@@ -400,10 +400,10 @@ npm run android:build`}
                   <Note>
                     The build output is a native Android app that runs on Android 5.0 (API 21) and above.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Code Signing */}
-                <motion.section id="code-signing" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="scroll-mt-24">
+                <m.section id="code-signing" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Code Signing</h2>
                   <p className="text-slate-300 mb-4">
                     Configure keystore signing for Android apps at scaffold time or later. Create a <code className="text-cyan-400">keystore.properties</code> file:
@@ -425,10 +425,10 @@ keyPassword=your-key-password`}
                   <Note>
                     For Google Play Store distribution, you must sign your app with a keystore. Keep your keystore secure and never commit it to version control.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Deployment */}
-                <motion.section id="deployment" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="scroll-mt-24">
+                <m.section id="deployment" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Deployment</h2>
                   <p className="text-slate-300 mb-4">
                     Deploy your Android project by pushing to GitHub:
@@ -450,10 +450,10 @@ keyPassword=your-key-password`}
                   <Note>
                     Store submission is manual. After building your APK/AAB, upload it to the Google Play Console for distribution.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Previous / Next Navigation */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
+                <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
                   <Link to="/docs/platform-linux" className="group flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
                     <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                     <div>
@@ -468,7 +468,7 @@ keyPassword=your-key-password`}
                     </div>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
-                </motion.div>
+                </m.div>
 
               </div>
 

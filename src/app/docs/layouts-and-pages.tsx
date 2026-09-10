@@ -1,6 +1,6 @@
 // src/pages/docs/layouts-and-pages/page.tsx
 import React from 'react'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import {
   ArrowLeft,
   ArrowRight,
@@ -106,7 +106,7 @@ export default function LayoutsAndPagesPage() {
               <div className="max-w-4xl min-w-0 flex-1">
 
                 {/* Title + Copy page button */}
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="flex items-start justify-between gap-4 mb-4"
@@ -118,21 +118,21 @@ export default function LayoutsAndPagesPage() {
                   <div className="shrink-0 pt-2 hidden sm:block">
                     <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                   </div>
-                </motion.div>
+                </m.div>
                 {/* Copy button on small screens */}
                 <div className="sm:hidden mb-8">
                   <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                 </div>
 
                 {/* Overview */}
-                <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+                <m.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
                   <p className="text-slate-300 mb-6">
                     Bini.js uses <strong className="text-white">file-system based routing</strong>, meaning you can use folders and files to define routes. This page will guide you through how to create layouts and pages, and link between them.
                   </p>
-                </motion.section>
+                </m.section>
 
                 {/* Creating a page */}
-                <motion.section id="creating-a-page" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
+                <m.section id="creating-a-page" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Creating a page</h2>
                   <p className="text-slate-300 mb-4">
                     A <strong className="text-white">page</strong> is UI that is rendered on a specific route. To create a page, add a <code className="text-cyan-400">page</code> file inside the <code className="text-cyan-400">app</code> directory and default export a React component. For example, to create an index page (<code className="text-cyan-400">/</code>):
@@ -144,10 +144,10 @@ export default function Page() {
 }`}
                     filename="app/page.tsx"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Creating a layout */}
-                <motion.section id="creating-a-layout" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
+                <m.section id="creating-a-layout" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Creating a layout</h2>
                   <p className="text-slate-300 mb-4">
                     A layout is UI that is <strong className="text-white">shared</strong> between multiple pages. On navigation, layouts preserve state, remain interactive, and do not rerender.
@@ -176,10 +176,10 @@ export default function RootLayout() {
                   <p className="text-slate-400 text-sm mt-4">
                     <strong className="text-white">Note:</strong> The <code className="text-cyan-400">&lt;html&gt;</code> and <code className="text-cyan-400">&lt;body&gt;</code> tags are defined in <code className="text-cyan-400">index.html</code>.
                   </p>
-                </motion.section>
+                </m.section>
 
                 {/* Creating a nested route */}
-                <motion.section id="creating-a-nested-route" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
+                <m.section id="creating-a-nested-route" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Creating a nested route</h2>
                   <p className="text-slate-300 mb-4">
                     A nested route is a route composed of multiple URL segments. For example, the <code className="text-cyan-400">/blog/[slug]</code> route is composed of three segments:
@@ -216,10 +216,10 @@ export default function BlogPost() {
 }`}
                     filename="app/blog/[slug]/page.tsx"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Nesting layouts */}
-                <motion.section id="nesting-layouts" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
+                <m.section id="nesting-layouts" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Nesting layouts</h2>
                   <p className="text-slate-300 mb-4">
                     By default, layouts in the folder hierarchy are also nested. You can nest layouts by adding <code className="text-cyan-400">layout</code> inside specific route segments (folders).
@@ -243,10 +243,10 @@ export default function DashboardLayout() {
 }`}
                     filename="app/dashboard/layout.tsx"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Creating a dynamic segment */}
-                <motion.section id="creating-a-dynamic-segment" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
+                <m.section id="creating-a-dynamic-segment" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Creating a dynamic segment</h2>
                   <p className="text-slate-300 mb-4">
                     Dynamic segments allow you to create routes that are generated from data. To create a dynamic segment, wrap the folder name in square brackets: <code className="text-cyan-400">[segmentName]</code>.
@@ -266,10 +266,10 @@ export default function BlogPostPage() {
 }`}
                     filename="app/blog/[slug]/page.tsx"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Linking between pages */}
-                <motion.section id="linking-between-pages" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
+                <m.section id="linking-between-pages" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Linking between pages</h2>
                   <p className="text-slate-300 mb-4">
                     Use the <code className="text-cyan-400">&lt;Link&gt;</code> component (auto-imported) to navigate between routes. It extends the HTML <code className="text-cyan-400">&lt;a&gt;</code> tag to provide client-side navigation.
@@ -297,10 +297,10 @@ export default function BlogList() {
                   <p className="text-slate-400 text-sm mt-4">
                     <strong className="text-white">Tip:</strong> You can also use <code className="text-cyan-400">useNavigate</code> for programmatic navigation.
                   </p>
-                </motion.section>
+                </m.section>
 
                 {/* Previous / Next Navigation */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
+                <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
                   <Link to="/docs/project-structure" className="group flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
                     <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                     <div>
@@ -315,7 +315,7 @@ export default function BlogList() {
                     </div>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
-                </motion.div>
+                </m.div>
 
               </div>
 

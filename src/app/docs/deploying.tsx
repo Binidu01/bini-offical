@@ -1,6 +1,6 @@
 // src/pages/docs/deploying/page.tsx
 import React from 'react'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import {
   ArrowLeft,
   ArrowRight,
@@ -158,7 +158,7 @@ export default function DeployingPage() {
               <div className="max-w-4xl min-w-0 flex-1">
 
                 {/* Title + Copy page button */}
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="flex items-start justify-between gap-4 mb-4"
@@ -170,22 +170,22 @@ export default function DeployingPage() {
                   <div className="shrink-0 pt-2 hidden sm:block">
                     <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                   </div>
-                </motion.div>
+                </m.div>
                 {/* Copy button on small screens */}
                 <div className="sm:hidden mb-8">
                   <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                 </div>
 
                 {/* Overview */}
-                <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+                <m.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
                   <p className="text-slate-300 mb-6">
                     Bini.js can be deployed to any platform that supports Node.js, or exported as static files for static hosting. 
                     For all hosting platforms <strong className="text-white">except static export</strong>, use the unified <code className="text-cyan-400">npm run deploy</code> command.
                   </p>
-                </motion.section>
+                </m.section>
 
                 {/* Deployment Options */}
-                <motion.section id="deployment-options" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
+                <m.section id="deployment-options" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Deployment Options</h2>
                   <Table 
                     headers={['Platform', 'Command', 'Notes']}
@@ -201,10 +201,10 @@ export default function DeployingPage() {
                   <Note>
                     <strong>Unified command:</strong> <code>npm run deploy</code> works for Node.js, Netlify, Vercel, Cloudflare, and Deno Deploy. Static export uses <code>npm run build</code> which pre-renders all routes.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Using bini-deploy */}
-                <motion.section id="using-bini-deploy" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }} className="scroll-mt-24">
+                <m.section id="using-bini-deploy" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2 flex items-center gap-2">
                     One Command to Deploy Anywhere
                   </h2>
@@ -236,10 +236,10 @@ export default function DeployingPage() {
                   <Note>
                     <strong>Zero config required:</strong> bini-deploy automatically detects your project structure, picks the right adapter, and generates platform-specific configuration. No changes to <code>vite.config.ts</code> needed. Learn more at <a href="https://github.com/Binidu01/bini-deploy" target="_blank" rel="noopener noreferrer" className="text-cyan-400 hover:underline">bini-deploy</a>.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Node.js Server */}
-                <motion.section id="nodejs-server" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
+                <m.section id="nodejs-server" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2 flex items-center gap-2">
                     <SimpleIcon icon={siNodedotjs} className="text-green-400" size={20} />
                     Node.js Server
@@ -265,10 +265,10 @@ export default function DeployingPage() {
                   <Note>
                     <strong>bini-server features:</strong> ETag support, 30s timeouts, 10MB body limit, graceful shutdown, and automatic port increment.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Netlify */}
-                <motion.section id="netlify" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
+                <m.section id="netlify" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2 flex items-center gap-2">
                     <SimpleIcon icon={siNetlify} className="text-cyan-400" size={20} />
                     Netlify
@@ -289,10 +289,10 @@ export default function DeployingPage() {
                   <Note>
                     <strong>Important:</strong> Netlify Edge Functions run on Deno, not Node.js. Node-specific packages like <code>nodemailer</code>, <code>fs</code>, or <code>path</code> will not work. Use Web API alternatives.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Vercel */}
-                <motion.section id="vercel" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
+                <m.section id="vercel" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2 flex items-center gap-2">
                     <SimpleIcon icon={siVercel} className="text-white" size={20} />
                     Vercel
@@ -310,10 +310,10 @@ export default function DeployingPage() {
                     <li><code className="text-cyan-400">vercel.json</code> — Routing and build configuration</li>
                     <li><code className="text-cyan-400">api/index.ts</code> — Serverless function entry point</li>
                   </ul>
-                </motion.section>
+                </m.section>
 
                 {/* Cloudflare Workers */}
-                <motion.section id="cloudflare" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
+                <m.section id="cloudflare" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2 flex items-center gap-2">
                     <SimpleIcon icon={siCloudflare} className="text-orange-400" size={20} />
                     Cloudflare Workers
@@ -331,10 +331,10 @@ export default function DeployingPage() {
                     <li><code className="text-cyan-400">wrangler.toml</code> — Worker configuration</li>
                     <li><code className="text-cyan-400">worker.ts</code> — Worker entry point with API routes</li>
                   </ul>
-                </motion.section>
+                </m.section>
 
                 {/* Deno Deploy */}
-                <motion.section id="deno-deploy" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
+                <m.section id="deno-deploy" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2 flex items-center gap-2">
                     <SimpleIcon icon={siDeno} className="text-white" size={20} />
                     Deno Deploy
@@ -351,10 +351,10 @@ export default function DeployingPage() {
                   <ul className="space-y-2 text-slate-300 mb-4 list-disc list-inside">
                     <li><code className="text-cyan-400">server/index.ts</code> — Deno Deploy entry point</li>
                   </ul>
-                </motion.section>
+                </m.section>
 
                 {/* Static Export */}
-                <motion.section id="static-export" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
+                <m.section id="static-export" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2 flex items-center gap-2">
                     <SimpleIcon icon={siGithub} className="text-white" size={20} />
                     Static Export
@@ -394,10 +394,10 @@ export default defineConfig({
                   <Note>
                     <strong>Pre-rendering:</strong> <code>npm run build</code> pre-renders all static routes to HTML and creates shell pages for dynamic routes. The client hydrates on load. No separate export command needed.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Platform Comparison */}
-                <motion.section id="platform-comparison" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="scroll-mt-24">
+                <m.section id="platform-comparison" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Platform Comparison</h2>
                   <Table 
                     headers={['Platform', 'API Runtime', 'Static Routes', 'Dynamic Routes', 'Deploy Command']}
@@ -410,10 +410,10 @@ export default defineConfig({
                       [<span className="flex items-center gap-2"><SimpleIcon icon={siGithub} className="text-white" size={14} /> Static Export</span>, 'N/A', <CheckCircle className="w-4 h-4 text-emerald-400" />, <span className="text-amber-400">via shell pages</span>, <code className="text-amber-400">npm run build</code>],
                     ]}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Environment Variables in Production */}
-                <motion.section id="environment-variables" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="scroll-mt-24">
+                <m.section id="environment-variables" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Environment Variables in Production</h2>
                   <p className="text-slate-300 mb-4">
                     Set environment variables through your hosting platform's dashboard:
@@ -431,10 +431,10 @@ export default defineConfig({
                   <Note>
                     Never commit <code>.env</code> files with secrets to your repository. Use platform environment variables for production.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Best Practices */}
-                <motion.section id="best-practices" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="scroll-mt-24">
+                <m.section id="best-practices" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Best Practices</h2>
                   <ul className="space-y-3 text-slate-300 mb-6 list-disc list-inside">
                     <li><strong className="text-white">Test builds locally</strong> — Run <code>npm run build</code> and <code>npm run preview</code> before deploying.</li>
@@ -443,10 +443,10 @@ export default defineConfig({
                     <li><strong className="text-white">Monitor your app</strong> — Use platform analytics to track performance.</li>
                     <li><strong className="text-white">Use a custom domain</strong> — Configure SSL for secure connections.</li>
                   </ul>
-                </motion.section>
+                </m.section>
 
                 {/* Previous / Next Navigation */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
+                <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
                   <Link to="/docs/environment-variables" className="group flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
                     <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                     <div>
@@ -461,7 +461,7 @@ export default defineConfig({
                     </div>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
-                </motion.div>
+                </m.div>
 
               </div>
 

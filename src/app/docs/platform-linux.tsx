@@ -1,6 +1,6 @@
 // src/pages/docs/platform-linux/page.tsx
 import React from 'react'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import {
   ArrowLeft,
   ArrowRight,
@@ -212,7 +212,7 @@ export default function PlatformLinuxPage() {
               <div className="max-w-4xl min-w-0 flex-1">
 
                 {/* Title + Copy page button */}
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="flex items-start justify-between gap-4 mb-4"
@@ -224,14 +224,14 @@ export default function PlatformLinuxPage() {
                   <div className="shrink-0 pt-2 hidden sm:block">
                     <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                   </div>
-                </motion.div>
+                </m.div>
                 {/* Copy button on small screens */}
                 <div className="sm:hidden mb-8">
                   <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                 </div>
 
                 {/* Linux Overview */}
-                <motion.section id="linux-overview" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="scroll-mt-24">
+                <m.section id="linux-overview" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Linux Overview</h2>
                   <p className="text-slate-300 mb-4">
                     Bini.js allows you to build native Linux desktop applications using Tauri. Your React app is wrapped in a WebKitGTK binary, providing a native experience with full system access.
@@ -256,10 +256,10 @@ export default function PlatformLinuxPage() {
                   <Note>
                     Linux desktop apps are built using Tauri's WebKitGTK backend. Your app runs in a native window with full system access.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Requirements */}
-                <motion.section id="requirements" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
+                <m.section id="requirements" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Requirements</h2>
                   <p className="text-slate-300 mb-4">
                     Before building Linux apps, make sure you have the following installed:
@@ -285,10 +285,10 @@ sudo pacman -S webkit2gtk base-devel openssl gtk3`}
                   <Note>
                     The WebKitGTK libraries are required to compile the Tauri backend. Install them using your distribution's package manager.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Native Linux */}
-                <motion.section id="native-linux" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
+                <m.section id="native-linux" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Native Linux</h2>
                   <p className="text-slate-300 mb-4">
                     Build natively on Linux using the CLI. The development and build commands run directly on your Linux machine.
@@ -317,10 +317,10 @@ npm run tauri:build`}
                       <strong className="text-white">Tip:</strong> Use <code className="text-cyan-400">--sign</code> during scaffold to set up GPG signing.
                     </p>
                   </div>
-                </motion.section>
+                </m.section>
 
                 {/* Windows */}
-                <motion.section id="windows" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
+                <m.section id="windows" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Windows</h2>
                   <p className="text-slate-300 mb-4">
                     Build Linux apps from Windows using GitHub Actions. This is the recommended approach for cross-platform builds.
@@ -329,10 +329,10 @@ npm run tauri:build`}
                   <Note>
                     GitHub Actions runs on Ubuntu runners to build native Linux applications. This works from any OS.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* macOS */}
-                <motion.section id="macos" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
+                <m.section id="macos" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">macOS</h2>
                   <p className="text-slate-300 mb-4">
                     Build Linux apps from macOS using GitHub Actions. This is the recommended approach and is used by Tauri for cross-platform builds.
@@ -341,10 +341,10 @@ npm run tauri:build`}
                   <Note>
                     GitHub Actions with <code>ubuntu-latest</code> runners is the official Tauri-recommended approach for building Linux apps from macOS.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Creating a Linux App */}
-                <motion.section id="creating-linux-app" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
+                <m.section id="creating-linux-app" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Creating a Linux App</h2>
                   <p className="text-slate-300 mb-4">
                     Create a new Bini.js project targeting Linux:
@@ -368,10 +368,10 @@ npm run tauri:build`}
                   <CodeBlock 
                     code={`npx create-bini-app@latest`}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Development */}
-                <motion.section id="development" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
+                <m.section id="development" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Development</h2>
                   <p className="text-slate-300 mb-4">
                     Run your Linux app in development mode:
@@ -388,10 +388,10 @@ npm run tauri:build`}
                     <li>Access to Linux APIs</li>
                     <li>Devtools for debugging</li>
                   </ul>
-                </motion.section>
+                </m.section>
 
                 {/* Building */}
-                <motion.section id="building" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
+                <m.section id="building" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Building</h2>
                   <p className="text-slate-300 mb-4">
                     Build a distributable Linux application:
@@ -413,10 +413,10 @@ npm run tauri:build`}
                   <Note>
                     The build output is a native Linux binary that runs without any additional dependencies.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Code Signing */}
-                <motion.section id="code-signing" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="scroll-mt-24">
+                <m.section id="code-signing" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Code Signing</h2>
                   <p className="text-slate-300 mb-4">
                     Bini.js supports GPG signing for Linux binaries. Configure signing in <code className="text-cyan-400">src-tauri/tauri.conf.json</code>:
@@ -452,10 +452,10 @@ npm run tauri:build`}
                   <Note>
                     For production distribution, GPG signing is recommended to establish trust with Linux users.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Previous / Next Navigation */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
+                <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
                   <Link to="/docs/platform-macos" className="group flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
                     <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                     <div>
@@ -470,7 +470,7 @@ npm run tauri:build`}
                     </div>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
-                </motion.div>
+                </m.div>
 
               </div>
 

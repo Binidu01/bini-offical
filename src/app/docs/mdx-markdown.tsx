@@ -1,6 +1,6 @@
 // src/pages/docs/mdx-markdown/page.tsx
 import React from 'react'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import {
   ArrowLeft,
   ArrowRight,
@@ -109,7 +109,7 @@ export default function MdxMarkdownPage() {
               <div className="max-w-4xl min-w-0 flex-1">
 
                 {/* Title + Copy page button */}
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="flex items-start justify-between gap-4 mb-4"
@@ -121,14 +121,14 @@ export default function MdxMarkdownPage() {
                   <div className="shrink-0 pt-2 hidden sm:block">
                     <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                   </div>
-                </motion.div>
+                </m.div>
                 {/* Copy button on small screens */}
                 <div className="sm:hidden mb-8">
                   <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                 </div>
 
                 {/* What is MDX? */}
-                <motion.section id="what-is-mdx" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="scroll-mt-24">
+                <m.section id="what-is-mdx" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">What is MDX?</h2>
                   <p className="text-slate-300 mb-4">
                     MDX is an extension to Markdown that allows you to write JSX components directly in your Markdown files. Bini.js supports <code className="text-cyan-400">.mdx</code> and <code className="text-cyan-400">.md</code> files as content routes out of the box.
@@ -136,10 +136,10 @@ export default function MdxMarkdownPage() {
                   <p className="text-slate-300 mb-4">
                     <code className="text-cyan-400">@mdx-js/rollup</code> is bundled internally, so no separate installation or Vite configuration is required. This makes it easy to create rich, interactive content pages.
                   </p>
-                </motion.section>
+                </m.section>
 
                 {/* MDX Pages */}
-                <motion.section id="mdx-pages" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
+                <m.section id="mdx-pages" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">MDX Pages</h2>
                   <p className="text-slate-300 mb-4">
                     Create an MDX page by adding a <code className="text-cyan-400">.mdx</code> file anywhere in <code className="text-cyan-400">src/app/</code>. The file is compiled to a React component and rendered as a page.
@@ -171,10 +171,10 @@ Welcome to our company! This is a regular **Markdown** page with JSX support.
 We build amazing products with Bini.js.`}
                     filename="app/about.mdx"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Markdown Pages */}
-                <motion.section id="markdown-pages" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
+                <m.section id="markdown-pages" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Markdown Pages</h2>
                   <p className="text-slate-300 mb-4">
                     Bini.js also supports plain <code className="text-cyan-400">.md</code> files. They go through the same MDX pipeline, which means they also support JSX and imports.
@@ -209,10 +209,10 @@ We reserve the right to terminate accounts that violate these terms.
                   <p className="text-slate-300 mt-4">
                     Both <code className="text-cyan-400">.mdx</code> and <code className="text-cyan-400">.md</code> are compiled through the same MDX pipeline with full JSX, import, and export support. There is no plain-markdown-only mode.
                   </p>
-                </motion.section>
+                </m.section>
 
                 {/* Metadata in MDX */}
-                <motion.section id="metadata-in-mdx" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
+                <m.section id="metadata-in-mdx" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Metadata in MDX</h2>
                   <p className="text-slate-300 mb-4">
                     Export <code className="text-cyan-400">metadata</code> from any MDX page to set page titles, descriptions, and Open Graph tags.
@@ -243,10 +243,10 @@ This is a blog post written in MDX with full metadata support.`}
                   <p className="text-slate-300 mt-4">
                     Root layout metadata is injected into <code className="text-cyan-400">index.html</code> at build time. Nested layout titles update <code className="text-cyan-400">document.title</code> at runtime.
                   </p>
-                </motion.section>
+                </m.section>
 
                 {/* Imports in MDX */}
-                <motion.section id="imports-in-mdx" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
+                <m.section id="imports-in-mdx" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Imports in MDX</h2>
                   <p className="text-slate-300 mb-4">
                     You can import components, utilities, and other files directly in MDX:
@@ -271,10 +271,10 @@ export const metadata = {
                   <p className="text-slate-300 mt-4">
                     Auto-imports (<code className="text-cyan-400">useState</code>, <code className="text-cyan-400">Link</code>, <code className="text-cyan-400">getEnv</code>, etc.) apply to MDX files the same as any other page.
                   </p>
-                </motion.section>
+                </m.section>
 
                 {/* Extension Priority */}
-                <motion.section id="extension-priority" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
+                <m.section id="extension-priority" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Extension Priority</h2>
                   <p className="text-slate-300 mb-4">
                     When multiple files share the same base name in a folder, Bini.js uses this priority order:
@@ -301,10 +301,10 @@ export const metadata = {
 │   └── page.md           ← Ignored
 └── contact.md            → /contact`}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Styling MDX Content */}
-                <motion.section id="styling-mdx" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
+                <m.section id="styling-mdx" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Styling MDX Content</h2>
                   <p className="text-slate-300 mb-4">
                     CSS Modules, plain CSS imports, and Tailwind utility classes work directly in MDX files:
@@ -328,10 +328,10 @@ import { Button } from '@/components/Button'
                       <strong className="text-white">Note:</strong> Tailwind's Preflight reset strips default styling from headings and bold text. Wrap plain-markdown regions in a <code className="text-cyan-400">prose</code> class from <code className="text-cyan-400">@tailwindcss/typography</code> if you want them to look styled by default.
                     </p>
                   </div>
-                </motion.section>
+                </m.section>
 
                 {/* MDX Configuration */}
-                <motion.section id="mdx-configuration" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
+                <m.section id="mdx-configuration" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">MDX Configuration</h2>
                   <p className="text-slate-300 mb-4">
                     You can pass options directly to the bundled <code className="text-cyan-400">@mdx-js/rollup</code> plugin via the <code className="text-cyan-400">biniroute()</code> configuration:
@@ -358,10 +358,10 @@ export default defineConfig({
                   <p className="text-slate-300 mt-4">
                     This is useful for adding syntax highlighting, custom markdown transformations, or other content processing.
                   </p>
-                </motion.section>
+                </m.section>
 
                 {/* Complete Example */}
-                <motion.section id="complete-example" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="scroll-mt-24">
+                <m.section id="complete-example" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Complete Example</h2>
                   <p className="text-slate-300 mb-4">
                     Here is a comprehensive example showing MDX and Markdown usage:
@@ -414,10 +414,10 @@ We build amazing things with Bini.js.
 - **Speed** — We move fast
 - **Community** — We support our users`}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Previous / Next Navigation */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
+                <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
                   <Link to="/docs/catch-all-routes" className="group flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
                     <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                     <div>
@@ -432,7 +432,7 @@ We build amazing things with Bini.js.
                     </div>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
-                </motion.div>
+                </m.div>
 
               </div>
 

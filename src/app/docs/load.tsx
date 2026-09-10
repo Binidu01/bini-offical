@@ -1,6 +1,6 @@
 // src/pages/docs/loading/page.tsx
 import React from 'react'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import {
   ArrowLeft,
   ArrowRight,
@@ -107,7 +107,7 @@ export default function LoadingPage() {
               <div className="max-w-4xl min-w-0 flex-1">
 
                 {/* Title + Copy page button */}
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="flex items-start justify-between gap-4 mb-4"
@@ -119,21 +119,21 @@ export default function LoadingPage() {
                   <div className="shrink-0 pt-2 hidden sm:block">
                     <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                   </div>
-                </motion.div>
+                </m.div>
                 {/* Copy button on small screens */}
                 <div className="sm:hidden mb-8">
                   <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                 </div>
 
                 {/* Overview */}
-                <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+                <m.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
                   <p className="text-slate-300 mb-6">
                     Bini.js provides a built-in loading spinner, but you can create custom <code className="text-cyan-400">loading.tsx</code> files to show your own loading UI while page content loads.
                   </p>
-                </motion.section>
+                </m.section>
 
                 {/* How it Works */}
-                <motion.section id="how-it-works" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
+                <m.section id="how-it-works" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">How it Works</h2>
                   <p className="text-slate-300 mb-4">
                     The <code className="text-cyan-400">loading.tsx</code> file automatically wraps the page in a Suspense boundary. The loading UI is shown immediately on navigation while the page content streams in.
@@ -146,10 +146,10 @@ export default function LoadingPage() {
                       <li>Once ready, the loading UI is replaced with the actual page</li>
                     </ol>
                   </div>
-                </motion.section>
+                </m.section>
 
                 {/* Global Loading */}
-                <motion.section id="global-loading" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
+                <m.section id="global-loading" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Global Loading UI</h2>
                   <p className="text-slate-300 mb-4">
                     Create a <code className="text-cyan-400">loading.tsx</code> file in the root of your <code className="text-cyan-400">app</code> directory to show a loading state for all routes.
@@ -171,10 +171,10 @@ export default function Loading() {
 }`}
                     filename="app/loading.tsx"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Nested Loading UI */}
-                <motion.section id="nested-loading" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
+                <m.section id="nested-loading" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Nested Loading UI</h2>
                   <p className="text-slate-300 mb-4">
                     You can create route-specific loading states by placing <code className="text-cyan-400">loading.tsx</code> in subdirectories. The closest loading file to the page being navigated to will be used.
@@ -202,10 +202,10 @@ export default function Loading() {
                       ['/ → /dashboard', 'app/dashboard/loading.tsx'],
                     ]}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Skeleton Examples */}
-                <motion.section id="skeleton-examples" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
+                <m.section id="skeleton-examples" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Skeleton Examples</h2>
                   <p className="text-slate-300 mb-4">
                     Skeletons provide a better user experience than spinners by showing the approximate layout of the content.
@@ -292,10 +292,10 @@ export default function ProductsLoading() {
 }`}
                     filename="app/products/loading.tsx"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Loading with Layout */}
-                <motion.section id="loading-with-layout" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
+                <m.section id="loading-with-layout" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Loading with Layout</h2>
                   <p className="text-slate-300 mb-4">
                     Loading UI is shown inside the layout hierarchy. Layouts remain visible and interactive while the page loads.
@@ -329,10 +329,10 @@ export default function BlogLayout() {
 }`}
                     filename="app/blog/layout.tsx"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Custom Spinners */}
-                <motion.section id="custom-spinners" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
+                <m.section id="custom-spinners" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Custom Spinners</h2>
                   <p className="text-slate-300 mb-4">
                     Create branded spinners that match your design system:
@@ -368,10 +368,10 @@ export default function Loading() {
   )
 }`}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Built-in Fallback */}
-                <motion.section id="built-in-fallback" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
+                <m.section id="built-in-fallback" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Built-in Fallback</h2>
                   <p className="text-slate-300 mb-4">
                     If you don't create a <code className="text-cyan-400">loading.tsx</code> file, Bini.js uses a built-in spinner:
@@ -385,10 +385,10 @@ export default function Loading() {
                   <p className="text-slate-300">
                     The built-in spinner is a good starting point, but creating custom loading UI is recommended for production applications.
                   </p>
-                </motion.section>
+                </m.section>
 
                 {/* Best Practices */}
-                <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="scroll-mt-24">
+                <m.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Best Practices</h2>
                   <ul className="space-y-3 text-slate-300 mb-6">
                     <li className="flex items-start gap-2">
@@ -412,10 +412,10 @@ export default function Loading() {
                       <span><strong className="text-white">Match your brand</strong> — Use your brand colors and design language.</span>
                     </li>
                   </ul>
-                </motion.section>
+                </m.section>
 
                 {/* Previous / Next Navigation */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
+                <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
                   <Link to="/docs/mdx-markdown" className="group flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
                     <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                     <div>
@@ -430,7 +430,7 @@ export default function Loading() {
                     </div>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
-                </motion.div>
+                </m.div>
 
               </div>
 

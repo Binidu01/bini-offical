@@ -1,6 +1,6 @@
 // src/pages/docs/dynamic-routes/page.tsx
 import React, { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { m, AnimatePresence } from 'framer-motion'
 import {
   ArrowLeft,
   ArrowRight,
@@ -214,7 +214,7 @@ export default function DynamicRoutesPage() {
               <div className="max-w-4xl min-w-0 flex-1">
 
                 {/* Title + Copy page button */}
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="flex items-start justify-between gap-4 mb-4"
@@ -228,14 +228,14 @@ export default function DynamicRoutesPage() {
                   <div className="shrink-0 pt-2 hidden sm:block">
                     <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                   </div>
-                </motion.div>
+                </m.div>
                 
                 <div className="sm:hidden mb-8">
                   <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                 </div>
 
                 {/* Overview */}
-                <motion.section 
+                <m.section 
                   id="overview"
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -268,10 +268,10 @@ export default function DynamicRoutesPage() {
                   <Callout type="info">
                     <strong>Auto-import:</strong> <code>useParams()</code> is auto-imported in all pages and layouts — no import statement needed.
                   </Callout>
-                </motion.section>
+                </m.section>
 
                 {/* Dynamic Segments */}
-                <motion.section 
+                <m.section 
                   id="dynamic-segments" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -341,10 +341,10 @@ export default function UserProfile() {
 }`}
                     filename="app/user/[id]/page.tsx"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Multiple Parameters */}
-                <motion.section 
+                <m.section 
                   id="multiple-parameters" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -389,10 +389,10 @@ export default function BlogPost() {
                       ['/blog/design/ux-tips', '{ category: "design", slug: "ux-tips" }'],
                     ]}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Catch-all Segments */}
-                <motion.section 
+                <m.section 
                   id="catch-all-segments" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -458,10 +458,10 @@ export default function DocsPage() {
                   <Callout type="warning">
                     <strong>Priority:</strong> Catch-all segments have lower priority than static routes and dynamic single segments. For example, <code>/blog/featured</code> will match a static route if it exists, falling back to the catch-all only if no more specific route matches.
                   </Callout>
-                </motion.section>
+                </m.section>
 
                 {/* Optional Catch-all Segments */}
-                <motion.section 
+                <m.section 
                   id="optional-catch-all" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -518,10 +518,10 @@ export default function ShopPage() {
                       ['/shop/electronics/phones/iphone', "['electronics', 'phones', 'iphone']"],
                     ]}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Dynamic Segments in Layouts */}
-                <motion.section 
+                <m.section 
                   id="dynamic-layouts" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -570,10 +570,10 @@ export default function BlogLayout() {
                   <Callout type="tip">
                     <strong>Layout inheritance:</strong> The layout wraps the page and any nested routes, providing consistent UI across the dynamic route section.
                   </Callout>
-                </motion.section>
+                </m.section>
 
                 {/* Flat File Dynamic Routes */}
-                <motion.section 
+                <m.section 
                   id="flat-file-dynamic" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -617,10 +617,10 @@ export default function BlogPost() {
                     <li>Single-level dynamic pages (e.g., <code className="text-cyan-400">/post/:id</code>)</li>
                     <li>When you want to reduce folder nesting</li>
                   </ul>
-                </motion.section>
+                </m.section>
 
                 {/* Route Priority */}
-                <motion.section 
+                <m.section 
                   id="route-priority" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -662,10 +662,10 @@ export default function BlogPost() {
                   <p className="text-slate-300 mt-4">
                     This ensures predictable routing behavior and prevents conflicts between different route types.
                   </p>
-                </motion.section>
+                </m.section>
 
                 {/* Complete Example */}
-                <motion.section 
+                <m.section 
                   id="complete-example" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -727,10 +727,10 @@ export default function BlogPost() {
                       ['/users/:userId/settings', '/users/john/settings', 'Nested Dynamic'],
                     ]}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Previous / Next Navigation */}
-                <motion.div 
+                <m.div 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
                   transition={{ delay: 0.55 }} 
@@ -750,7 +750,7 @@ export default function BlogPost() {
                     </div>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
-                </motion.div>
+                </m.div>
 
               </div>
 

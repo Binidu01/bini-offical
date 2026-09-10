@@ -1,6 +1,6 @@
 // src/pages/docs/platforms/page.tsx
 import React from 'react'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import {
   ArrowLeft,
   ArrowRight,
@@ -194,15 +194,15 @@ export default function PlatformsPage() {
           <DocLayout>
             <div className="max-w-4xl">
               
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+              <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                 <h1 className="text-4xl font-bold text-white mb-2">Platforms</h1>
                 <p className="text-slate-400 text-sm mb-8">
                   Build native apps for web, desktop, and mobile from a single codebase.
                 </p>
-              </motion.div>
+              </m.div>
 
               {/* Overview */}
-              <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+              <m.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
                 <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Overview</h2>
                 <p className="text-slate-300 mb-4">
                   Bini.js lets you build for multiple platforms from a single codebase. Use the <code className="text-cyan-400">--platform</code> flag when scaffolding your project to target your desired platform.
@@ -211,10 +211,10 @@ export default function PlatformsPage() {
                 <p className="text-slate-400 text-sm mt-4">
                   Each platform gets exactly the dependencies, scripts, and config it needs — nothing more.
                 </p>
-              </motion.section>
+              </m.section>
 
               {/* Platform Cards */}
-              <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="mt-8">
+              <m.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="mt-8">
                 <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Platforms</h2>
                 
                 <div className="space-y-6">
@@ -361,10 +361,10 @@ export default function PlatformsPage() {
                     ]}
                   />
                 </div>
-              </motion.section>
+              </m.section>
 
               {/* Native Plugin Wiring */}
-              <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mt-8">
+              <m.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mt-8">
                 <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Native Plugin Wiring</h2>
                 <p className="text-slate-300 mb-4">
                   Bini.js automatically wires native plugins for desktop and mobile platforms. <code className="text-cyan-400">bini-native</code> detects the web APIs you call and handles everything:
@@ -379,10 +379,10 @@ export default function PlatformsPage() {
                 <Callout type="tip">
                   <strong>Dev-only wiring.</strong> <code className="text-cyan-400">bini-native</code> runs only in development. Your production build stays untouched and exactly what you configured.
                 </Callout>
-              </motion.section>
+              </m.section>
 
               {/* Platform Comparison */}
-              <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="mt-8">
+              <m.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="mt-8">
                 <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Platform Comparison</h2>
                 <div className="overflow-x-auto rounded-lg border border-slate-700">
                   <table className="w-full text-sm">
@@ -434,10 +434,10 @@ export default function PlatformsPage() {
                     </tbody>
                   </table>
                 </div>
-              </motion.section>
+              </m.section>
 
               {/* Previous / Next Navigation */}
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
+              <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
                 <Link to="/docs/environment-variables" className="group flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
                   <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                   <div>
@@ -452,7 +452,7 @@ export default function PlatformsPage() {
                   </div>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
-              </motion.div>
+              </m.div>
 
             </div>
           </DocLayout>

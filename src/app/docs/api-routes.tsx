@@ -1,6 +1,6 @@
 // src/pages/docs/api-routes/page.tsx
 import React from 'react'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import {
   ArrowLeft,
   ArrowRight,
@@ -121,7 +121,7 @@ export default function ApiRoutesPage() {
               <div className="max-w-4xl min-w-0 flex-1">
 
                 {/* Title + Copy page button */}
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="flex items-start justify-between gap-4 mb-4"
@@ -133,24 +133,24 @@ export default function ApiRoutesPage() {
                   <div className="shrink-0 pt-2 hidden sm:block">
                     <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                   </div>
-                </motion.div>
+                </m.div>
                 {/* Copy button on small screens */}
                 <div className="sm:hidden mb-8">
                   <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                 </div>
 
                 {/* Overview */}
-                <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+                <m.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
                   <p className="text-slate-300 mb-6">
                     Bini.js allows you to create API endpoints directly in your project. Place files in <code className="text-cyan-400">src/app/api/</code> and they automatically become API routes at <code className="text-cyan-400">/api/*</code>. The filename maps directly to the route — <code className="text-cyan-400">hello.ts</code> becomes <code className="text-cyan-400">/api/hello</code>, <code className="text-cyan-400">users.ts</code> becomes <code className="text-cyan-400">/api/users</code>.
                   </p>
                   <Note>
                     <strong>Important:</strong> Every API route file <strong>must</strong> have a <code>default</code> export. Bini.js uses the default export to handle requests. Named exports will <strong>not</strong> work.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* File Structure */}
-                <motion.section id="file-structure" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
+                <m.section id="file-structure" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">File Structure</h2>
                   <p className="text-slate-300 mb-4">
                     The filename (without extension) becomes the last segment of the URL path under <code className="text-cyan-400">/api/</code>:
@@ -170,10 +170,10 @@ export default function ApiRoutesPage() {
                   <Note>
                     There is no root <code>/api</code> route. Every API file maps to a named path — use <code>posts/index.ts</code> if you need a route at <code>/api/posts</code>.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Plain Function Handler */}
-                <motion.section id="plain-function-handler" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
+                <m.section id="plain-function-handler" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Plain Function Handler</h2>
                   <p className="text-slate-300 mb-4">
                     The simplest way to create an API route is to default export a handler function that checks the HTTP method:
@@ -197,10 +197,10 @@ export default function handler(request: Request) {
                   <Note>
                     For APIs with multiple endpoints or complex logic, Hono is recommended over plain functions.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Hono Integration */}
-                <motion.section id="hono-integration" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
+                <m.section id="hono-integration" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Hono Integration</h2>
                   <p className="text-slate-300 mb-4">
                     For more complex APIs, use Hono. Create a Hono app and default export it. Write routes <strong className="text-white">without</strong> the <code className="text-cyan-400">/api</code> prefix — bini-router strips it before your handler sees the request.
@@ -231,10 +231,10 @@ export default app`}
                   <Note>
                     Hono is the recommended approach for complex APIs. It provides routing, middleware, validation, and better TypeScript support.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Hono Middleware */}
-                <motion.section id="hono-middleware" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
+                <m.section id="hono-middleware" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Hono Middleware</h2>
                   <p className="text-slate-300 mb-4">
                     Hono provides built-in middleware for common tasks:
@@ -265,10 +265,10 @@ export default app`}
                       ['timeout', 'Request timeout'],
                     ]}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Dynamic API Routes */}
-                <motion.section id="dynamic-api-routes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
+                <m.section id="dynamic-api-routes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Dynamic API Routes</h2>
                   <p className="text-slate-300 mb-4">
                     Use square brackets for dynamic segments, just like page routes:
@@ -301,10 +301,10 @@ export default function handler(request: Request) {
 }`}
                     filename="src/app/api/posts/[id].ts"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Catch-all API Routes */}
-                <motion.section id="catch-all-api-routes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
+                <m.section id="catch-all-api-routes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Catch-all API Routes</h2>
                   <p className="text-slate-300 mb-4">
                     Use <code className="text-cyan-400">[...catch]</code> to handle all unmatched API routes:
@@ -321,10 +321,10 @@ export default function handler(request: Request) {
 }`}
                     filename="src/app/api/[...catch].ts"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Environment Variables */}
-                <motion.section id="environment-variables" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
+                <m.section id="environment-variables" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Environment Variables</h2>
                   <p className="text-slate-300 mb-4">
                     API routes use <code className="text-cyan-400">getEnv(c, key)</code> and <code className="text-cyan-400">requireEnv(c, key)</code> from <code className="text-cyan-400">bini-env</code>. Both read directly from the Hono request context — they work across every runtime without code changes.
@@ -360,10 +360,10 @@ export default app`}
 requireEnv(ctx, 'KEY')            // throws if missing
 getEnv(ctx, 'KEY') ?? 'default'   // optional with default`}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Request & Response */}
-                <motion.section id="request-response" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="scroll-mt-24">
+                <m.section id="request-response" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Request & Response</h2>
                   <p className="text-slate-300 mb-4">
                     API routes use standard Web APIs for requests and responses:
@@ -378,10 +378,10 @@ getEnv(ctx, 'KEY') ?? 'default'   // optional with default`}
   return Response.json({ data: json, page })
 }`}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* CORS */}
-                <motion.section id="cors" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="scroll-mt-24">
+                <m.section id="cors" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">CORS</h2>
                   <p className="text-slate-300 mb-4">
                     CORS is enabled by default for all API routes:
@@ -411,10 +411,10 @@ const app = new Hono()
 app.use('*', cors({ origin: 'https://myapp.com' }))
 export default app`}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Deployment */}
-                <motion.section id="deployment" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="scroll-mt-24">
+                <m.section id="deployment" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Deployment</h2>
                   <p className="text-slate-300 mb-4">
                     API routes work across all deployment platforms. To deploy, run:
@@ -435,10 +435,10 @@ export default app`}
                   <Note>
                     Run <code>npm run deploy</code> and select your platform. bini-deploy will generate the appropriate entry files and configuration for your chosen platform.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Previous / Next Navigation */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
+                <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
                   <Link to="/docs/icons" className="group flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
                     <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                     <div>
@@ -453,7 +453,7 @@ export default app`}
                     </div>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
-                </motion.div>
+                </m.div>
 
               </div>
 

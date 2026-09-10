@@ -1,6 +1,6 @@
 // src/pages/docs/project-structure/page.tsx
 import React from 'react'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import {
   ArrowLeft,
   ArrowRight,
@@ -138,7 +138,7 @@ export default function ProjectStructurePage() {
               <div className="max-w-4xl min-w-0 flex-1">
 
                 {/* Title + Copy page button */}
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="flex items-start justify-between gap-4 mb-4"
@@ -150,22 +150,22 @@ export default function ProjectStructurePage() {
                   <div className="shrink-0 pt-2 hidden sm:block">
                     <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                   </div>
-                </motion.div>
+                </m.div>
                 {/* Copy button on small screens */}
                 <div className="sm:hidden mb-8">
                   <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                 </div>
 
                 {/* Folder and file conventions */}
-                <motion.section id="folder-and-file-conventions" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="scroll-mt-24">
+                <m.section id="folder-and-file-conventions" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Folder and file conventions</h2>
                   <p className="text-slate-300 mb-4">
                     This page provides an overview of all the folder and file conventions in Bini.js, and recommendations for organizing your project across web, desktop, and mobile platforms.
                   </p>
-                </motion.section>
+                </m.section>
 
                 {/* Cross-Platform Structure */}
-                <motion.section id="cross-platform-structure" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }} className="mb-8 scroll-mt-24">
+                <m.section id="cross-platform-structure" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }} className="mb-8 scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Cross-Platform Project Structure</h2>
                   <p className="text-slate-300 mb-4">
                     Bini.js projects are designed to work across all platforms from a single codebase. The same folder structure works for web, desktop, and mobile:
@@ -194,10 +194,10 @@ export default function ProjectStructurePage() {
                       <p className="text-slate-400 text-xs">Adds <code className="text-cyan-400">src-tauri/gen/</code> for Android and iOS</p>
                     </div>
                   </div>
-                </motion.section>
+                </m.section>
 
                 {/* Top-level folders */}
-                <motion.section id="top-level-folders" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
+                <m.section id="top-level-folders" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
                   <h3 className="text-lg font-semibold text-white mb-3">Top-level folders</h3>
                   <p className="text-slate-300 mb-4">
                     Top-level folders are used to organize your application's code and static assets.
@@ -212,10 +212,10 @@ export default function ProjectStructurePage() {
                       ['dist/', 'Production build output (generated)'],
                     ]}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Top-level files */}
-                <motion.section id="top-level-files" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
+                <m.section id="top-level-files" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
                   <h3 className="text-lg font-semibold text-white mb-3">Top-level files</h3>
                   <p className="text-slate-300 mb-4">
                     Top-level files are used to configure your application, manage dependencies, and define environment variables.
@@ -237,10 +237,10 @@ export default function ProjectStructurePage() {
                       ['jsconfig.json', 'Configuration file for JavaScript'],
                     ]}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Routing Files */}
-                <motion.section id="routing-files" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
+                <m.section id="routing-files" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
                   <h3 className="text-lg font-semibold text-white mb-3">Routing Files</h3>
                   <p className="text-slate-300 mb-4">
                     Add <code className="text-cyan-400">page</code> to expose a route, <code className="text-cyan-400">layout</code> for shared UI such as header, nav, or footer, <code className="text-cyan-400">loading</code> for skeletons, and <code className="text-cyan-400">not-found</code> for custom 404 pages.
@@ -258,10 +258,10 @@ export default function ProjectStructurePage() {
                   <p className="text-slate-400 text-sm mt-2">
                     <strong className="text-white">Note:</strong> The <code className="text-cyan-400">&lt;html&gt;</code> and <code className="text-cyan-400">&lt;body&gt;</code> tags are defined in <code className="text-cyan-400">index.html</code>, not in layouts.
                   </p>
-                </motion.section>
+                </m.section>
 
                 {/* Complete project structure */}
-                <motion.section id="complete-project-structure" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
+                <m.section id="complete-project-structure" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
                   <h3 className="text-lg font-semibold text-white mb-3">Complete project structure</h3>
                   <CodeBlock 
                     code={`my-app/
@@ -295,10 +295,10 @@ export default function ProjectStructurePage() {
                   <p className="text-slate-400 text-sm mt-2 mb-8">
                     <strong className="text-white">Note:</strong> <code className="text-cyan-400">App.tsx</code> is auto-generated by bini-router. Never edit this file directly.
                   </p>
-                </motion.section>
+                </m.section>
 
                 {/* Platform-Specific Files */}
-                <motion.section id="platform-specific-files" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.32 }} className="scroll-mt-24">
+                <m.section id="platform-specific-files" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.32 }} className="scroll-mt-24">
                   <h3 className="text-lg font-semibold text-white mb-3">Platform-Specific Files</h3>
                   <p className="text-slate-300 mb-4">
                     When targeting desktop or mobile, Bini.js generates platform-specific files and configurations:
@@ -314,10 +314,10 @@ export default function ProjectStructurePage() {
                       ['iOS', <code className="text-cyan-400">src-tauri/gen/ios/</code>, "Native app via Tauri's iOS backend"],
                     ]}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Nested routes */}
-                <motion.section id="nested-routes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
+                <m.section id="nested-routes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
                   <h3 className="text-lg font-semibold text-white mb-3">Nested routes</h3>
                   <p className="text-slate-300 mb-4">
                     Folders define URL segments. Nesting folders nests segments. Layouts at any level wrap their child segments. A route becomes public when a <code className="text-cyan-400">page</code> file exists.
@@ -333,10 +333,10 @@ export default function ProjectStructurePage() {
                       ['src/app/blog/authors/page.tsx', '/blog/authors', 'Public route'],
                     ]}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Dynamic routes */}
-                <motion.section id="dynamic-routes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
+                <m.section id="dynamic-routes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
                   <h3 className="text-lg font-semibold text-white mb-3">Dynamic routes</h3>
                   <p className="text-slate-300 mb-4">
                     Parameterize segments with square brackets. Use <code className="text-cyan-400">[segment]</code> for a single param, <code className="text-cyan-400">[...segment]</code> for catch‑all, and <code className="text-cyan-400">[[...segment]]</code> for optional catch‑all. Access values via the <code className="text-cyan-400">useParams()</code> hook.
@@ -349,10 +349,10 @@ export default function ProjectStructurePage() {
                       ['src/app/docs/[[...slug]]/page.tsx', '/docs, /docs/layouts, /docs/api/use-router'],
                     ]}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Route Groups and Private Folders */}
-                <motion.section id="route-groups-private" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
+                <m.section id="route-groups-private" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
                   <h3 className="text-lg font-semibold text-white mb-3">Route groups and private folders</h3>
                   <p className="text-slate-300 mb-4">
                     Organize code without changing URLs with route groups <code className="text-cyan-400">(group)</code>, and colocate non-routable files with private folders <code className="text-cyan-400">_folder</code>.
@@ -366,10 +366,10 @@ export default function ProjectStructurePage() {
                       ['src/app/blog/_lib/data.ts', '—', 'Not routable; safe place for utils'],
                     ]}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* API Routes */}
-                <motion.section id="api-routes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="scroll-mt-24">
+                <m.section id="api-routes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="scroll-mt-24">
                   <h3 className="text-lg font-semibold text-white mb-3">API Routes</h3>
                   <p className="text-slate-300 mb-4">
                     Create API endpoints in <code className="text-cyan-400">src/app/api/</code>. Files export a handler function or Hono app.
@@ -396,10 +396,10 @@ app.get('/users/:id', (c) => {
 export default app`}
                     filename="app/api/users/[id].ts"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Component Hierarchy */}
-                <motion.section id="component-hierarchy" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="scroll-mt-24">
+                <m.section id="component-hierarchy" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="scroll-mt-24">
                   <h3 className="text-lg font-semibold text-white mb-3">Component hierarchy</h3>
                   <p className="text-slate-300 mb-4">
                     The components defined in special files are rendered in a specific hierarchy:
@@ -415,10 +415,10 @@ export default app`}
                   <p className="text-slate-300">
                     The components are rendered recursively in nested routes, meaning the components of a route segment will be nested <strong className="text-white">inside</strong> the components of its parent segment.
                   </p>
-                </motion.section>
+                </m.section>
 
                 {/* Colocation */}
-                <motion.section id="colocation" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="scroll-mt-24">
+                <m.section id="colocation" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="scroll-mt-24">
                   <h3 className="text-lg font-semibold text-white mt-8 mb-3">Colocation</h3>
                   <p className="text-slate-300 mb-4">
                     In the <code className="text-cyan-400">src/app</code> directory, nested folders define route structure. Each folder represents a route segment that maps to a URL path.
@@ -429,10 +429,10 @@ export default app`}
                   <p className="text-slate-300">
                     This means that <strong className="text-white">project files can be safely colocated</strong> inside route segments in the <code className="text-cyan-400">app</code> directory without accidentally being routable.
                   </p>
-                </motion.section>
+                </m.section>
 
                 {/* Previous / Next Navigation */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
+                <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
                   <Link to="/docs/installation" className="group flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
                     <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                     <div>
@@ -447,7 +447,7 @@ export default app`}
                     </div>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
-                </motion.div>
+                </m.div>
 
               </div>
 

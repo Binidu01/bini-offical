@@ -1,6 +1,6 @@
 // src/pages/docs/static-export/page.tsx
 import React from 'react'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import {
   ArrowLeft,
   ArrowRight,
@@ -124,7 +124,7 @@ export default function StaticExportPage() {
               <div className="max-w-4xl min-w-0 flex-1">
 
                 {/* Title + Copy page button */}
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="flex items-start justify-between gap-4 mb-4"
@@ -136,24 +136,24 @@ export default function StaticExportPage() {
                   <div className="shrink-0 pt-2 hidden sm:block">
                     <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                   </div>
-                </motion.div>
+                </m.div>
                 {/* Copy button on small screens */}
                 <div className="sm:hidden mb-8">
                   <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                 </div>
 
                 {/* Overview */}
-                <motion.section id="overview" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="scroll-mt-24">
+                <m.section id="overview" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="scroll-mt-24">
                   <p className="text-slate-300 mb-6">
                     <code className="text-cyan-400">bini-ssg</code> pre-renders every route — static and dynamic — to static HTML as part of <code className="text-cyan-400">npm run build</code>. There is no separate export command or export mode. The output is real server-rendered markup, not a client-only shell, ready for GitHub Pages, S3, Firebase, Surge, and any other static host.
                   </p>
                   <Note>
                     <strong>Web target only.</strong> Static export applies to the Node.js/web target. Desktop and mobile builds (Windows, macOS, Linux, Android, iOS) don't use <code>bini-ssg</code> — they package the same routes into a native binary instead.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* How It Works */}
-                <motion.section id="how-it-works" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
+                <m.section id="how-it-works" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">How It Works</h2>
                   <p className="text-slate-300 mb-4">
                     <code className="text-cyan-400">bini-ssg</code> is a Vite build plugin that runs during <code className="text-cyan-400">vite build</code>. It:
@@ -164,10 +164,10 @@ export default function StaticExportPage() {
                     <li><strong className="text-white">Creates shell pages</strong> for dynamic routes with a hydration marker</li>
                     <li><strong className="text-white">Writes one <code className="text-cyan-400">index.html</code></strong> per route into your output directory</li>
                   </ul>
-                </motion.section>
+                </m.section>
 
                 {/* Your render() Function */}
-                <motion.section id="render-function" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
+                <m.section id="render-function" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Your render() Function</h2>
                   <p className="text-slate-300 mb-4">
                     The <code className="text-cyan-400">render()</code> function is exported from <code className="text-cyan-400">src/main.tsx</code> and called by <code className="text-cyan-400">bini-ssg</code> for every static route:
@@ -199,10 +199,10 @@ export async function render(url: string): Promise<string> {
                   <Note>
                     <strong>Already scaffolded:</strong> The <code>render()</code> function is already in your project. You only need to modify it if you need custom server rendering logic.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Build Command */}
-                <motion.section id="build-command" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
+                <m.section id="build-command" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Build Command</h2>
                   <Table
                     headers={['Command', 'When to use']}
@@ -214,10 +214,10 @@ export async function render(url: string): Promise<string> {
                   <p className="text-slate-300 mt-4">
                     <code className="text-cyan-400">npm run build</code> type-checks (TypeScript projects) and then runs <code className="text-cyan-400">vite build</code>. The <code className="text-cyan-400">bini-ssg</code> plugin drives pre-rendering as part of that same build.
                   </p>
-                </motion.section>
+                </m.section>
 
                 {/* Output Structure */}
-                <motion.section id="output-structure" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
+                <m.section id="output-structure" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Output Structure</h2>
                   <CodeBlock
                     code={`dist/
@@ -235,10 +235,10 @@ export async function render(url: string): Promise<string> {
 └── css/                         ← Your compiled CSS files
     └── index-[hash].css`}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Shell Pages & Hydration */}
-                <motion.section id="shell-pages" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
+                <m.section id="shell-pages" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Shell Pages & Hydration</h2>
                   <p className="text-slate-300 mb-4">
                     For dynamic routes (e.g., <code className="text-cyan-400">/blog/:slug</code>), <code className="text-cyan-400">bini-ssg</code> creates a shell page with a marker script:
@@ -262,10 +262,10 @@ if (window.__BINI_SHELL__) {
                   <Note>
                     <strong>No hydration errors:</strong> The shell marker prevents React from trying to hydrate an empty <code>#root</code> div against your component tree.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* 404 Handling */}
-                <motion.section id="404-handling" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
+                <m.section id="404-handling" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">404 Handling</h2>
                   <p className="text-slate-300 mb-4">
                     You can enable <code className="text-cyan-400">404.html</code> generation with the <code className="text-cyan-400">fallback</code> option:
@@ -297,10 +297,10 @@ export default defineConfig({
                   <Note>
                     <strong>Default:</strong> <code>fallback</code> is <code>false</code>. Enable it to generate <code>404.html</code> for static hosts that support it.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Works on Any Fully Static Host */}
-                <motion.section id="static-hosts" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
+                <m.section id="static-hosts" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Works on Any Fully Static Host</h2>
                   <Table
                     headers={['Host', 'Static routes', 'Dynamic routes']}
@@ -311,10 +311,10 @@ export default defineConfig({
                       ['Surge.sh', <span className="flex items-center gap-1"><CheckCircle className="w-3.5 h-3.5 text-emerald-400" /> pre-rendered</span>, <span className="flex items-center gap-1"><CheckCircle className="w-3.5 h-3.5 text-emerald-400" /> shell pages</span>],
                     ]}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Complete Example */}
-                <motion.section id="complete-example" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="scroll-mt-24">
+                <m.section id="complete-example" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Complete Example</h2>
                   <p className="text-slate-300 mb-4">
                     A full setup for deploying to GitHub Pages with true SSG:
@@ -342,10 +342,10 @@ export default defineConfig({
                   <p className="text-slate-300 mt-4">
                     Run <code className="text-cyan-400">npm run build</code>, then push the contents of <code className="text-cyan-400">dist/</code> to your GitHub Pages branch (or upload them through the GitHub Pages UI).
                   </p>
-                </motion.section>
+                </m.section>
 
                 {/* Previous / Next Navigation */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
+                <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
                   <Link to="/docs/production-server" className="group flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
                     <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                     <div>
@@ -360,7 +360,7 @@ export default defineConfig({
                     </div>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
-                </motion.div>
+                </m.div>
 
               </div>
 

@@ -1,6 +1,6 @@
 // src/pages/docs/file-based-routing/page.tsx
 import React, { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { m, AnimatePresence } from 'framer-motion'
 import {
   ArrowLeft,
   ArrowRight,
@@ -193,7 +193,7 @@ export default function FileBasedRoutingPage() {
               <div className="max-w-4xl min-w-0 flex-1">
 
                 {/* Title + Copy page button */}
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="flex items-start justify-between gap-4 mb-4"
@@ -207,14 +207,14 @@ export default function FileBasedRoutingPage() {
                   <div className="shrink-0 pt-2 hidden sm:block">
                     <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                   </div>
-                </motion.div>
+                </m.div>
                 
                 <div className="sm:hidden mb-8">
                   <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                 </div>
 
                 {/* Overview */}
-                <motion.section 
+                <m.section 
                   id="overview"
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -248,10 +248,10 @@ export default function FileBasedRoutingPage() {
                       description="Create shared UI that persists across navigation"
                     />
                   </div>
-                </motion.section>
+                </m.section>
 
                 {/* Special Files Overview */}
-                <motion.section 
+                <m.section 
                   id="special-files" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -278,10 +278,10 @@ export default function FileBasedRoutingPage() {
                   <Callout type="info">
                     <strong>Note:</strong> Files and directories prefixed with <code>_</code> or <code>.</code> are ignored by the router. The <code>api/</code> directory is excluded from page route scanning.
                   </Callout>
-                </motion.section>
+                </m.section>
 
                 {/* page.tsx */}
-                <motion.section 
+                <m.section 
                   id="page-file" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -356,10 +356,10 @@ export default function BlogPage() {
                   <Callout type="tip">
                     <strong>Auto-imports:</strong> If you already import from one of these packages manually, Bini.js detects it and skips injection — no duplicates ever.
                   </Callout>
-                </motion.section>
+                </m.section>
 
                 {/* MDX & Markdown Pages */}
-                <motion.section 
+                <m.section 
                   id="mdx-pages" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -441,10 +441,10 @@ export const metadata = {
                   <p className="text-slate-300">
                     The higher-priority file wins; the lower-priority one is simply ignored for that route.
                   </p>
-                </motion.section>
+                </m.section>
 
                 {/* layout.tsx */}
-                <motion.section 
+                <m.section 
                   id="layout-file" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -547,10 +547,10 @@ export default function DashboardLayout() {
 }`}
                     filename="app/dashboard/layout.tsx"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* loading.tsx */}
-                <motion.section 
+                <m.section 
                   id="loading-file" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -595,10 +595,10 @@ export default function DashboardLoading() {
                   <p className="text-slate-300 mt-4">
                     The loading UI is shown immediately on navigation while the page content streams in. If no <code className="text-cyan-400">loading.tsx</code> exists, a built-in dark-mode-aware spinner is used automatically.
                   </p>
-                </motion.section>
+                </m.section>
 
                 {/* error.tsx */}
-                <motion.section 
+                <m.section 
                   id="error-file" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -661,10 +661,10 @@ export default function DashboardError({ error, reset }: { error: Error; reset: 
                   <Callout type="info">
                     <strong>Dev vs Production:</strong> In development, errors are also dispatched as a <code>__bini_error__</code> CustomEvent on window. In production, generic "Something went wrong" UI is shown if no error.tsx exists.
                   </Callout>
-                </motion.section>
+                </m.section>
 
                 {/* not-found.tsx */}
-                <motion.section 
+                <m.section 
                   id="not-found-file" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -727,10 +727,10 @@ export default function BlogNotFound() {
 }`}
                     filename="app/blog/not-found.tsx"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Nearest Wins Resolution */}
-                <motion.section 
+                <m.section 
                   id="nearest-wins" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -788,10 +788,10 @@ export default function BlogNotFound() {
                     <li><strong className="text-white">Error:</strong> <code className="text-cyan-400">null</code> in dev (Vite overlay takes over), generic "Something went wrong" in production</li>
                     <li><strong className="text-white">Not Found:</strong> Built-in 404 page</li>
                   </ul>
-                </motion.section>
+                </m.section>
 
                 {/* File Combinations */}
-                <motion.section 
+                <m.section 
                   id="file-combinations" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -824,10 +824,10 @@ export default function BlogNotFound() {
                       ['/dashboard/profile', 'layout.tsx + profile/layout.tsx + loading.tsx + error.tsx + page.tsx'],
                     ]}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* File Priority */}
-                <motion.section 
+                <m.section 
                   id="file-priority" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -848,10 +848,10 @@ export default function BlogNotFound() {
                       <li><code className="text-cyan-400">page.tsx</code> or <code className="text-cyan-400">page.mdx</code></li>
                     </ol>
                   </div>
-                </motion.section>
+                </m.section>
 
                 {/* Dynamic Routes */}
-                <motion.section 
+                <m.section 
                   id="dynamic-routes" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -912,10 +912,10 @@ export default function UserProfile() {
 }`}
                     filename="app/user/[id]/page.tsx"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Catch-All Routes */}
-                <motion.section 
+                <m.section 
                   id="catch-all-routes" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -960,10 +960,10 @@ export default function DocsPage() {
                   <p className="text-slate-300">
                     Routes are sorted by priority and then by path length (shortest first).
                   </p>
-                </motion.section>
+                </m.section>
 
                 {/* API Routes */}
-                <motion.section 
+                <m.section 
                   id="api-routes" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -1046,10 +1046,10 @@ export default app`}
                   <Callout type="tip">
                     <strong>Note:</strong> Write routes without the <code>/api</code> prefix — Bini.js strips it before your handler sees the request. Requires <code>npm install hono</code> if you choose the Hono style.
                   </Callout>
-                </motion.section>
+                </m.section>
 
                 {/* Complete Example */}
-                <motion.section 
+                <m.section 
                   id="complete-example" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -1114,10 +1114,10 @@ export default app`}
                       ['app/api/users/[id].ts', '/api/users/:id', 'API Dynamic'],
                     ]}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Previous / Next Navigation */}
-                <motion.div 
+                <m.div 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
                   transition={{ delay: 0.6 }} 
@@ -1137,7 +1137,7 @@ export default app`}
                     </div>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
-                </motion.div>
+                </m.div>
 
               </div>
 

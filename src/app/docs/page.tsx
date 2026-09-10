@@ -1,6 +1,6 @@
 // src/pages/docs/page.tsx
 import React from 'react'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import {
   MessageCircle,
   ExternalLink,
@@ -56,7 +56,7 @@ export default function DocsPage() {
               <div className="max-w-4xl min-w-0 flex-1">
 
                 {/* Title + Copy page button */}
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="flex items-start justify-between gap-4 mb-4"
@@ -70,14 +70,14 @@ export default function DocsPage() {
                   <div className="shrink-0 pt-2 hidden sm:block">
                     <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                   </div>
-                </motion.div>
+                </m.div>
                 {/* Copy button on small screens, below the title */}
                 <div className="sm:hidden mb-8">
                   <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                 </div>
 
                 {/* What is Bini.js? */}
-                <motion.section
+                <m.section
                   id="what-is-bini-js"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -94,10 +94,10 @@ export default function DocsPage() {
                   <p className="text-white mt-4 leading-relaxed">
                     Whether you're building a web app, a desktop application for Windows, macOS, or Linux, or a mobile app for Android and iOS — Bini.js gives you the tools to do it all from one project.
                   </p>
-                </motion.section>
+                </m.section>
 
                 {/* Native Capabilities Section */}
-                <motion.section
+                <m.section
                   id="native-apps"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -176,10 +176,10 @@ export default function DocsPage() {
                       <p className="text-white/60 text-xs">Same routes, API handlers, and components compile to every target</p>
                     </div>
                   </div>
-                </motion.section>
+                </m.section>
 
                 {/* How to use the docs */}
-                <motion.section
+                <m.section
                   id="how-to-use-the-docs"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -198,10 +198,10 @@ export default function DocsPage() {
                     <li><span className="font-medium text-cyan-400">Platforms:</span> Build for web, Windows, macOS, Linux, Android, and iOS</li>
                     <li><span className="font-medium text-cyan-400">Deployment:</span> Deploy to Node.js, Netlify, Vercel, Cloudflare, or Deno</li>
                   </ul>
-                </motion.section>
+                </m.section>
 
                 {/* Bini.js Router */}
-                <motion.section
+                <m.section
                   id="bini-js-router"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -231,10 +231,10 @@ export default function DocsPage() {
                   <p className="text-white text-sm">
                     Routes are automatically code-split — no manual <code className="text-cyan-400">React.lazy()</code> required.
                   </p>
-                </motion.section>
+                </m.section>
 
                 {/* Pre-requisite knowledge */}
-                <motion.section
+                <m.section
                   id="pre-requisite-knowledge"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -257,10 +257,10 @@ export default function DocsPage() {
                       React documentation <ExternalLink className="w-3 h-3" />
                     </a>.
                   </p>
-                </motion.section>
+                </m.section>
 
                 {/* Join our Community */}
-                <motion.section
+                <m.section
                   id="join-our-community"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -287,10 +287,10 @@ export default function DocsPage() {
                       </a>
                     </div>
                   </div>
-                </motion.section>
+                </m.section>
 
                 {/* Next Steps */}
-                <motion.section
+                <m.section
                   id="next-steps"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -305,7 +305,7 @@ export default function DocsPage() {
                     Getting Started
                     <ArrowRight className="w-4 h-4" />
                   </Link>
-                </motion.section>
+                </m.section>
 
               </div>
 

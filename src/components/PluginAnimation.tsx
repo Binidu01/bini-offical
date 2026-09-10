@@ -1,5 +1,38 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
+
+// ─── Reduced-motion hook ────────────────────────────────────────
+function usePrefersReducedMotion() {
+  const [prefersReduced, setPrefersReduced] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setPrefersReduced(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setPrefersReduced(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+
+  return prefersReduced;
+}
+
+// ─── Visibility hook — pause when off-screen ───────────────────
+function useIsVisible(ref: React.RefObject<HTMLElement | null>) {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => setIsVisible(entry.isIntersecting),
+      { threshold: 0.1 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [ref]);
+
+  return isVisible;
+}
 
 const PluginAnimation = () => {
   const layers = 7;
@@ -17,6 +50,12 @@ const PluginAnimation = () => {
   const DESIGN_HEIGHT = 500;
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
+
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const isVisible = useIsVisible(wrapperRef);
+
+  // Only run animations when visible AND user hasn't requested reduced motion
+  const motionPaused = !isVisible || prefersReducedMotion;
 
   useEffect(() => {
     const updateScale = () => {
@@ -50,12 +89,15 @@ const PluginAnimation = () => {
     'env': 'bini-env',
     'Deploy': 'bini-deploy',
     'Overlay': 'bini-overlay',
-    'Scaffold': 'create-bini-app'
+    'Scaffold': 'bini-ssg'
   };
 
   // Main cadence: hold each card centered for 2s, then a short window
   // where the deck advances and the wrapping card fades out/in.
+  // Skips entirely when off-screen or reduced motion is requested.
   useEffect(() => {
+    if (motionPaused) return;
+
     const HOLD_MS = 2000;
     const TRANSITION_MS = 700;
     const interval = setInterval(() => {
@@ -67,7 +109,7 @@ const PluginAnimation = () => {
     }, HOLD_MS + TRANSITION_MS);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [motionPaused]);
 
   // Every time offset changes, figure out which card was sitting at the
   // very top (position 6) *before* the change - that's the one that wraps
@@ -103,6 +145,27 @@ const PluginAnimation = () => {
   const containerHeight = `${DESIGN_HEIGHT}px`;
   const wireGradientLR = 'linear-gradient(90deg, #00CFFF, #0077FF)';
   const wireGradientRL = 'linear-gradient(90deg, #0077FF, #00CFFF)';
+
+  // ─── Static fallback for reduced motion ────────────────────────
+  if (prefersReducedMotion) {
+    return (
+      <div
+        ref={wrapperRef}
+        className="w-full flex items-center justify-center bg-transparent px-2 py-6 sm:p-8"
+      >
+        <div className="flex items-center gap-6">
+          <div className="relative w-20 h-20 flex items-center justify-center">
+            <img src="/logo.svg" alt="Bini.js" width={56} height={56} className="w-14 h-14" />
+          </div>
+          <div className="px-6 py-2 rounded-xl bg-[#0a0a12] border border-blue-500/30">
+            <span className="font-mono text-lg tracking-wider text-white">
+              {displayText}
+            </span>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div ref={wrapperRef} className="w-full flex items-center justify-center bg-transparent px-2 py-6 sm:p-8">
@@ -161,7 +224,7 @@ const PluginAnimation = () => {
 
             {/* Logo */}
             <div className="absolute inset-0 flex items-center justify-center" style={{ transform: `translateZ(${layers * 3 + 6}px)`, zIndex: 100 }}>
-              <img src="/logo.svg" alt="Bini.js" className="w-14 h-14" style={{ transform: 'rotate(-45deg)' }} />
+              <img src="/logo.svg" alt="Bini.js" width={56} height={56} className="w-14 h-14" style={{ transform: 'rotate(-45deg)' }} />
             </div>
           </div>
         </div>
@@ -171,28 +234,28 @@ const PluginAnimation = () => {
             with a negative margin so it reaches into the block instead of
             stopping short of it. */}
         <div className="relative flex-1 h-px flex items-center z-0" style={{ marginLeft: '-28px' }}>
-          <motion.div
+          <m.div
             className="h-[2px] w-full origin-left"
             style={{ background: wireGradientLR }}
             animate={{
-              opacity: isPaused ? [0.6, 0.95, 0.6] : 0.6,
+              opacity: (isPaused && !motionPaused) ? [0.6, 0.95, 0.6] : 0.6,
             }}
             transition={{
-              opacity: isPaused ? { duration: 1, repeat: Infinity } : { duration: 0.3 },
+              opacity: (isPaused && !motionPaused) ? { duration: 1, repeat: Infinity } : { duration: 0.3 },
             }}
           />
         </div>
 
         {/* Center Pill - Package Name */}
         <div className="relative flex-shrink-0 flex items-center justify-center z-10" style={{ height: containerHeight }}>
-          <motion.div
+          <m.div
             key={offset}
             initial={{ x: 0 }}
-            animate={{ x: [0, -10, 0] }}
+            animate={{ x: motionPaused ? 0 : [0, -10, 0] }}
             transition={{ duration: 0.6, ease: 'easeInOut' }}
           >
             <div className="relative px-8 py-2 rounded-xl bg-[#0a0a12] border border-blue-500/30">
-              <motion.span
+              <m.span
                 className="font-mono text-lg lg:text-xl tracking-wider text-white"
                 key={displayText}
                 initial={{ opacity: 0, scale: 0.8 }}
@@ -200,9 +263,9 @@ const PluginAnimation = () => {
                 transition={{ duration: 0.3 }}
               >
                 {displayText}
-              </motion.span>
+              </m.span>
             </div>
-          </motion.div>
+          </m.div>
         </div>
 
         {/* Right Wire - starts merged into the pill and grows outward
@@ -212,19 +275,19 @@ const PluginAnimation = () => {
             gradient border on the right. */}
         <div className="relative flex-1 h-px flex items-center z-0" style={{ marginLeft: '-10px', marginRight: '-48px' }}>
           <AnimatePresence mode="wait">
-            <motion.div
+            <m.div
               key={`right-${offset}`}
               className="h-[2px] w-full origin-left"
               style={{ background: wireGradientRL }}
               initial={{ scaleX: 0, opacity: 0.3 }}
               animate={{
                 scaleX: 1,
-                opacity: isPaused ? [0.6, 0.95, 0.6] : 0.6,
+                opacity: (isPaused && !motionPaused) ? [0.6, 0.95, 0.6] : 0.6,
               }}
               exit={{ scaleX: 0, opacity: 0, transition: { duration: 0.2 } }}
               transition={{
                 scaleX: { duration: 0.4, ease: 'easeOut' },
-                opacity: isPaused ? { duration: 1, repeat: Infinity } : { duration: 0.3 },
+                opacity: (isPaused && !motionPaused) ? { duration: 1, repeat: Infinity } : { duration: 0.3 },
               }}
             />
           </AnimatePresence>
@@ -258,7 +321,7 @@ const PluginAnimation = () => {
                 : 'transform 0.6s ease-in-out, opacity 0.3s ease-in-out';
 
               return (
-                <motion.div
+                <m.div
                   key={cardIndex}
                   className="absolute"
                   style={{
@@ -274,7 +337,9 @@ const PluginAnimation = () => {
                     opacity,
                   }}
                   animate={{
-                    borderColor: isMiddlePosition && isPaused ? ['rgba(0,207,255,0.3)', 'rgba(0,119,255,0.8)', 'rgba(0,207,255,0.3)'] : undefined,
+                    borderColor: (isMiddlePosition && isPaused && !motionPaused)
+                      ? ['rgba(0,207,255,0.3)', 'rgba(0,119,255,0.8)', 'rgba(0,207,255,0.3)']
+                      : undefined,
                   }}
                   transition={{
                     duration: 1,
@@ -306,7 +371,7 @@ const PluginAnimation = () => {
                       {label}
                     </span>
                   </div>
-                </motion.div>
+                </m.div>
               );
             })}
           </div>

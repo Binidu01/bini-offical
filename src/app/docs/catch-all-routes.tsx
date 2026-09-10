@@ -1,6 +1,6 @@
 // src/pages/docs/catch-all-routes/page.tsx
 import React, { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { m, AnimatePresence } from 'framer-motion'
 import {
   ArrowLeft,
   ArrowRight,
@@ -217,7 +217,7 @@ export default function CatchAllRoutesPage() {
               <div className="max-w-4xl min-w-0 flex-1">
 
                 {/* Title + Copy page button */}
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="flex items-start justify-between gap-4 mb-4"
@@ -231,14 +231,14 @@ export default function CatchAllRoutesPage() {
                   <div className="shrink-0 pt-2 hidden sm:block">
                     <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                   </div>
-                </motion.div>
+                </m.div>
                 
                 <div className="sm:hidden mb-8">
                   <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                 </div>
 
                 {/* Overview */}
-                <motion.section 
+                <m.section 
                   id="overview"
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -272,10 +272,10 @@ export default function CatchAllRoutesPage() {
                   <Callout>
                     <strong>Auto-import:</strong> <code>useParams()</code> is auto-imported in all pages — no import statement needed to access catch-all parameters.
                   </Callout>
-                </motion.section>
+                </m.section>
 
                 {/* What are Catch-All Routes? */}
-                <motion.section 
+                <m.section 
                   id="what-are-catch-all-routes" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -307,10 +307,10 @@ export default function CatchAllRoutesPage() {
                   <p className="text-slate-300 mt-4">
                     In this example, <code className="text-cyan-400">/docs/getting-started</code> matches with <code className="text-cyan-400">slug = ['getting-started']</code>, while <code className="text-cyan-400">/docs/guides/routing/basics</code> matches with <code className="text-cyan-400">slug = ['guides', 'routing', 'basics']</code>.
                   </p>
-                </motion.section>
+                </m.section>
 
                 {/* Basic Usage */}
-                <motion.section 
+                <m.section 
                   id="basic-usage" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -345,10 +345,10 @@ export default function CatchAllRoutesPage() {
                   <Callout>
                     <strong>At least one segment required:</strong> A regular catch-all route <code>[...slug]</code> requires at least one segment. Use <code>[[...slug]]</code> for optional catch-all that matches the parent path too.
                   </Callout>
-                </motion.section>
+                </m.section>
 
                 {/* Accessing Parameters */}
-                <motion.section 
+                <m.section 
                   id="accessing-parameters" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -418,10 +418,10 @@ export default function BlogArchive() {
 }`}
                     filename="app/blog/[...slug]/page.tsx"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Nested Catch-All Routes */}
-                <motion.section 
+                <m.section 
                   id="nested-catch-all" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -467,10 +467,10 @@ export default function ProductPage() {
 }`}
                     filename="app/products/[category]/[...slug]/page.tsx"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Optional Catch-All Routes */}
-                <motion.section 
+                <m.section 
                   id="optional-catch-all" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -535,10 +535,10 @@ export default function ShopPage() {
                   <Callout>
                     <strong>Use case:</strong> Optional catch-all routes are perfect for documentation pages where the root path (<code>/docs</code>) should show a landing page, and nested paths (<code>/docs/getting-started</code>) show specific content.
                   </Callout>
-                </motion.section>
+                </m.section>
 
                 {/* File-Based Catch-All Routes */}
-                <motion.section 
+                <m.section 
                   id="file-based-catch-all" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -577,10 +577,10 @@ export default function BlogArchive() {
 }`}
                     filename="app/blog/[...slug].tsx"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Route Priority */}
-                <motion.section 
+                <m.section 
                   id="route-priority" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -621,10 +621,10 @@ export default function BlogArchive() {
                   <p className="text-slate-300 mt-4">
                     This priority system ensures predictable routing behavior and prevents conflicts between different route types.
                   </p>
-                </motion.section>
+                </m.section>
 
                 {/* Use Cases */}
-                <motion.section 
+                <m.section 
                   id="use-cases" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -667,10 +667,10 @@ export default function BlogArchive() {
                     <li><strong className="text-white">Wiki Pages:</strong> Multi-level wiki documentation</li>
                     <li><strong className="text-white">Path-Based Navigation:</strong> Any URL structure where depth varies</li>
                   </ul>
-                </motion.section>
+                </m.section>
 
                 {/* Complete Example */}
-                <motion.section 
+                <m.section 
                   id="complete-example" 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -728,10 +728,10 @@ export default function BlogArchive() {
                       ['/api/v1/*', '/api/v1/users/123', 'Flat File Catch-all'],
                     ]}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Previous / Next Navigation */}
-                <motion.div 
+                <m.div 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
                   transition={{ delay: 0.6 }} 
@@ -751,7 +751,7 @@ export default function BlogArchive() {
                     </div>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
-                </motion.div>
+                </m.div>
 
               </div>
 

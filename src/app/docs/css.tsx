@@ -1,6 +1,6 @@
 // src/pages/docs/css/page.tsx
 import React from 'react'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import {
   ArrowLeft,
   ArrowRight,
@@ -121,7 +121,7 @@ export default function CSSPage() {
               <div className="max-w-4xl min-w-0 flex-1">
 
                 {/* Title + Copy page button */}
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="flex items-start justify-between gap-4 mb-4"
@@ -133,21 +133,21 @@ export default function CSSPage() {
                   <div className="shrink-0 pt-2 hidden sm:block">
                     <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                   </div>
-                </motion.div>
+                </m.div>
                 {/* Copy button on small screens */}
                 <div className="sm:hidden mb-8">
                   <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                 </div>
 
                 {/* Overview */}
-                <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+                <m.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
                   <p className="text-slate-300 mb-6">
                     Bini.js provides several ways to style your application. You can use Tailwind CSS v4 (default), CSS Modules, or plain CSS — choose what works best for your project.
                   </p>
-                </motion.section>
+                </m.section>
 
                 {/* Styling Options */}
-                <motion.section id="styling-options" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
+                <m.section id="styling-options" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Styling Options</h2>
                   <Table 
                     headers={['Option', 'Description', 'Best For']}
@@ -158,10 +158,10 @@ export default function CSSPage() {
                       ['None', 'No styling — bring your own', 'Custom setups, CSS-in-JS libraries'],
                     ]}
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Tailwind CSS v4 */}
-                <motion.section id="tailwind-css" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
+                <m.section id="tailwind-css" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Tailwind CSS v4</h2>
                   <p className="text-slate-300 mb-4">
                     Tailwind CSS v4 is pre-configured using the official Vite plugin. No PostCSS configuration needed — it just works.
@@ -215,10 +215,10 @@ export default defineConfig({
 })`}
                     filename="vite.config.ts"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* CSS Modules */}
-                <motion.section id="css-modules" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
+                <m.section id="css-modules" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">CSS Modules</h2>
                   <p className="text-slate-300 mb-4">
                     CSS Modules scope styles locally to avoid naming conflicts. Files must end with <code className="text-cyan-400">.module.css</code>:
@@ -258,10 +258,10 @@ export function Button({ variant = 'primary', children }) {
                   <Note>
                     CSS Modules are processed by Vite automatically — no configuration needed.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Global CSS */}
-                <motion.section id="global-css" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
+                <m.section id="global-css" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Global CSS</h2>
                   <p className="text-slate-300 mb-4">
                     Import CSS files directly to apply styles globally:
@@ -290,10 +290,10 @@ export default function RootLayout() {
 }`}
                     filename="app/layout.tsx"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* None Option */}
-                <motion.section id="none-option" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
+                <m.section id="none-option" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">None Option</h2>
                   <p className="text-slate-300 mb-4">
                     Choose <code className="text-cyan-400">--none</code> during project creation for a clean slate:
@@ -304,10 +304,10 @@ export default function RootLayout() {
                   <Note>
                     Even with <code>--none</code>, Vite still handles <code>.css</code> imports natively. You can add any CSS file and it will work.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* External Stylesheets */}
-                <motion.section id="external-stylesheets" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
+                <m.section id="external-stylesheets" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">External Stylesheets</h2>
                   <p className="text-slate-300 mb-4">
                     Import styles from npm packages or external URLs:
@@ -322,10 +322,10 @@ export default function RootLayout() {
 }`}
                     filename="app/layout.tsx"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* CSS Ordering */}
-                <motion.section id="css-ordering" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
+                <m.section id="css-ordering" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">CSS Ordering</h2>
                   <p className="text-slate-300 mb-4">
                     CSS is applied in the order you import it:
@@ -338,10 +338,10 @@ import styles from './Component.module.css'  // Component styles last`}
                   <Note>
                     Keep CSS imports in a consistent order to avoid specificity issues. Global styles → utilities → component styles.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* Sass/SCSS Support */}
-                <motion.section id="sass-support" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="scroll-mt-24">
+                <m.section id="sass-support" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Sass/SCSS Support</h2>
                   <p className="text-slate-300 mb-4">
                     Vite has built-in support for Sass:
@@ -366,10 +366,10 @@ import styles from './Component.module.css'  // Component styles last`}
                   <Note>
                     Vite handles Sass compilation automatically. No additional configuration needed.
                   </Note>
-                </motion.section>
+                </m.section>
 
                 {/* CSS-in-JS */}
-                <motion.section id="css-in-js" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="scroll-mt-24">
+                <m.section id="css-in-js" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">CSS-in-JS</h2>
                   <p className="text-slate-300 mb-4">
                     Use CSS-in-JS libraries with the <code className="text-cyan-400">--none</code> option:
@@ -398,10 +398,10 @@ export function StyledButton({ children }) {
 }`}
                     filename="StyledButton.tsx"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* CSS Variables */}
-                <motion.section id="css-variables" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="scroll-mt-24">
+                <m.section id="css-variables" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">CSS Variables for Theming</h2>
                   <p className="text-slate-300 mb-4">
                     Define CSS variables for consistent theming:
@@ -429,10 +429,10 @@ body {
 }`}
                     filename="app/globals.css"
                   />
-                </motion.section>
+                </m.section>
 
                 {/* Previous / Next Navigation */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
+                <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
                   <Link to="/docs/env-api" className="group flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
                     <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                     <div>
@@ -447,7 +447,7 @@ body {
                     </div>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
-                </motion.div>
+                </m.div>
 
               </div>
 
