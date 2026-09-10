@@ -303,30 +303,6 @@ app.get('/hello', (c) => {
 
 ---
 
-## Configuration
-
-```ts
-// vite.config.ts
-biniroute({
-  appDir    : 'src/app',      // default — scanned for page.tsx / layout.tsx
-  apiDir    : 'src/app/api',  // default — scanned for API handlers
-  cors      : true,           // enable CORS on dev/preview API routes
-  strictMode: true,           // throw on route conflicts
-  basePath  : '',             // subpath prefix, e.g. '/app'
-  mdx       : {},             // passed through to the bundled MDX compiler
-})
-```
-
-`biniroute()` returns an array of plugins (the router plugin plus the bundled MDX compiler), so spread it into `plugins`. `bini-ssg` is already included in the scaffolded config alongside it:
-
-```ts
-plugins: [react(), biniEnv(), ...biniroute(), biniSSG()],
-```
-
-See the [full config reference](https://bini.js.org/plugins) for all options.
-
----
-
 ## License
 
 MIT © [Binidu Ranasinghe](https://github.com/Binidu01)
