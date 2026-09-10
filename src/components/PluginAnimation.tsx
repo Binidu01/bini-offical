@@ -16,24 +16,6 @@ function usePrefersReducedMotion() {
   return prefersReduced;
 }
 
-// ─── Visibility hook — pause when off-screen ───────────────────
-function useIsVisible(ref: React.RefObject<HTMLElement | null>) {
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const io = new IntersectionObserver(
-      ([entry]) => setIsVisible(entry.isIntersecting),
-      { threshold: 0.1 }
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, [ref]);
-
-  return isVisible;
-}
-
 const PluginAnimation = () => {
   const layers = 7;
   const [offset, setOffset] = useState(0);
@@ -52,10 +34,6 @@ const PluginAnimation = () => {
   const [scale, setScale] = useState(1);
 
   const prefersReducedMotion = usePrefersReducedMotion();
-  const isVisible = useIsVisible(wrapperRef);
-
-  // Only run animations when visible AND user hasn't requested reduced motion
-  const motionPaused = !isVisible || prefersReducedMotion;
 
   useEffect(() => {
     const updateScale = () => {
@@ -94,9 +72,8 @@ const PluginAnimation = () => {
 
   // Main cadence: hold each card centered for 2s, then a short window
   // where the deck advances and the wrapping card fades out/in.
-  // Skips entirely when off-screen or reduced motion is requested.
   useEffect(() => {
-    if (motionPaused) return;
+    if (prefersReducedMotion) return;
 
     const HOLD_MS = 2000;
     const TRANSITION_MS = 700;
@@ -109,7 +86,7 @@ const PluginAnimation = () => {
     }, HOLD_MS + TRANSITION_MS);
 
     return () => clearInterval(interval);
-  }, [motionPaused]);
+  }, [prefersReducedMotion]);
 
   // Every time offset changes, figure out which card was sitting at the
   // very top (position 6) *before* the change - that's the one that wraps
@@ -238,10 +215,10 @@ const PluginAnimation = () => {
             className="h-[2px] w-full origin-left"
             style={{ background: wireGradientLR }}
             animate={{
-              opacity: (isPaused && !motionPaused) ? [0.6, 0.95, 0.6] : 0.6,
+              opacity: isPaused ? [0.6, 0.95, 0.6] : 0.6,
             }}
             transition={{
-              opacity: (isPaused && !motionPaused) ? { duration: 1, repeat: Infinity } : { duration: 0.3 },
+              opacity: isPaused ? { duration: 1, repeat: Infinity } : { duration: 0.3 },
             }}
           />
         </div>
@@ -251,7 +228,7 @@ const PluginAnimation = () => {
           <m.div
             key={offset}
             initial={{ x: 0 }}
-            animate={{ x: motionPaused ? 0 : [0, -10, 0] }}
+            animate={{ x: [0, -10, 0] }}
             transition={{ duration: 0.6, ease: 'easeInOut' }}
           >
             <div className="relative px-8 py-2 rounded-xl bg-[#0a0a12] border border-blue-500/30">
@@ -282,12 +259,12 @@ const PluginAnimation = () => {
               initial={{ scaleX: 0, opacity: 0.3 }}
               animate={{
                 scaleX: 1,
-                opacity: (isPaused && !motionPaused) ? [0.6, 0.95, 0.6] : 0.6,
+                opacity: isPaused ? [0.6, 0.95, 0.6] : 0.6,
               }}
               exit={{ scaleX: 0, opacity: 0, transition: { duration: 0.2 } }}
               transition={{
                 scaleX: { duration: 0.4, ease: 'easeOut' },
-                opacity: (isPaused && !motionPaused) ? { duration: 1, repeat: Infinity } : { duration: 0.3 },
+                opacity: isPaused ? { duration: 1, repeat: Infinity } : { duration: 0.3 },
               }}
             />
           </AnimatePresence>
@@ -337,7 +314,7 @@ const PluginAnimation = () => {
                     opacity,
                   }}
                   animate={{
-                    borderColor: (isMiddlePosition && isPaused && !motionPaused)
+                    borderColor: (isMiddlePosition && isPaused)
                       ? ['rgba(0,207,255,0.3)', 'rgba(0,119,255,0.8)', 'rgba(0,207,255,0.3)']
                       : undefined,
                   }}

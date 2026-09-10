@@ -87,9 +87,7 @@ function segLen(ax: number, ay: number, bx: number, by: number) {
 }
 
 // ─── Chip diagonal sweep ────────────────────────────────────────
-function ChipSweepLight({ paused }: { paused: boolean }) {
-  if (paused) return null
-
+function ChipSweepLight() {
   return (
     <div
       className="absolute inset-0 pointer-events-none overflow-hidden rounded-2xl"
@@ -107,12 +105,7 @@ function ChipSweepLight({ paused }: { paused: boolean }) {
           transform: 'rotate(0deg)',
         }}
         animate={{ left: ['-160%', '120%'] }}
-        transition={{
-          duration: 3.0,
-          repeat: Infinity,
-          repeatDelay: 2.5,
-          ease: 'easeInOut',
-        }}
+        transition={{ duration: 3.0, repeat: Infinity, repeatDelay: 2.5, ease: 'easeInOut' }}
       />
     </div>
   )
@@ -125,14 +118,12 @@ function LightRay({
   duration = 1.8,
   delay = 0,
   glowIntensity = 4,
-  paused = false,
 }: {
   wire: WireGeo
   color: string
   duration?: number
   delay?: number
   glowIntensity?: number
-  paused?: boolean
 }) {
   const pathRef = useRef<SVGPathElement>(null)
   const [len, setLen] = useState(wire.totalLength || 200)
@@ -157,17 +148,8 @@ function LightRay({
       strokeLinecap="round"
       strokeLinejoin="round"
       strokeDasharray={`${dashLen} ${len + dashLen}`}
-      animate={paused ? {} : { strokeDashoffset: [travel, -travel] }}
-      transition={
-        paused
-          ? {}
-          : {
-              duration,
-              delay,
-              repeat: Infinity,
-              ease: 'linear',
-            }
-      }
+      animate={{ strokeDashoffset: [travel, -travel] }}
+      transition={{ duration, delay, repeat: Infinity, ease: 'linear' }}
       style={{ filter: `drop-shadow(0 0 ${glowIntensity}px ${color})` }}
     />
   )
@@ -204,24 +186,6 @@ function usePrefersReducedMotion() {
   return prefersReduced
 }
 
-// ─── Visibility hook — pause when off-screen ───────────────────
-function useIsVisible(ref: React.RefObject<HTMLElement | null>) {
-  const [isVisible, setIsVisible] = useState(false)
-
-  useEffect(() => {
-    const el = ref.current
-    if (!el) return
-    const io = new IntersectionObserver(
-      ([entry]) => setIsVisible(entry.isIntersecting),
-      { threshold: 0.1 }
-    )
-    io.observe(el)
-    return () => io.disconnect()
-  }, [ref])
-
-  return isVisible
-}
-
 // ─── Main component ───────────────────────────────────────────
 export function FoundationAnimation() {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -233,10 +197,6 @@ export function FoundationAnimation() {
   const [geo, setGeo] = useState<Geo | null>(null)
   const isMobile = useIsMobile()
   const prefersReducedMotion = usePrefersReducedMotion()
-  const isVisible = useIsVisible(containerRef)
-
-  // Pause infinite animations when off-screen or when reduced motion is requested
-  const paused = !isVisible || prefersReducedMotion
 
   useEffect(() => {
     const measure = () => {
@@ -364,7 +324,6 @@ export function FoundationAnimation() {
                   duration={1.6 + i * 0.25}
                   delay={i * 0.5}
                   glowIntensity={2}
-                  paused={paused}
                 />
               )
             })}
@@ -391,7 +350,7 @@ export function FoundationAnimation() {
             <MiniToolCard
               tool={TOOLS[0]}
               cardRef={cardRefs.current['Vite 8'] as React.RefObject<HTMLDivElement>}
-              delay={0.12}
+              delay={0.1}
             />
           </div>
 
@@ -400,7 +359,7 @@ export function FoundationAnimation() {
             <MiniToolCard
               tool={TOOLS[3]}
               cardRef={cardRefs.current['React 19'] as React.RefObject<HTMLDivElement>}
-              delay={0.3}
+              delay={0.2}
             />
           </div>
 
@@ -446,7 +405,7 @@ export function FoundationAnimation() {
                   boxShadow: '0 8px 16px rgba(0,0,0,0.35)',
                 }}
               >
-                <ChipSweepLight paused={paused} />
+                {!prefersReducedMotion && <ChipSweepLight />}
 
                 <svg className="absolute inset-0 w-full h-full opacity-[0.1]" viewBox="0 0 128 128">
                   <line x1="64" y1="0" x2="64" y2="28" stroke="#a855f7" strokeWidth="1.5" />
@@ -501,7 +460,7 @@ export function FoundationAnimation() {
             <MiniToolCard
               tool={TOOLS[1]}
               cardRef={cardRefs.current['Hono 4'] as React.RefObject<HTMLDivElement>}
-              delay={0.21}
+              delay={0.15}
             />
           </div>
 
@@ -510,7 +469,7 @@ export function FoundationAnimation() {
             <MiniToolCard
               tool={TOOLS[2]}
               cardRef={cardRefs.current['Tauri 2'] as React.RefObject<HTMLDivElement>}
-              delay={0.39}
+              delay={0.25}
             />
           </div>
         </div>
@@ -585,7 +544,6 @@ export function FoundationAnimation() {
                 duration={1.6 + i * 0.25}
                 delay={i * 0.5}
                 glowIntensity={4}
-                paused={paused}
               />
             )
           })}
@@ -612,7 +570,7 @@ export function FoundationAnimation() {
           <ToolCard
             tool={TOOLS[0]}
             cardRef={cardRefs.current['Vite 8'] as React.RefObject<HTMLDivElement>}
-            delay={0.12}
+            delay={0.1}
           />
         </div>
 
@@ -621,7 +579,7 @@ export function FoundationAnimation() {
           <ToolCard
             tool={TOOLS[3]}
             cardRef={cardRefs.current['React 19'] as React.RefObject<HTMLDivElement>}
-            delay={0.3}
+            delay={0.2}
           />
         </div>
 
@@ -667,7 +625,7 @@ export function FoundationAnimation() {
                 boxShadow: '0 20px 40px rgba(0,0,0,0.35)',
               }}
             >
-              <ChipSweepLight paused={paused} />
+              {!prefersReducedMotion && <ChipSweepLight />}
 
               <svg className="absolute inset-0 w-full h-full opacity-[0.1]" viewBox="0 0 128 128">
                 <line x1="64" y1="0" x2="64" y2="28" stroke="#a855f7" strokeWidth="1.5" />
@@ -722,7 +680,7 @@ export function FoundationAnimation() {
           <ToolCard
             tool={TOOLS[1]}
             cardRef={cardRefs.current['Hono 4'] as React.RefObject<HTMLDivElement>}
-            delay={0.21}
+            delay={0.15}
           />
         </div>
 
@@ -731,7 +689,7 @@ export function FoundationAnimation() {
           <ToolCard
             tool={TOOLS[2]}
             cardRef={cardRefs.current['Tauri 2'] as React.RefObject<HTMLDivElement>}
-            delay={0.39}
+            delay={0.25}
           />
         </div>
       </div>
