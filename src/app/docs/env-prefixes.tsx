@@ -19,7 +19,6 @@ const TOC_ITEMS: TocItem[] = [
   { id: 'bini-prefix', label: 'BINI_ Prefix' },
   { id: 'vite-prefix', label: 'VITE_ Prefix' },
   { id: 'no-prefix', label: 'No Prefix (Secrets)' },
-  { id: 'custom-prefixes', label: 'Custom Prefixes' },
   { id: 'client-access', label: 'Client-Side Access' },
   { id: 'server-access', label: 'Server-Side Access' },
   { id: 'getenv-vs-requireenv', label: 'getEnv vs requireEnv' },
@@ -30,7 +29,7 @@ const PAGE_URL = 'https://bini.js.org/docs/env-prefixes'
 const EDIT_URL = 'https://github.com/Binidu01/bini-offical/edit/main/src/app/docs/env-prefixes.tsx'
 
 // ────────────────────────────────────────────────────────────────────────────────
-// Code Block Component with horizontal scrollbar
+// Code Block Component
 // ────────────────────────────────────────────────────────────────────────────────
 function CodeBlock({ code, filename }: { code: string; filename?: string }) {
   const [copied, setCopied] = React.useState(false)
@@ -132,7 +131,6 @@ export default function EnvPrefixesPage() {
                     <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                   </div>
                 </motion.div>
-                {/* Copy button on small screens */}
                 <div className="sm:hidden mb-8">
                   <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                 </div>
@@ -145,6 +143,9 @@ export default function EnvPrefixesPage() {
                   </p>
                   <Note>
                     Both <code>BINI_</code> and <code>VITE_</code> prefixes are exposed to the browser by default. Variables without a prefix are never exposed to the client.
+                  </Note>
+                  <Note>
+                    <strong>Fixed prefixes:</strong> The prefix list in <code>bini-env</code> v2 is fixed to <code>['BINI_', 'VITE_']</code>. There is no option to add custom prefixes.
                   </Note>
                 </motion.section>
 
@@ -255,58 +256,8 @@ export default app`}
                   </Note>
                 </motion.section>
 
-                {/* Custom Prefixes */}
-                <motion.section id="custom-prefixes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Custom Prefixes</h2>
-                  <p className="text-slate-300 mb-4">
-                    You can add custom prefixes to expose additional variables to the client:
-                  </p>
-                  <CodeBlock 
-                    code={`// vite.config.ts
-import { defineConfig } from 'vite'
-import { biniEnv } from 'bini-env'
-
-export default defineConfig({
-  plugins: [
-    biniEnv({
-      envPrefix: ['PUBLIC_', 'MY_APP_']
-    })
-  ]
-})`}
-                    filename="vite.config.ts"
-                  />
-                  <CodeBlock 
-                    code={`# .env
-PUBLIC_API_URL=https://api.example.com
-PUBLIC_APP_NAME=My App
-MY_APP_VERSION=1.0.0
-BINI_ANALYTICS_ID=UA-XXXX`}
-                    filename=".env"
-                  />
-                  <CodeBlock 
-                    code={`// All of these are accessible in the browser
-import.meta.env.PUBLIC_API_URL
-import.meta.env.PUBLIC_APP_NAME
-import.meta.env.MY_APP_VERSION
-import.meta.env.BINI_ANALYTICS_ID`}
-                  />
-                  <Table 
-                    headers={['Prefix', 'Exposed to browser']}
-                    rows={[
-                      ['BINI_', 'Yes (default)'],
-                      ['VITE_', 'Yes (default)'],
-                      ['PUBLIC_', 'Yes (custom)'],
-                      ['MY_APP_', 'Yes (custom)'],
-                      ['No prefix', 'No'],
-                    ]}
-                  />
-                  <Note>
-                    Adding custom prefixes is useful when you want to use a different naming convention for your public environment variables.
-                  </Note>
-                </motion.section>
-
                 {/* Client-Side Access */}
-                <motion.section id="client-access" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
+                <motion.section id="client-access" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Client-Side Access</h2>
                   <p className="text-slate-300 mb-4">
                     Client-side variables are accessed via <code className="text-cyan-400">import.meta.env</code> in any component:
@@ -340,7 +291,7 @@ export const metadata = {
                 </motion.section>
 
                 {/* Server-Side Access */}
-                <motion.section id="server-access" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
+                <motion.section id="server-access" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Server-Side Access</h2>
                   <p className="text-slate-300 mb-4">
                     Server-side variables are accessed via <code className="text-cyan-400">getEnv(ctx, key)</code> and <code className="text-cyan-400">requireEnv(ctx, key)</code> in API routes:
@@ -379,7 +330,7 @@ export default app`}
                   <Table 
                     headers={['Access Method', 'Where', 'Variables']}
                     rows={[
-                      ['import.meta.env', 'Client components', 'BINI_, VITE_, custom prefixes'],
+                      ['import.meta.env', 'Client components', 'BINI_, VITE_'],
                       ['getEnv(ctx, key)', 'API routes', 'All variables (including no prefix)'],
                       ['requireEnv(ctx, key)', 'API routes', 'All variables (throws if missing)'],
                     ]}
@@ -387,7 +338,7 @@ export default app`}
                 </motion.section>
 
                 {/* getEnv vs requireEnv */}
-                <motion.section id="getenv-vs-requireenv" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.42 }} className="scroll-mt-24">
+                <motion.section id="getenv-vs-requireenv" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">getEnv vs requireEnv</h2>
                   <p className="text-slate-300 mb-4">
                     Both <code className="text-cyan-400">getEnv</code> and <code className="text-cyan-400">requireEnv</code> read environment variables from the Hono request context, but they behave differently:

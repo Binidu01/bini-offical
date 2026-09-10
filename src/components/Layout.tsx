@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { siGithub, siNpm } from 'simple-icons'
 import { Menu, X, ChevronRight, ExternalLink, Star, Search } from 'lucide-react'
@@ -28,8 +27,7 @@ function SimpleIcon({
 }
 
 // ────────────────────────────────────────────────────────────────────────────────
-// Search suggestions data — mirrors the current docs sidebar structure
-// and the corrected plugin data from /plugins
+// Search suggestions data
 // ────────────────────────────────────────────────────────────────────────────────
 const searchSuggestions = [
   // Docs — Getting Started
@@ -232,12 +230,7 @@ export const Header = () => {
 
   return (
     <>
-      <motion.header
-        initial={{ y: -20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.4, ease: 'easeOut' }}
-        className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-xl border-b border-slate-800"
-      >
+      <header className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-xl border-b border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-14 lg:h-16">
             {/* Logo and main navigation */}
@@ -373,12 +366,7 @@ export const Header = () => {
 
         {/* Mobile menu */}
         {mobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="lg:hidden border-t border-slate-800 bg-black"
-          >
+          <div className="lg:hidden border-t border-slate-800 bg-black">
             <nav className="max-w-7xl mx-auto px-4 py-4 flex flex-col gap-1">
               {/* Mobile search bar */}
               <button
@@ -451,26 +439,17 @@ export const Header = () => {
                 <SimpleIcon icon={siGithub} size={16} />
               </a>
             </nav>
-          </motion.div>
+          </div>
         )}
-      </motion.header>
+      </header>
 
       {/* Search Modal - Black background with cyan selection */}
       {searchOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm overflow-hidden"
-        >
+        <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm overflow-hidden">
           <div className="fixed inset-0 overflow-y-auto overflow-x-hidden">
             <div className="flex min-h-full items-start justify-center p-4 pt-20 text-center">
-              <motion.div
+              <div
                 ref={searchModalRef}
-                initial={{ scale: 0.95, opacity: 0, y: -10 }}
-                animate={{ scale: 1, opacity: 1, y: 0 }}
-                exit={{ scale: 0.95, opacity: 0, y: -10 }}
-                transition={{ duration: 0.15 }}
                 className="w-full max-w-lg transform overflow-hidden rounded-xl bg-black border border-slate-800 shadow-2xl"
               >
                 <div className="relative">
@@ -551,10 +530,10 @@ export const Header = () => {
                   </div>
                   <span className="text-slate-500">Showing {filteredSuggestions.length} results</span>
                 </div>
-              </motion.div>
+              </div>
             </div>
           </div>
-        </motion.div>
+        </div>
       )}
     </>
   )

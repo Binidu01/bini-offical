@@ -73,7 +73,7 @@ const Eyebrow = ({ children }: { children: React.ReactNode }) => (
   </span>
 )
 
-// ─── Section Divider (matches hero's gradient-fade divider style) ──────────
+// ─── Section Divider ────────────────────────────────────────────────────────
 const SectionDivider = () => (
   <div
     aria-hidden
@@ -259,30 +259,20 @@ const Home = () => {
       {/* Header */}
       <Header />
 
-      {/* Hero Section */}
+      {/* Hero Section — STATIC, no Framer Motion */}
       <section className="relative pt-16 lg:pt-20 pb-8 lg:pb-10 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-slate-700 to-transparent" />
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: 'easeOut' }}
-            className="flex justify-center mb-4"
-          >
+          <div className="flex justify-center mb-4">
             <img
               src="/logo.svg"
               alt="Bini.js Logo"
               className="w-12 h-12 lg:w-14 lg:h-14"
             />
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1, ease: 'easeOut' }}
-            className="text-center mb-4"
-          >
+          <div className="text-center mb-4">
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-[1.2]">
               React Framework for
               <br />
@@ -293,17 +283,12 @@ const Home = () => {
             <p className="text-base sm:text-lg text-slate-400 max-w-2xl mx-auto mt-4 leading-relaxed">
               One codebase. Six platforms. Zero boilerplate. Write React, ship everywhere.
             </p>
-          </motion.div>
+          </div>
 
           <div className="grid lg:grid-cols-2 gap-6 lg:gap-8 items-center relative">
             <div className="hidden lg:block absolute left-1/2 top-0 bottom-0 w-px bg-linear-to-b from-transparent via-slate-700 to-transparent" />
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2, ease: 'easeOut' }}
-              className="text-center lg:text-left lg:pr-6"
-            >
+            <div className="text-center lg:text-left lg:pr-6">
               <p className="text-base lg:text-lg text-slate-400 max-w-xl lg:max-w-none mx-auto lg:mx-0 mb-5 leading-relaxed">
                 Build modern, high-performance apps that run natively everywhere without complex tooling, steep learning curves, or endless config files. Focus on your ideas and users, while the framework handles the heavy lifting.
               </p>
@@ -333,12 +318,7 @@ const Home = () => {
                 </a>
               </div>
 
-              <motion.div
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.3 }}
-                className="max-w-lg mx-auto lg:mx-0"
-              >
+              <div className="max-w-lg mx-auto lg:mx-0">
                 <div className="rounded-lg overflow-hidden border border-slate-700 bg-[#0a0a0a] shadow-2xl">
                   <div className="flex items-center justify-between gap-2 px-3 py-2 bg-[#1a1a1a] border-b border-slate-800">
                     <div className="flex items-center gap-1.5 shrink-0">
@@ -379,43 +359,29 @@ const Home = () => {
                   <div className="p-4 overflow-x-auto">
                     <div className="flex items-center gap-2 w-max">
                       <span className="text-cyan-400 text-sm">$</span>
-                      <AnimatePresence mode="wait">
-                        <motion.span
-                          key={activeTab}
-                          initial={{ opacity: 0, x: 4 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          exit={{ opacity: 0, x: -4 }}
-                          transition={{ duration: 0.15 }}
-                          className="text-slate-200 font-mono text-xs sm:text-sm whitespace-nowrap"
-                        >
-                          {tabs.find((t) => t.id === activeTab)?.command}
-                        </motion.span>
-                      </AnimatePresence>
+                      <span className="text-slate-200 font-mono text-xs sm:text-sm whitespace-nowrap">
+                        {tabs.find((t) => t.id === activeTab)?.command}
+                      </span>
                     </div>
                   </div>
                 </div>
-              </motion.div>
-            </motion.div>
+              </div>
+            </div>
 
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.3, ease: 'easeOut' }}
-              className="relative w-full lg:pl-6"
-            >
+            <div className="relative w-full lg:pl-6">
               <div className="w-full flex items-center justify-center">
                 <div className="w-full max-w-full mx-auto">
                   <BiniAnimation />
                 </div>
               </div>
-            </motion.div>
+            </div>
           </div>
 
           <div className="mt-8 lg:mt-10" />
         </div>
       </section>
 
-      {/* Foundation Section */}
+      {/* Foundation Section — Animated */}
       <section
         id="foundation"
         className="relative py-20 sm:py-24 lg:py-28 px-4 sm:px-6 lg:px-8 overflow-x-clip"
@@ -444,7 +410,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Why Bini? Section */}
+      {/* Why Bini? Section — Animated */}
       <section className="relative py-20 sm:py-24 lg:py-28 px-4 sm:px-6 lg:px-8 bg-black overflow-x-clip">
         <SectionDivider />
         <div className="max-w-7xl mx-auto">
@@ -499,7 +465,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* What makes it different? Section */}
+      {/* What makes it different? Section — Animated */}
       <section className="relative py-20 sm:py-24 lg:py-28 px-4 sm:px-6 lg:px-8 bg-black overflow-x-clip">
         <SectionDivider />
         <div className="max-w-7xl mx-auto">
@@ -544,7 +510,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Platform Showcase Section */}
+      {/* Platform Showcase Section — Animated */}
       <section className="relative py-20 sm:py-24 lg:py-28 px-4 sm:px-6 lg:px-8 bg-black overflow-x-clip">
         <SectionDivider />
         <div className="max-w-7xl mx-auto">
@@ -626,7 +592,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Ecosystem Section - Reduced padding */}
+      {/* Ecosystem Section — Animated */}
       <section className="relative py-8 sm:py-10 lg:py-12 px-4 sm:px-6 lg:px-8 bg-black overflow-x-clip">
         <SectionDivider />
         <div className="max-w-7xl mx-auto">
@@ -650,7 +616,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Framework Facts Section */}
+      {/* Framework Facts Section — Animated */}
       <section className="relative py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-black overflow-x-clip">
         <SectionDivider />
         <div className="max-w-7xl mx-auto">
@@ -682,7 +648,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Final CTA Section */}
+      {/* Final CTA Section — Animated */}
       <section className="relative py-20 sm:py-24 px-4 sm:px-6 lg:px-8 overflow-x-clip">
         <SectionDivider />
         <div className="max-w-4xl mx-auto text-center">

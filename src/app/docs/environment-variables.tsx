@@ -21,6 +21,7 @@ const TOC_ITEMS: TocItem[] = [
   { id: 'platform-support', label: 'Platform Support' },
   { id: 'how-it-works', label: 'How It Works' },
   { id: 'api-reference', label: 'API Reference' },
+  { id: 'security', label: 'Security Best Practices' },
   { id: 'performance', label: 'Performance' },
   { id: 'troubleshooting', label: 'Troubleshooting' },
   { id: 'complete-example', label: 'Complete Example' },
@@ -31,7 +32,7 @@ const PAGE_URL = 'https://bini.js.org/docs/environment-variables'
 const EDIT_URL = 'https://github.com/Binidu01/bini-offical/edit/main/src/app/docs/environment-variables.tsx'
 
 // ────────────────────────────────────────────────────────────────────────────────
-// Code Block Component with horizontal scrollbar
+// Code Block Component
 // ────────────────────────────────────────────────────────────────────────────────
 function CodeBlock({ code, filename }: { code: string; filename?: string }) {
   const [copied, setCopied] = React.useState(false)
@@ -127,13 +128,12 @@ export default function EnvironmentVariablesPage() {
                 >
                   <div>
                     <h1 className="text-4xl font-bold text-white mb-2">{PAGE_TITLE}</h1>
-                    <p className="text-slate-400 text-sm">Zero-config environment variable system powered by Hono — works across Node.js, Bun, Deno, Vercel Edge, Netlify Edge, and Cloudflare Workers.</p>
+                    <p className="text-slate-400 text-sm">Hono-native environment variable system for Bini.js — works across Node.js, Bun, Deno, Vercel Edge, Netlify Edge, and Cloudflare Workers.</p>
                   </div>
                   <div className="shrink-0 pt-2 hidden sm:block">
                     <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                   </div>
                 </motion.div>
-                {/* Copy button on small screens */}
                 <div className="sm:hidden mb-8">
                   <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                 </div>
@@ -163,6 +163,9 @@ export default defineConfig({
 })`}
                     filename="vite.config.ts"
                   />
+                  <p className="text-slate-300 mt-2">
+                    <code>biniEnv()</code> takes no options — there's nothing to configure.
+                  </p>
 
                   <h3 className="text-lg font-semibold text-white mt-6 mb-3">2. Read env vars in your Hono handlers</h3>
                   <CodeBlock 
@@ -192,6 +195,9 @@ app.post('/hello', async (c) => {
 export default app`}
                     filename="src/app/api/hello.ts"
                   />
+                  <Note>
+                    That's it — no manual <code>loadEnv</code> loop in <code>vite.config.ts</code> needed. Your secret just needs to exist in <code>.env</code> with no prefix, and <code>requireEnv</code> will find it during dev and preview.
+                  </Note>
                 </motion.section>
 
                 {/* Usage Pattern */}
@@ -209,6 +215,8 @@ export default app`}
     const apiKey = requireEnv(ctx, 'STRIPE_SECRET_KEY')
 
     const model      = getEnv(ctx, 'AI_MODEL')    ?? 'gpt-4o'
+    const region     = getEnv(ctx, 'AWS_REGION')  ?? 'us-east-1'
+    const maxRetries = parseInt(getEnv(ctx, 'MAX_RETRIES') ?? '3')
     const debug      = getEnv(ctx, 'DEBUG_MODE')  === 'true'
 
     // ... rest of handler
@@ -225,7 +233,7 @@ export default app`}
                     The pattern in three steps:
                   </p>
                   <CodeBlock 
-                    code={`const ctx = c as any              // cast once
+                    code={`const ctx = c as any              // cast once, at the top
 requireEnv(ctx, 'KEY')            // throws if missing
 getEnv(ctx, 'KEY') ?? 'default'   // optional with default`}
                   />
@@ -263,7 +271,7 @@ VITE_ANALYTICS_ID=UA-XXXX`}
 
                   <h3 className="text-lg font-semibold text-white mt-6 mb-3">No prefix — Secrets (server only)</h3>
                   <p className="text-slate-300 mb-4">
-                    Variables without a prefix are NOT exposed to the browser. Read them via <code>getEnv(ctx, key)</code> in API routes only.
+                    Variables without a prefix are NOT exposed to the browser. During dev/preview they are mirrored into <code>process.env</code> automatically, and read via <code>getEnv(ctx, key)</code> in API routes.
                   </p>
                   <CodeBlock 
                     code={`# .env
@@ -278,11 +286,11 @@ const dbUrl = requireEnv(ctx, 'DATABASE_URL')`}
 
                   <h3 className="text-lg font-semibold text-white mt-6 mb-3">Prefix Summary</h3>
                   <Table 
-                    headers={['Prefix', 'Exposed to browser', 'Use for']}
+                    headers={['Prefix', 'Exposed to browser', 'Mirrored to process.env', 'Use for']}
                     rows={[
-                      ['BINI_', 'Yes', 'Public client config'],
-                      ['VITE_', 'Yes', 'Public client config'],
-                      ['No prefix', 'No', 'Secrets — server only'],
+                      ['BINI_', 'Yes', 'No', 'Public client config'],
+                      ['VITE_', 'Yes', 'No', 'Public client config'],
+                      ['No prefix', 'No', 'Yes (dev/preview)', 'Secrets — server only'],
                     ]}
                   />
                   <Note>
@@ -294,7 +302,7 @@ const dbUrl = requireEnv(ctx, 'DATABASE_URL')`}
                 <motion.section id="platform-support" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Platform Support</h2>
                   <p className="text-slate-300 mb-4">
-                    <code>getEnv</code> and <code>requireEnv</code> delegate to Hono's <code>env(c)</code> adapter, which reads from the correct source on every supported platform automatically.
+                    <code>getEnv</code> and <code>requireEnv</code> delegate to Hono's <code>env(c)</code> adapter, which reads from the correct source on every supported platform automatically. Your code never changes regardless of where it deploys.
                   </p>
                   <Table 
                     headers={['Platform', 'Runtime', 'How Hono reads it']}
@@ -307,26 +315,43 @@ const dbUrl = requireEnv(ctx, 'DATABASE_URL')`}
                       ['Deno Deploy', 'Deno', 'Deno.env.get()'],
                     ]}
                   />
+                  <Note>
+                    <strong>Cloudflare note:</strong> Secrets set via <code>wrangler secret put</code> are only available inside the fetch handler via <code>c.env</code>. <code>getEnv(ctx, key)</code> reads them correctly as long as you pass <code>c</code>.
+                  </Note>
                 </motion.section>
 
                 {/* How It Works */}
                 <motion.section id="how-it-works" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">How It Works</h2>
                   <p className="text-slate-300 mb-4">
-                    The <code>biniEnv()</code> plugin tells Vite which env prefixes to expose to <code>import.meta.env</code>:
+                    The <code>biniEnv()</code> plugin does three things:
                   </p>
+                  <ul className="text-slate-300 mb-4 list-disc list-inside space-y-1">
+                    <li>Tells Vite to expose <code>BINI_</code> and <code>VITE_</code> prefixed vars to <code>import.meta.env</code></li>
+                    <li>Mirrors non-prefixed <code>.env</code> values into <code>process.env</code> during <code>vite dev</code> / <code>vite preview</code></li>
+                    <li>Prints the <code>ß Bini.js</code> banner with detected <code>.env</code> files when the dev or preview server starts</li>
+                  </ul>
                   <CodeBlock 
-                    code={`config() {
-  return { envPrefix: ['BINI_', 'VITE_', ...yourExtras] }
+                    code={`config(userConfig, { command }) {
+  if (command === 'serve') {
+    const envDir = userConfig.envDir ?? userConfig.root ?? process.cwd()
+    // mirrors non-prefixed, non-empty .env values into process.env
+    // silent on success, warns on failure — no opt-out
+  }
+  return { envPrefix: ['BINI_', 'VITE_'] }
 }`}
                   />
+                  <p className="text-slate-300 mt-4">
+                    The prefix list is fixed — there is no option to add more prefixes. Only <code>BINI_</code> and <code>VITE_</code> are ever exposed to the browser.
+                  </p>
                   <p className="text-slate-300 mt-4">
                     On server start you will see:
                   </p>
                   <CodeBlock 
                     code={`  ß Bini.js (dev)
   ➜  Environments: .env.local, .env
-  ➜  Local:   http://localhost:3000/`}
+  ➜  Local:   http://localhost:3000/
+  ➜  Network: http://192.168.1.7:3000/`}
                   />
                   <p className="text-slate-300 mt-4">
                     Vite handles everything natively: loading <code>.env</code> files, watching, restarting, injecting prefixed vars, and HMR. bini-env does not reimplement any of that.
@@ -334,6 +359,9 @@ const dbUrl = requireEnv(ctx, 'DATABASE_URL')`}
                   <p className="text-slate-300 mt-2">
                     <strong>Zero dotenv:</strong> <code>dotenv</code> is never used at runtime. In production, vars are set in your hosting platform's environment config.
                   </p>
+                  <Note>
+                    <strong>Precedence:</strong> A value already present in <code>process.env</code> (set by your OS, shell, or CI) always wins. <code>.env</code> file values only fill in variables that aren't already set.
+                  </Note>
                 </motion.section>
 
                 {/* API Reference */}
@@ -341,22 +369,40 @@ const dbUrl = requireEnv(ctx, 'DATABASE_URL')`}
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">API Reference</h2>
                   
                   <h3 className="text-lg font-semibold text-white mt-6 mb-3">getEnv(c, key)</h3>
-                  <p className="text-slate-300 mb-2">Returns <code>string | undefined</code>.</p>
+                  <p className="text-slate-300 mb-2">Returns <code>string | undefined</code>. Reads from the Hono request context.</p>
                   <CodeBlock 
                     code={`app.get('/config', async (c) => {
   const ctx = c as any
-  const region = getEnv(ctx, 'AWS_REGION') ?? 'us-east-1'
-  return c.json({ region })
+
+  const region   = getEnv(ctx, 'AWS_REGION') ?? 'us-east-1'
+  const logLevel = getEnv(ctx, 'LOG_LEVEL')  ?? 'info'
+  const debug    = getEnv(ctx, 'DEBUG_MODE') === 'true'
+
+  return c.json({ region, logLevel, debug })
 })`}
                   />
 
                   <h3 className="text-lg font-semibold text-white mt-6 mb-3">requireEnv(c, key)</h3>
-                  <p className="text-slate-300 mb-2">Returns <code>string</code>. Throws if missing.</p>
+                  <p className="text-slate-300 mb-2">Returns <code>string</code>. Throws immediately if the variable is missing or empty.</p>
                   <CodeBlock 
                     code={`app.post('/send-email', async (c) => {
-  const ctx = c as any
-  const smtpHost = requireEnv(ctx, 'SMTP_HOST')
-  // ...
+  try {
+    const ctx = c as any
+
+    const smtpHost = requireEnv(ctx, 'SMTP_HOST')
+    const smtpPass = requireEnv(ctx, 'SMTP_PASS')
+    const smtpPort = parseInt(getEnv(ctx, 'SMTP_PORT') ?? '587')
+
+    // ... send email
+
+    return c.json({ sent: true })
+
+  } catch (error: any) {
+    if (error.message?.includes('[bini-env] Missing required')) {
+      return c.json({ error: error.message }, 500)
+    }
+    return c.json({ error: 'Failed to send email.' }, 500)
+  }
 })`}
                   />
                   <p className="text-slate-300 mt-4">
@@ -364,54 +410,106 @@ const dbUrl = requireEnv(ctx, 'DATABASE_URL')`}
                   </p>
                   <CodeBlock 
                     code={`[bini-env] error  Missing required environment variable: "SMTP_HOST"
-  -> Set it in your platform's env config.`}
+  -> Set it in your platform's env config or hosting dashboard.`}
                   />
 
-                  <h3 className="text-lg font-semibold text-white mt-6 mb-3">biniEnv(options?)</h3>
+                  <h3 className="text-lg font-semibold text-white mt-6 mb-3">biniEnv()</h3>
+                  <p className="text-slate-300 mb-2">Vite plugin. Takes no options.</p>
                   <CodeBlock 
-                    code={`biniEnv()
-biniEnv({ envPrefix: ['MY_PUBLIC_'] })`}
+                    code={`biniEnv()`}
                   />
-                  <Table 
-                    headers={['Option', 'Type', 'Default', 'Description']}
-                    rows={[
-                      ['envPrefix', 'string | string[]', '[]', 'Extra prefixes to expose'],
-                    ]}
+                  <p className="text-slate-300 mt-2">
+                    There is nothing to configure — no prefix list to extend, no flag to disable the <code>process.env</code> mirror. The prefix list is fixed to <code>['BINI_', 'VITE_']</code>.
+                  </p>
+
+                  <h3 className="text-lg font-semibold text-white mt-6 mb-3">biniLogger</h3>
+                  <p className="text-slate-300 mb-2">Vite-style terminal logger. Use it in your own Bini.js plugins or server-side code.</p>
+                  <CodeBlock 
+                    code={`import { biniLogger } from 'bini-env'
+
+biniLogger.info('Server ready')
+biniLogger.warn('Missing optional var')
+biniLogger.error('Something broke', error)`}
+                  />
+
+                  <h3 className="text-lg font-semibold text-white mt-6 mb-3">HonoContext</h3>
+                  <p className="text-slate-300 mb-2">Exported type (<code>Context</code> from Hono). Use it to type helper functions that group env reads.</p>
+                  <CodeBlock 
+                    code={`import type { HonoContext } from 'bini-env'
+
+function readDbConfig(c: HonoContext) {
+  const ctx = c as any
+  return {
+    url:      requireEnv(ctx, 'DATABASE_URL'),
+    poolSize: parseInt(getEnv(ctx, 'DB_POOL_SIZE') ?? '10'),
+    ssl:      getEnv(ctx, 'DB_SSL') !== 'false',
+  }
+}`}
                   />
                 </motion.section>
 
+                {/* Security Best Practices */}
+                <motion.section id="security" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
+                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Security Best Practices</h2>
+                  
+                  <h3 className="text-lg font-semibold text-white mt-6 mb-3">Rule 1: Never Prefix Secrets</h3>
+                  <CodeBlock 
+                    code={`# ❌ BAD - This will be exposed to the browser!
+BINI_DATABASE_URL=postgres://...
+
+# ✅ GOOD - Not exposed, mirrored into process.env for server-side use
+DATABASE_URL=postgres://...`}
+                  />
+
+                  <h3 className="text-lg font-semibold text-white mt-6 mb-3">Rule 2: Use BINI_ or VITE_ for Public Data</h3>
+                  <CodeBlock 
+                    code={`# ✅ Safe - Public data
+BINI_API_URL=https://api.example.com
+VITE_GA_ID=UA-XXXXX`}
+                  />
+
+                  <h3 className="text-lg font-semibold text-white mt-6 mb-3">Rule 3: Don't Leave Secret Placeholders Empty</h3>
+                  <p className="text-slate-300">
+                    An empty value (<code>API_KEY=</code>) is skipped by the <code>process.env</code> mirror, so <code>requireEnv</code> will correctly throw instead of silently succeeding with an empty string.
+                  </p>
+                </motion.section>
+
                 {/* Performance */}
-                <motion.section id="performance" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
+                <motion.section id="performance" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Performance</h2>
                   <Table 
                     headers={['Metric', 'Dev', 'Prod']}
                     rows={[
-                      ['File reads', '0', '0'],
-                      ['Runtime cost', '~0ms', '0'],
+                      ['File reads', '1 (loadEnv, cached by Vite)', '0'],
+                      ['Runtime cost', '~0ms (mirror runs once at server start)', '0'],
                       ['Bundle impact', 'Minimal', 'Tree-shaken'],
                     ]}
                   />
                   <p className="text-slate-300 mt-4">
-                    No dotenv. No disk reads. No caching layer.
+                    No dotenv. No per-request disk reads. <code>getEnv</code> is a direct call to Hono's adapter on every invocation — request-scoped and correct.
                   </p>
                 </motion.section>
 
                 {/* Troubleshooting */}
-                <motion.section id="troubleshooting" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="scroll-mt-24">
+                <motion.section id="troubleshooting" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Troubleshooting</h2>
                   <Table 
                     headers={['Problem', 'Solution']}
                     rows={[
-                      ['Env var undefined in production', 'Set variables in your hosting platform\'s environment dashboard.'],
-                      ['Works in dev, undefined in prod', 'Production requires platform-level configuration.'],
+                      ['Env var undefined in production', 'Set variables in your hosting platform\'s environment dashboard (Vercel, Netlify, Cloudflare, etc.).'],
+                      ['Works in dev, undefined in prod', 'Local dev works because biniEnv() mirrors non-prefixed vars into process.env automatically. Production requires platform-level configuration.'],
+                      ['My .env value isn\'t taking effect in dev', 'Check your shell and CI environment first — the mirror never overrides a variable that\'s already set. Also check the value isn\'t empty (KEY=).'],
+                      ['requireEnv still throws even though my key is in .env', 'If the value is KEY= with nothing after the =, it is treated as unset and skipped by design. Give it a real value.'],
+                      ['bini-env isn\'t reading my .env from the right folder', 'biniEnv() reads from your Vite envDir if set, otherwise root, otherwise the working directory. Double check envDir/root in vite.config.ts.'],
                       ['Cloudflare secret not found', 'Secrets set via wrangler secret put are only available via c.env. Ensure you are passing c to the function.'],
-                      ['TypeScript error: Context not assignable', 'Cast once per handler: const ctx = c as any'],
+                      ['TypeScript error: Context not assignable to HonoContext', 'Cast once per handler: const ctx = c as any'],
+                      ['Types not found', 'Add /// <reference types="vite/client" /> to your tsconfig.json or entry file.'],
                     ]}
                   />
                 </motion.section>
 
                 {/* Complete Example */}
-                <motion.section id="complete-example" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="scroll-mt-24">
+                <motion.section id="complete-example" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Complete Example</h2>
                   <CodeBlock 
                     code={`# .env
@@ -452,7 +550,7 @@ export default app`}
                 </motion.section>
 
                 {/* Previous / Next Navigation */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
                   <Link to="/docs/api-cors" className="group flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
                     <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                     <div>

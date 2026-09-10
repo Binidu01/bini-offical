@@ -20,6 +20,7 @@ const TOC_ITEMS: TocItem[] = [
   { id: 'required-vs-optional', label: 'Required vs Optional' },
   { id: 'complete-example', label: 'Complete Example' },
   { id: 'error-handling', label: 'Error Handling' },
+  { id: 'production-notes', label: 'Production Notes' },
 ]
 
 const PAGE_TITLE = 'Using Environment Variables in API Routes'
@@ -27,7 +28,7 @@ const PAGE_URL = 'https://bini.js.org/docs/env-api'
 const EDIT_URL = 'https://github.com/Binidu01/bini-offical/edit/main/src/app/docs/env-api.tsx'
 
 // ────────────────────────────────────────────────────────────────────────────────
-// Code Block Component with horizontal scrollbar
+// Code Block Component
 // ────────────────────────────────────────────────────────────────────────────────
 function CodeBlock({ code, filename }: { code: string; filename?: string }) {
   const [copied, setCopied] = React.useState(false)
@@ -129,7 +130,6 @@ export default function EnvApiPage() {
                     <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                   </div>
                 </motion.div>
-                {/* Copy button on small screens */}
                 <div className="sm:hidden mb-8">
                   <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
                 </div>
@@ -138,8 +138,11 @@ export default function EnvApiPage() {
                 <motion.section id="overview" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="scroll-mt-24">
                   <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Overview</h2>
                   <p className="text-slate-300 mb-4">
-                    In API routes, environment variables are read using <code className="text-cyan-400">getEnv(ctx, key)</code> and <code className="text-cyan-400">requireEnv(ctx, key)</code>. Both are auto-imported in API routes and read from the Hono request context via <code className="text-cyan-400">hono/adapter</code>.
+                    In API routes, environment variables are read using <code className="text-cyan-400">getEnv(c, key)</code> and <code className="text-cyan-400">requireEnv(c, key)</code>. Both read from the Hono request context via <code className="text-cyan-400">hono/adapter</code> — this is what makes them work on every runtime.
                   </p>
+                  <Note>
+                    <strong>Auto-imported:</strong> <code>getEnv</code> and <code>requireEnv</code> are auto-imported in API routes — you don't need to write <code>import {'{'} getEnv, requireEnv {'}'} from 'bini-env'</code> manually. It works either way, but the auto-import is on by default.
+                  </Note>
                   <Note>
                     <strong>Always pass c explicitly.</strong> Cast it once at the top of the handler as <code>const ctx = c as any</code>, then use <code>ctx</code> throughout. No <code>process.env</code> fallbacks — every read is request-scoped.
                   </Note>
@@ -151,7 +154,6 @@ export default function EnvApiPage() {
                   <CodeBlock 
                     code={`// src/app/api/hello.ts
 import { Hono } from 'hono'
-import { getEnv, requireEnv } from 'bini-env'
 
 const app = new Hono()
 
@@ -230,7 +232,6 @@ export default app`}
                   <CodeBlock 
                     code={`// src/app/api/email.ts
 import { Hono } from 'hono'
-import { getEnv, requireEnv } from 'bini-env'
 import nodemailer from 'nodemailer'
 
 const app = new Hono()
