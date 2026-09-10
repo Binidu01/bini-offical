@@ -721,7 +721,6 @@ export function BiniAnimation() {
 
   async function play() {
     if (isPlayingRef.current) return
-    isPlayingRef.current = true
     resetAll()
     isPlayingRef.current = true
 
@@ -785,6 +784,8 @@ export function BiniAnimation() {
                         setIsRestarting(true)
                         setDeployVisible(false)
                         later(() => {
+                          // ← THE FIX: release the guard so play() can restart
+                          isPlayingRef.current = false
                           play()
                         }, 300)
                       }
