@@ -263,12 +263,12 @@ A Vite plugin that pre-renders every route — static and dynamic alike — to s
 
 ### `bini-env` · [npm](https://www.npmjs.com/package/bini-env)
 
-A Hono-native environment variable system + Vite plugin. Loads `.env` files automatically in priority order and prints which ones are active on every dev/preview start. `getEnv(c, key)` and `requireEnv(c, key)` are auto-imported and read directly from the Hono request context, so they resolve correctly whether you're on Node.js, Bun, Deno, Vercel Edge, Netlify Edge, or Cloudflare Workers.
+A Hono-native environment variable system + Vite plugin, zero-config by design. `biniEnv()` takes no options: it always exposes `BINI_` and `VITE_` prefixed vars to `import.meta.env`, and during `vite dev` / `vite preview` it automatically mirrors every other (non-empty) `.env` value into `process.env` — no manual `loadEnv` loop in `vite.config.ts`, nothing to enable. `getEnv(c, key)` and `requireEnv(c, key)` are auto-imported and read directly from the Hono request context, so they resolve correctly whether you're on Node.js, Bun, Deno, Vercel Edge, Netlify Edge, or Cloudflare Workers.
 
 ```bash
 # .env
 BINI_PUBLIC_API_URL=https://api.example.com   # client-side: import.meta.env.BINI_*
-SMTP_USER=user@smtp.example.com               # server-side: requireEnv(c, key) in API routes
+SMTP_USER=user@smtp.example.com               # server-side: requireEnv(c, key) in API routes — no prefix, auto-mirrored in dev
 ```
 
 ```ts
@@ -299,7 +299,7 @@ app.get('/hello', (c) => {
 | [`bini-server`](https://www.npmjs.com/package/bini-server) | Production Node.js server — static files, API routes, SPA fallback (Node ≥ 20.19) |
 | [`bini-overlay`](https://www.npmjs.com/package/bini-overlay) | Animated dev badge + source-mapped error overlay |
 | [`bini-ssg`](https://www.npmjs.com/package/bini-ssg) | Pre-renders every route — static and dynamic — to static HTML as part of `npm run build` |
-| [`bini-env`](https://www.npmjs.com/package/bini-env) | Hono-native env vars + Vite plugin with startup banner |
+| [`bini-env`](https://www.npmjs.com/package/bini-env) | Zero-config Hono-native env vars — auto-mirrors non-prefixed `.env` values into `process.env` in dev |
 
 ---
 
