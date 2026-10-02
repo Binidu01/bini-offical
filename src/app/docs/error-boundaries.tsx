@@ -1,20 +1,23 @@
-// src/pages/docs/error-boundaries/page.tsx
-import React from 'react'
-import { m } from 'framer-motion'
-import {
-  ArrowLeft,
-  ArrowRight,
-} from 'lucide-react'
-import { Link } from 'react-router-dom'
-import { Header } from '../../components/Layout'
-import { DocLayout } from '../../components/DocSidebar'
-import { CopyPageButton } from '../../components/CopyPageButton'
-import { TableOfContents, type TocItem } from '../../components/TableOfContents'
+// src/app/docs/error-boundaries.tsx
+import { Atom } from 'lucide-react'
+import type { ReactNode } from 'react'
+import { siReact } from 'simple-icons'
 
-// ────────────────────────────────────────────────────────────────────────────────
-// "On this page" entries
-// ────────────────────────────────────────────────────────────────────────────────
+import {
+  C,
+  Callout,
+  CodeBlock,
+  DocPage,
+  P,
+  Section,
+  Table,
+  useDocLang,
+} from '../../components/DocBlocks'
+import { CARD, GridBg, LINE, RouteVisual } from '../../components/DocVisuals'
+import type { TocItem } from '../../components/TableOfContents'
+
 const TOC_ITEMS: TocItem[] = [
+  { id: 'overview', label: 'Overview' },
   { id: 'what-are-error-boundaries', label: 'What are Error Boundaries?' },
   { id: 'creating-error-boundary', label: 'Creating an Error Boundary' },
   { id: 'error-props', label: 'Error Props' },
@@ -22,146 +25,327 @@ const TOC_ITEMS: TocItem[] = [
   { id: 'nearest-wins', label: 'Nearest Wins Resolution' },
   { id: 'error-with-layout', label: 'Error with Layout' },
   { id: 'built-in-fallback', label: 'Built-in Fallback' },
+  { id: 'complete-example', label: 'Complete Example' },
 ]
 
-const PAGE_TITLE = 'Error Boundaries'
-const PAGE_URL = 'https://bini.js.org/docs/error-boundaries'
-const EDIT_URL = 'https://github.com/Binidu01/bini-offical/edit/main/src/app/docs/error-boundaries.tsx'
+/* ------------------------------------------------------------------ */
+/* Page-specific visuals                                               */
+/* ------------------------------------------------------------------ */
 
-// ────────────────────────────────────────────────────────────────────────────────
-// Code Block Component with horizontal scrollbar
-// ────────────────────────────────────────────────────────────────────────────────
-function CodeBlock({ code, filename }: { code: string; filename?: string }) {
-  const [copied, setCopied] = React.useState(false)
-  const handleCopy = () => { 
-    const cleanCode = code.replace(/\$ /g, '')
-    navigator.clipboard.writeText(cleanCode)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000) 
-  }
-
+function AppShell({ main }: { main: ReactNode }) {
   return (
-    <div className="relative group mb-6">
-      {filename && (
-        <div className="flex items-center justify-between px-4 py-2 bg-slate-900 border border-slate-800 border-b-0 rounded-t-lg">
-          <span className="text-sm text-slate-300 font-mono">{filename}</span>
+    <div className="w-65 overflow-hidden rounded-xl border border-neutral-300 bg-white shadow-sm dark:border-neutral-700 dark:bg-[#1a1a1a]">
+      <div className="flex items-center gap-2 border-b border-neutral-200 px-3 py-2.5 dark:border-neutral-700">
+        <div className="h-6 w-6 shrink-0 rounded-full bg-neutral-300 dark:bg-neutral-600" />
+        <div className="h-2.5 flex-1 rounded bg-neutral-300 dark:bg-neutral-600" />
+      </div>
+      <div className="flex min-h-40">
+        <div className="flex w-14 shrink-0 flex-col gap-2 border-r border-neutral-200 p-2.5 dark:border-neutral-700">
+          <div className="h-2 rounded bg-neutral-300 dark:bg-neutral-600" />
+          <div className="h-2 w-3/4 rounded bg-neutral-300 dark:bg-neutral-600" />
+          <div className="h-2 w-2/3 rounded bg-neutral-300 dark:bg-neutral-600" />
+          <div className="h-2 w-1/2 rounded bg-neutral-300 dark:bg-neutral-600" />
         </div>
-      )}
-      <button onClick={handleCopy} className="absolute top-2 right-2 p-1.5 rounded-md bg-slate-800 hover:bg-slate-700 transition-colors z-10 opacity-0 group-hover:opacity-100" style={{ top: filename ? '3rem' : '0.5rem' }}>
-        {copied ? (
-          <svg className="w-3.5 h-3.5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
-        ) : (
-          <svg className="w-3.5 h-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-          </svg>
-        )}
-      </button>
-      <div className={`bg-[#0a0a0a] border border-slate-700 ${filename ? 'rounded-t-none' : 'rounded-lg'} overflow-x-auto scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-transparent hover:scrollbar-thumb-slate-500`}>
-        <pre className="p-4 min-w-max">
-          <code className="text-sm font-mono text-slate-200 whitespace-pre">{code}</code>
-        </pre>
+        <div className="min-w-0 flex-1 p-2.5">{main}</div>
       </div>
     </div>
   )
 }
 
-// ────────────────────────────────────────────────────────────────────────────────
-// Table Component
-// ────────────────────────────────────────────────────────────────────────────────
-function Table({ headers, rows }: { headers: string[]; rows: string[][] }) {
+const tag = (s: string) => <span className="text-sky-700 dark:text-sky-300">{s}</span>
+const prop = (s: string) => <span className="text-violet-700 dark:text-violet-300">{s}</span>
+const dim = (s: string) => <span className="text-neutral-400 dark:text-neutral-500">{s}</span>
+
+function VisualHowItWorks({ ext }: { ext: string }) {
   return (
-    <div className="overflow-x-auto rounded-lg border border-slate-700 my-6">
-      <table className="w-full text-sm">
-        <thead className="bg-slate-900 border-b border-slate-800">
-          <tr>{headers.map((h, i) => <th key={i} className="text-left py-3 px-4 font-medium text-white">{h}</th>)}</tr>
-        </thead>
-        <tbody className="divide-y divide-slate-800">
-          {rows.map((row, i) => <tr key={i}>{row.map((cell, j) => <td key={j} className="py-3 px-4 text-slate-300 text-xs">{cell}</td>)}</tr>)}
-        </tbody>
-      </table>
-    </div>
+    <GridBg>
+      <div className="flex flex-col items-center gap-6 lg:flex-row lg:items-center lg:justify-center">
+        <div className="flex flex-col gap-3">
+          {/* error file panel */}
+          <div className={`w-80 max-w-full ${CARD} shadow-sm`}>
+            <div className={`flex items-center gap-1.5 border-b px-3 py-1.5 ${LINE}`}>
+              <svg
+                role="img"
+                viewBox="0 0 24 24"
+                width={14}
+                height={14}
+                fill="currentColor"
+                className="shrink-0 text-[#61DAFB]"
+              >
+                <path d={siReact.path} />
+              </svg>
+              <span className="font-mono text-[11px] text-neutral-500">error.{ext}</span>
+            </div>
+            <pre className="overflow-x-auto p-3 font-mono text-[11px] leading-relaxed text-neutral-700 dark:text-neutral-300">
+              <code>
+                <span className="text-purple-600 dark:text-[#C586C0]">export default function </span>
+                <span className="text-amber-700 dark:text-[#DCDCAA]">Error</span>
+                <span className="text-neutral-700 dark:text-neutral-300">{'({ '}</span>
+                <span className="text-sky-600 dark:text-[#9CDCFE]">error</span>
+                <span className="text-neutral-700 dark:text-neutral-300">, </span>
+                <span className="text-orange-600 dark:text-[#CE9178]">reset</span>
+                <span className="text-neutral-700 dark:text-neutral-300">{'}) {'}</span>
+                {'\n'}
+                <span className="text-purple-600 dark:text-[#C586C0]">  return </span>
+                <span className="text-neutral-700 dark:text-neutral-300">(</span>
+                {'\n'}
+                <span className="text-neutral-700 dark:text-neutral-300">{'    <>'}</span>
+                {'\n'}
+                <span className="text-neutral-500 dark:text-neutral-400">
+                  {'      An error occurred: '}
+                </span>
+                <span className="text-sky-600 dark:text-[#9CDCFE]">{'{error.message}'}</span>
+                {'\n'}
+                <span className="text-teal-600 dark:text-[#4EC9B0]">{'      <button '}</span>
+                <span className="text-sky-600 dark:text-[#9CDCFE]">onClick</span>
+                <span className="text-neutral-700 dark:text-neutral-300">=</span>
+                <span className="text-orange-600 dark:text-[#CE9178]">{'{() => reset()}'}</span>
+                <span className="text-teal-600 dark:text-[#4EC9B0]">{'>'}</span>
+                <span className="text-emerald-600 dark:text-[#6A9955]">Retry</span>
+                <span className="text-teal-600 dark:text-[#4EC9B0]">{'</button>'}</span>
+                {'\n'}
+                <span className="text-neutral-700 dark:text-neutral-300">{'    </>'}</span>
+                {'\n'}
+                <span className="text-neutral-700 dark:text-neutral-300">  );</span>
+                {'\n'}
+                <span className="text-neutral-700 dark:text-neutral-300">{'}'}</span>
+              </code>
+            </pre>
+          </div>
+
+          {/* Component hierarchy - DocVisuals style */}
+          <div className={`w-80 max-w-full ${CARD}`}>
+            <div
+              className={`flex items-center gap-2 border-b px-3 py-2 font-sans text-[11px] text-neutral-600 dark:text-neutral-400 ${LINE}`}
+            >
+              <Atom className="h-3.5 w-3.5 text-sky-500" strokeWidth={1.5} /> Component hierarchy
+            </div>
+            <pre className="overflow-x-auto p-3 font-mono text-[11px] leading-5 text-neutral-700 dark:text-neutral-300">
+              <code>
+                {dim('<')}
+                {tag('Layout')}
+                {dim('>')}
+                {'\n'}
+                {'  '}
+                {dim('<')}
+                {tag('ErrorBoundary')} {prop('fallback')}={'{'}
+                {dim('<')}
+                {tag('Error')} {dim('/>')}
+                {'}'}
+                {dim('>')}
+                {'\n'}
+                {'    '}
+                {dim('<')}
+                {tag('Page')} {dim('/>')}
+                {'\n'}
+                {'  '}
+                {dim('</')}
+                {tag('ErrorBoundary')}
+                {dim('>')}
+                {'\n'}
+                {dim('</')}
+                {tag('Layout')}
+                {dim('>')}
+              </code>
+            </pre>
+          </div>
+        </div>
+
+        {/* Forward on lg+, down when stacked */}
+        <svg
+          width="40"
+          height="16"
+          viewBox="0 0 40 16"
+          className="hidden shrink-0 text-blue-500 lg:block"
+          fill="none"
+          stroke="currentColor"
+          aria-hidden
+        >
+          <path d="M0 8h36M32 4l4 4-4 4" strokeWidth="1.5" />
+        </svg>
+        <svg
+          width="16"
+          height="40"
+          viewBox="0 0 16 40"
+          className="block shrink-0 text-blue-500 lg:hidden"
+          fill="none"
+          stroke="currentColor"
+          aria-hidden
+        >
+          <path d="M8 0v36M4 32l4 4 4-4" strokeWidth="1.5" />
+        </svg>
+
+        <AppShell
+          main={
+            <div className="flex h-full min-h-30 items-center justify-center rounded-lg border-2 border-red-500 bg-red-500/10">
+              <span className="text-sm font-medium text-red-600 dark:text-red-300">Error...</span>
+            </div>
+          }
+        />
+      </div>
+    </GridBg>
   )
 }
 
-// ────────────────────────────────────────────────────────────────────────────────
-// Error Boundaries Page
-// ────────────────────────────────────────────────────────────────────────────────
-export default function ErrorBoundariesPage() {
+function VisualCreating({ ext }: { ext: string }) {
   return (
-    <div className="min-h-screen bg-black font-sans antialiased overflow-x-hidden">
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute inset-0 bg-black" />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-300 h-200 bg-linear-to-b from-cyan-500/5 via-sky-500/3 to-transparent rounded-full blur-3xl" />
-      </div>
+    <RouteVisual
+      fileWidth={260}
+      rows={[
+        { n: 'app' },
+        { n: `layout.${ext}`, d: 1 },
+        { n: `page.${ext}`, d: 1, url: '/' },
+        { n: 'dashboard', d: 1 },
+        { n: `layout.${ext}`, d: 2 },
+        { n: `page.${ext}`, d: 2, url: '/dashboard' },
+        { n: `error.${ext}`, d: 2, dot: true },
+      ]}
+    />
+  )
+}
 
-      <Header />
-
-      <div className="relative pt-16 lg:pt-20">
-        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 overflow-x-hidden">
-          
-          <DocLayout>
-            <div className="flex gap-10 xl:gap-14">
-              {/* Main content column */}
-              <div className="max-w-4xl min-w-0 flex-1">
-
-                {/* Title + Copy page button */}
-                <m.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex items-start justify-between gap-4 mb-4"
-                >
-                  <div>
-                    <h1 className="text-4xl font-bold text-white mb-2">{PAGE_TITLE}</h1>
-                    <p className="text-slate-400 text-sm">Learn how to handle errors gracefully with error boundaries in Bini.js.</p>
-                  </div>
-                  <div className="shrink-0 pt-2 hidden sm:block">
-                    <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
-                  </div>
-                </m.div>
-                {/* Copy button on small screens */}
-                <div className="sm:hidden mb-8">
-                  <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
-                </div>
-
-                {/* What are Error Boundaries? */}
-                <m.section id="what-are-error-boundaries" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">What are Error Boundaries?</h2>
-                  <p className="text-slate-300 mb-4">
-                    Error boundaries are React components that catch JavaScript errors in their child component tree, log those errors, and display a fallback UI instead of the component tree that crashed. In Bini.js, you can create error boundaries using the <code className="text-cyan-400">error.tsx</code> file.
-                  </p>
-                  <p className="text-slate-300 mb-4">
-                    Error boundaries catch errors during rendering, in lifecycle methods, and in constructors of the whole tree below them.
-                  </p>
-                </m.section>
-
-                {/* Creating an Error Boundary */}
-                <m.section id="creating-error-boundary" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Creating an Error Boundary</h2>
-                  <p className="text-slate-300 mb-4">
-                    Create an <code className="text-cyan-400">error.tsx</code> file in any folder to define an error boundary for that route and its children.
-                  </p>
-                  <CodeBlock 
-                    code={`src/app/
-├── layout.tsx
-├── page.tsx
-└── dashboard/
-    ├── layout.tsx
-    ├── page.tsx
-    └── error.tsx           ← Error boundary for /dashboard/*`}
-                  />
-                  <CodeBlock 
-                    code={`// src/app/dashboard/error.tsx
-export default function DashboardError({ error, reset }: { error: Error; reset: () => void }) {
+function VisualNested({ ext }: { ext: string }) {
   return (
-    <div className="p-6 max-w-2xl mx-auto">
-      <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-6">
-        <h2 className="text-xl font-bold text-white mb-2">Something went wrong</h2>
-        <p className="text-red-400 mb-4">{error.message}</p>
-        <button 
+    <RouteVisual
+      fileWidth={280}
+      rows={[
+        { n: 'app' },
+        { n: `error.${ext}`, d: 1, dot: true },
+        { n: `layout.${ext}`, d: 1 },
+        { n: `page.${ext}`, d: 1, url: '/' },
+        { n: 'blog', d: 1 },
+        { n: `error.${ext}`, d: 2, dot: true },
+        { n: `page.${ext}`, d: 2, url: '/blog' },
+        { n: '[slug]', d: 2 },
+        { n: `page.${ext}`, d: 3, url: '/blog/:slug' },
+        { n: 'dashboard', d: 1 },
+        { n: `error.${ext}`, d: 2, dot: true },
+        { n: `page.${ext}`, d: 2, url: '/dashboard' },
+        { n: 'settings', d: 2 },
+        { n: `error.${ext}`, d: 3, dot: true },
+        { n: `page.${ext}`, d: 3, url: '/dashboard/settings' },
+      ]}
+    />
+  )
+}
+
+function VisualWithLayout({ ext }: { ext: string }) {
+  return (
+    <RouteVisual
+      fileWidth={280}
+      rows={[
+        { n: 'app' },
+        { n: `layout.${ext}`, d: 1 },
+        { n: `error.${ext}`, d: 1, dot: true },
+        { n: 'blog', d: 1 },
+        { n: `layout.${ext}`, d: 2 },
+        { n: `error.${ext}`, d: 2, dot: true },
+        { n: `page.${ext}`, d: 2, url: '/blog' },
+      ]}
+    />
+  )
+}
+
+function VisualComplete({ ext }: { ext: string }) {
+  return (
+    <RouteVisual
+      fileWidth={280}
+      rows={[
+        { n: 'app' },
+        { n: `layout.${ext}`, d: 1 },
+        { n: `error.${ext}`, d: 1, dot: true },
+        { n: `page.${ext}`, d: 1, url: '/' },
+        { n: 'blog', d: 1 },
+        { n: `layout.${ext}`, d: 2 },
+        { n: `error.${ext}`, d: 2, dot: true },
+        { n: `page.${ext}`, d: 2, url: '/blog' },
+        { n: 'dashboard', d: 1 },
+        { n: `layout.${ext}`, d: 2 },
+        { n: `error.${ext}`, d: 2, dot: true },
+        { n: `page.${ext}`, d: 2, url: '/dashboard' },
+      ]}
+    />
+  )
+}
+
+/* ---------- content ---------- */
+
+function Content() {
+  const lang = useDocLang()
+  const e = lang === 'js' ? 'jsx' : 'tsx'
+
+  return (
+    <>
+      <Section id="overview" title="Overview">
+        <P>
+          Every layout and page is wrapped in an error boundary that resets on navigation. Add{' '}
+          <C>{`error.${e}`}</C> in a folder for custom fallback UI. It is a special file - it does
+          not create a URL. Nearest-wins applies.
+        </P>
+        <VisualHowItWorks ext={e} />
+        <Table
+          headers={['File', 'Creates URL?', 'Purpose']}
+          rows={[
+            [
+              `app/error.${e}`,
+              'No - special file',
+              'Fallback for routes without a closer error file',
+            ],
+            [`app/dashboard/error.${e}`, 'No - special file', 'Dashboard segment only'],
+            [
+              `app/blog/[slug]/error.${e}`,
+              'No - special file',
+              'Blog post segment only',
+            ],
+          ]}
+        />
+        <Callout>
+          Layouts stay mounted. The error UI replaces the page (or segment) inside the boundary -
+          not the whole app shell.
+        </Callout>
+      </Section>
+
+      <Section id="what-are-error-boundaries" title="What are Error Boundaries?">
+        <P>
+          Error boundaries catch JavaScript errors in the child tree, log them, and show fallback
+          UI instead of a crashed tree. In Bini.js you use <C>{`error.${e}`}</C>.
+        </P>
+        <P>
+          They catch errors during rendering and in the tree below them. Boundaries also reset
+          automatically when the pathname changes.
+        </P>
+        <Callout>
+          <C>{`error.${e}`}</C> does not create a URL - same idea as <C>{`loading.${e}`}</C>.
+          Closest file to the error wins.
+        </Callout>
+      </Section>
+
+      <Section id="creating-error-boundary" title="Creating an Error Boundary">
+        <P>
+          Create <C>{`error.${e}`}</C> in any folder for that route and its children.
+        </P>
+        <VisualCreating ext={e} />
+        <CodeBlock
+          filename={`app/dashboard/error.${e}`}
+          tsCode={`export default function DashboardError({
+  error,
+  reset,
+}: {
+  error: Error
+  reset: () => void
+}) {
+  return (
+    <div className="mx-auto max-w-2xl p-6">
+      <div className="rounded-lg border border-neutral-200 p-6 dark:border-neutral-800">
+        <h2 className="mb-2 text-xl font-bold text-black dark:text-white">
+          Something went wrong
+        </h2>
+        <p className="mb-4 text-neutral-600 dark:text-neutral-400">
+          {error.message}
+        </p>
+        <button
           onClick={reset}
-          className="px-4 py-2 bg-cyan-500 text-black font-medium rounded-lg hover:bg-cyan-400 transition-colors"
+          className="rounded-lg bg-black px-4 py-2 font-medium text-white dark:bg-white dark:text-black"
         >
           Try again
         </button>
@@ -169,187 +353,189 @@ export default function DashboardError({ error, reset }: { error: Error; reset: 
     </div>
   )
 }`}
-                    filename="app/dashboard/error.tsx"
-                  />
-                </m.section>
+          jsCode={`export default function DashboardError({ error, reset }) {
+  return (
+    <div className="mx-auto max-w-2xl p-6">
+      <div className="rounded-lg border border-neutral-200 p-6 dark:border-neutral-800">
+        <h2 className="mb-2 text-xl font-bold text-black dark:text-white">
+          Something went wrong
+        </h2>
+        <p className="mb-4 text-neutral-600 dark:text-neutral-400">
+          {error.message}
+        </p>
+        <button
+          onClick={reset}
+          className="rounded-lg bg-black px-4 py-2 font-medium text-white dark:bg-white dark:text-black"
+        >
+          Try again
+        </button>
+      </div>
+    </div>
+  )
+}`}
+        />
+      </Section>
 
-                {/* Error Props */}
-                <m.section id="error-props" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Error Props</h2>
-                  <p className="text-slate-300 mb-4">
-                    The <code className="text-cyan-400">error.tsx</code> component receives two props:
-                  </p>
-                  <Table 
-                    headers={['Prop', 'Type', 'Description']}
-                    rows={[
-                      ['error', 'Error', 'The thrown Error object with message and stack trace'],
-                      ['reset', '() => void', 'A function that clears the error state and re-renders children'],
-                    ]}
-                  />
-                  <CodeBlock 
-                    code={`// src/app/dashboard/error.tsx
-export default function DashboardError({ 
-  error, 
-  reset 
-}: { 
-  error: Error; 
-  reset: () => void 
+      <Section id="error-props" title="Error Props">
+        <P>
+          <C>{`error.${e}`}</C> receives two props.
+        </P>
+        <Table
+          headers={['Prop', 'Type', 'Description']}
+          rows={[
+            ['error', 'Error', 'Thrown Error object with message and stack'],
+            ['reset', '() => void', 'Clears error state and re-renders children'],
+          ]}
+        />
+        <CodeBlock
+          filename={`app/dashboard/error.${e}`}
+          tsCode={`export default function DashboardError({
+  error,
+  reset,
+}: {
+  error: Error
+  reset: () => void
 }) {
-  // Log the error to your error reporting service
   console.error('Dashboard error:', error)
-  
+
   return (
     <div>
       <h2>Something went wrong!</h2>
-      <details className="mt-4 p-4 bg-slate-800 rounded">
-        <summary className="cursor-pointer text-slate-300">Error details</summary>
-        <pre className="mt-2 text-xs text-red-400 whitespace-pre-wrap">
-          {error.stack}
-        </pre>
+      <details className="mt-4 rounded border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-800 dark:bg-neutral-900">
+        <summary className="cursor-pointer">Error details</summary>
+        <pre className="mt-2 whitespace-pre-wrap text-xs">{error.stack}</pre>
       </details>
-      <button 
+      <button
         onClick={reset}
-        className="mt-4 px-4 py-2 bg-cyan-500 text-black rounded"
+        className="mt-4 rounded bg-black px-4 py-2 text-white dark:bg-white dark:text-black"
       >
         Try again
       </button>
     </div>
   )
 }`}
-                    filename="app/dashboard/error.tsx"
-                  />
-                </m.section>
+          jsCode={`export default function DashboardError({ error, reset }) {
+  console.error('Dashboard error:', error)
 
-                {/* Nested Error Boundaries */}
-                <m.section id="nested-error-boundaries" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Nested Error Boundaries</h2>
-                  <p className="text-slate-300 mb-4">
-                    You can create nested error boundaries by placing <code className="text-cyan-400">error.tsx</code> in subdirectories. Each error boundary only catches errors in its subtree.
-                  </p>
-                  <CodeBlock 
-                    code={`src/app/
-├── error.tsx                 ← Global error boundary (fallback)
-├── layout.tsx
-├── page.tsx
-├── blog/
-│   ├── error.tsx             ← Blog error boundary
-│   ├── page.tsx
-│   └── [slug]/
-│       └── page.tsx
-└── dashboard/
-    ├── error.tsx             ← Dashboard error boundary
-    ├── page.tsx
-    └── settings/
-        ├── error.tsx         ← Settings error boundary
-        └── page.tsx`}
-                  />
-                  <Table 
-                    headers={['Route', 'Error Boundary Used']}
-                    rows={[
-                      ['/blog/hello-world', 'app/blog/error.tsx'],
-                      ['/dashboard', 'app/dashboard/error.tsx'],
-                      ['/dashboard/settings', 'app/dashboard/settings/error.tsx'],
-                      ['/about', 'app/error.tsx (global)'],
-                    ]}
-                  />
-                </m.section>
-
-                {/* Nearest Wins Resolution */}
-                <m.section id="nearest-wins" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Nearest Wins Resolution</h2>
-                  <p className="text-slate-300 mb-4">
-                    Error boundaries use <strong className="text-white">"nearest wins"</strong> resolution. The closest <code className="text-cyan-400">error.tsx</code> to the route where the error occurred is used.
-                  </p>
-                  <CodeBlock 
-                    code={`src/app/
-├── error.tsx                 ← Fallback for any error not caught below
-├── layout.tsx
-├── page.tsx
-├── blog/
-│   ├── error.tsx             ← Catches errors in /blog/*
-│   ├── page.tsx
-│   └── [slug]/
-│       ├── error.tsx         ← Catches errors in /blog/:slug
-│       └── page.tsx
-└── dashboard/
-    ├── error.tsx             ← Catches errors in /dashboard/*
-    └── page.tsx`}
-                  />
-                  <p className="text-slate-300 mt-4">
-                    When an error occurs:
-                  </p>
-                  <ol className="list-decimal list-inside space-y-2 text-slate-300 mb-4">
-                    <li>Check the route's own folder for <code className="text-cyan-400">error.tsx</code></li>
-                    <li>If not found, check each parent folder (going up)</li>
-                    <li>If still not found, use the built-in fallback</li>
-                  </ol>
-                </m.section>
-
-                {/* Error with Layout */}
-                <m.section id="error-with-layout" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Error with Layout</h2>
-                  <p className="text-slate-300 mb-4">
-                    Error boundaries are rendered inside the layout hierarchy. Layouts remain visible when an error occurs in a child route.
-                  </p>
-                  <CodeBlock 
-                    code={`src/app/
-├── layout.tsx                 ← Root layout (always visible)
-├── error.tsx                  ← Global error (shown inside root layout)
-└── blog/
-    ├── layout.tsx             ← Blog layout (always visible)
-    ├── error.tsx              ← Blog error (shown inside blog layout)
-    └── page.tsx`}
-                  />
-                  <p className="text-slate-300 mt-4">
-                    This allows you to keep navigation, headers, and sidebars visible even when an error occurs in the main content area.
-                  </p>
-                </m.section>
-
-                {/* Built-in Fallback */}
-                <m.section id="built-in-fallback" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Built-in Fallback</h2>
-                  <p className="text-slate-300 mb-4">
-                    If no <code className="text-cyan-400">error.tsx</code> exists in the hierarchy, Bini.js uses a built-in fallback:
-                  </p>
-                  <ul className="space-y-2 text-slate-300 mb-6 list-disc list-inside">
-                    <li><strong className="text-white">Development:</strong> Renders <code className="text-cyan-400">null</code> so <code className="text-cyan-400">bini-overlay</code> takes over with an animated error badge and full error panel</li>
-                    <li><strong className="text-white">Production:</strong> Shows a generic "Something went wrong" UI with a "Try again" button</li>
-                    <li><strong className="text-white">Error logging:</strong> Errors are dispatched as a <code className="text-cyan-400">__bini_error__</code> CustomEvent on window for external dev overlays</li>
-                  </ul>
-                  <p className="text-slate-300">
-                    Creating custom error boundaries is recommended for production applications to provide a better user experience.
-                  </p>
-                </m.section>
-
-                {/* Previous / Next Navigation */}
-                <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
-                  <Link to="/docs/load" className="group flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
-                    <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                    <div>
-                      <div className="text-xs text-slate-500">Previous</div>
-                      <div className="text-sm font-medium">Loading UI</div>
-                    </div>
-                  </Link>
-                  <Link to="/docs/notfound" className="group flex items-center gap-2 text-right text-slate-400 hover:text-white transition-colors">
-                    <div>
-                      <div className="text-xs text-slate-500">Next</div>
-                      <div className="text-sm font-medium">Not Found (404)</div>
-                    </div>
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                </m.div>
-
-              </div>
-
-              {/* Right-hand "On this page" sidebar */}
-              <aside className="hidden xl:block w-56 shrink-0">
-                <TableOfContents items={TOC_ITEMS} editUrl={EDIT_URL} />
-              </aside>
-            </div>
-          </DocLayout>
-          
-        </div>
-      </div>
+  return (
+    <div>
+      <h2>Something went wrong!</h2>
+      <details className="mt-4 rounded border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-800 dark:bg-neutral-900">
+        <summary className="cursor-pointer">Error details</summary>
+        <pre className="mt-2 whitespace-pre-wrap text-xs">{error.stack}</pre>
+      </details>
+      <button
+        onClick={reset}
+        className="mt-4 rounded bg-black px-4 py-2 text-white dark:bg-white dark:text-black"
+      >
+        Try again
+      </button>
     </div>
+  )
+}`}
+        />
+      </Section>
+
+      <Section id="nested-error-boundaries" title="Nested Error Boundaries">
+        <P>
+          Place <C>{`error.${e}`}</C> in subdirectories. Each only catches errors in its subtree.
+        </P>
+        <VisualNested ext={e} />
+        <Table
+          headers={['Route', 'Error Boundary Used']}
+          rows={[
+            ['/blog/hello-world', `app/blog/error.${e}`],
+            ['/dashboard', `app/dashboard/error.${e}`],
+            ['/dashboard/settings', `app/dashboard/settings/error.${e}`],
+            ['/about', `app/error.${e} (global fallback)`],
+          ]}
+        />
+      </Section>
+
+      <Section id="nearest-wins" title="Nearest Wins Resolution">
+        <P>
+          The closest <C>{`error.${e}`}</C> to the route where the error occurred is used.
+        </P>
+        <div className="mb-6 rounded-lg border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-800 dark:bg-neutral-950">
+          <ol className="list-decimal space-y-2 pl-5 text-[15px] text-neutral-600 dark:text-neutral-400">
+            <li>
+              Check the route&apos;s own folder for <C>{`error.${e}`}</C>
+            </li>
+            <li>If not found, walk up parent folders</li>
+            <li>If still not found, use the built-in fallback</li>
+          </ol>
+        </div>
+      </Section>
+
+      <Section id="error-with-layout" title="Error with Layout">
+        <P>
+          Error UI is shown inside the layout hierarchy. Headers, sidebars, and nav stay visible
+          when a child route errors.
+        </P>
+        <VisualWithLayout ext={e} />
+        <Callout>
+          Error UI replaces only the page (or segment) - not the surrounding layout.
+        </Callout>
+      </Section>
+
+      <Section id="built-in-fallback" title="Built-in Fallback">
+        <P>
+          If no <C>{`error.${e}`}</C> exists in scope, Bini.js uses a built-in fallback.
+        </P>
+        <div className="mb-6 rounded-lg border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-800 dark:bg-neutral-950">
+          <ul className="list-disc space-y-2 pl-5 text-[15px] text-neutral-600 dark:text-neutral-400">
+            <li>
+              <span className="font-semibold text-black dark:text-white">Development:</span>{' '}
+              Renders nothing so Vite / <C>bini-overlay</C> can show the error
+            </li>
+            <li>
+              <span className="font-semibold text-black dark:text-white">Production:</span> Generic
+              &quot;Something went wrong&quot; UI with a retry button
+            </li>
+            <li>
+              <span className="font-semibold text-black dark:text-white">Logging:</span> Runtime
+              errors dispatch a <C>__bini_error__</C> CustomEvent on <C>window</C> for external
+              overlays
+            </li>
+          </ul>
+        </div>
+        <Callout>
+          Custom error UIs are recommended for production. Boundaries also reset when the pathname
+          changes.
+        </Callout>
+      </Section>
+
+      <Section id="complete-example" title="Complete Example">
+        <P>Special files do not create URLs. Pages do.</P>
+        <VisualComplete ext={e} />
+        <Table
+          headers={['File', 'Creates URL?', 'Role']}
+          rows={[
+            [`error.${e}`, 'No', 'Segment error boundary'],
+            [`layout.${e}`, 'No', 'Wraps segment + children'],
+            [`page.${e}`, 'Yes', 'Route content'],
+            [`loading.${e}`, 'No', 'Suspense fallback'],
+          ]}
+        />
+      </Section>
+    </>
+  )
+}
+
+/* ---------- page ---------- */
+
+export default function ErrorBoundariesPage() {
+  return (
+    <DocPage
+      title="Error Boundaries"
+      description="Handle errors with error.tsx - catches errors in the child tree and shows fallback UI. Layouts stay visible."
+      url="https://bini.js.org/docs/error-boundaries"
+      editUrl="https://github.com/Binidu01/bini-official/edit/main/src/app/docs/error-boundaries.tsx"
+      toc={TOC_ITEMS}
+      prev={{ to: '/docs/load', title: 'Loading UI' }}
+      next={{ to: '/docs/templates', title: 'Templates' }}
+    >
+      <Content />
+    </DocPage>
   )
 }

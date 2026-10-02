@@ -1,19 +1,18 @@
-// src/pages/docs/css-modules/page.tsx
-import React from 'react'
-import { m } from 'framer-motion'
+// src/app/docs/css-modules.tsx
 import {
-  ArrowLeft,
-  ArrowRight,
-} from 'lucide-react'
-import { Link } from 'react-router-dom'
-import { Header } from '../../components/Layout'
-import { DocLayout } from '../../components/DocSidebar'
-import { CopyPageButton } from '../../components/CopyPageButton'
-import { TableOfContents, type TocItem } from '../../components/TableOfContents'
+  C,
+  Callout,
+  CodeBlock,
+  DocPage,
+  MultiTerminal,
+  P,
+  PromptOutput,
+  Section,
+  useDocLang,
+} from '../../components/DocBlocks'
+import { Arrow, CARD, FolderVisual, GridBg } from '../../components/DocVisuals'
+import type { TocItem } from '../../components/TableOfContents'
 
-// ────────────────────────────────────────────────────────────────────────────────
-// "On this page" entries
-// ────────────────────────────────────────────────────────────────────────────────
 const TOC_ITEMS: TocItem[] = [
   { id: 'basic-usage', label: 'Basic Usage' },
   { id: 'combining-classes', label: 'Combining Classes' },
@@ -26,136 +25,139 @@ const TOC_ITEMS: TocItem[] = [
   { id: 'complete-example', label: 'Complete Example' },
 ]
 
-const PAGE_TITLE = 'CSS Modules'
-const PAGE_URL = 'https://bini.js.org/docs/css-modules'
-const EDIT_URL = 'https://github.com/Binidu01/bini-offical/edit/main/src/app/docs/css-modules.tsx'
+/* ---------- visuals ---------- */
 
-// ────────────────────────────────────────────────────────────────────────────────
-// Code Block Component with horizontal scrollbar
-// ────────────────────────────────────────────────────────────────────────────────
-function CodeBlock({ code, filename }: { code: string; filename?: string }) {
-  const [copied, setCopied] = React.useState(false)
-  const handleCopy = () => { 
-    const cleanCode = code.replace(/\$ /g, '')
-    navigator.clipboard.writeText(cleanCode)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000) 
-  }
-
+/** Source selector on the left, the selector the browser actually receives on the right. */
+function ClassMapVisual({ title, rows }: { title: string; rows: [string, string][] }) {
   return (
-    <div className="relative group mb-6">
-      {filename && (
-        <div className="flex items-center justify-between px-4 py-2 bg-slate-900 border border-slate-800 border-b-0 rounded-t-lg">
-          <span className="text-sm text-slate-300 font-mono">{filename}</span>
+    <GridBg>
+      <div>
+        <div className="mb-3 text-[13px] font-semibold text-neutral-900 dark:text-neutral-100">
+          {title}
         </div>
-      )}
-      <button onClick={handleCopy} className="absolute top-2 right-2 p-1.5 rounded-md bg-slate-800 hover:bg-slate-700 transition-colors z-10 opacity-0 group-hover:opacity-100" style={{ top: filename ? '3rem' : '0.5rem' }}>
-        {copied ? (
-          <svg className="w-3.5 h-3.5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
-        ) : (
-          <svg className="w-3.5 h-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-          </svg>
-        )}
-      </button>
-      <div className={`bg-[#0a0a0a] border border-slate-700 ${filename ? 'rounded-t-none' : 'rounded-lg'} overflow-x-auto scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-transparent hover:scrollbar-thumb-slate-500`}>
-        <pre className="p-4 min-w-max">
-          <code className="text-sm font-mono text-slate-200 whitespace-pre">{code}</code>
-        </pre>
+        {rows.map(([from, to]) => (
+          <div key={from} className="mb-2 flex items-center gap-3 last:mb-0">
+            <span
+              className={`${CARD} flex h-8 w-44 shrink-0 items-center px-3 font-mono text-[12px] text-neutral-800 dark:text-neutral-200`}
+            >
+              {from}
+            </span>
+            <Arrow />
+            <span
+              className={`${CARD} flex h-8 w-56 shrink-0 items-center px-3 font-mono text-[12px] text-neutral-800 dark:text-neutral-200`}
+            >
+              {to}
+            </span>
+          </div>
+        ))}
       </div>
-    </div>
+    </GridBg>
   )
 }
 
-// ────────────────────────────────────────────────────────────────────────────────
-// Table Component
-// ────────────────────────────────────────────────────────────────────────────────
-function Table({ headers, rows }: { headers: string[]; rows: React.ReactNode[][] }) {
-  return (
-    <div className="overflow-x-auto rounded-lg border border-slate-700 my-6">
-      <table className="w-full text-sm">
-        <thead className="bg-slate-900 border-b border-slate-800">
-          <tr>{headers.map((h, i) => <th key={i} className="text-left py-3 px-4 font-medium text-white">{h}</th>)}</tr>
-        </thead>
-        <tbody className="divide-y divide-slate-800">
-          {rows.map((row, i) => <tr key={i}>{row.map((cell, j) => <td key={j} className="py-3 px-4 text-slate-300 text-xs">{cell}</td>)}</tr>)}
-        </tbody>
-      </table>
-    </div>
-  )
-}
+/* ---------- content (reads the TS/JS choice from DocPage) ---------- */
 
-// ────────────────────────────────────────────────────────────────────────────────
-// Note Component
-// ────────────────────────────────────────────────────────────────────────────────
-function Note({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="p-4 rounded-lg bg-slate-900/50 border border-slate-800 my-6">
-      <div className="text-sm text-slate-300 [&>strong]:text-white [&>code]:text-cyan-400 [&>code]:bg-slate-800 [&>code]:px-1 [&>code]:py-0.5 [&>code]:rounded">{children}</div>
-    </div>
-  )
-}
+function Content() {
+  const lang = useDocLang()
+  const e = lang === 'js' ? 'jsx' : 'tsx'
 
-// ────────────────────────────────────────────────────────────────────────────────
-// CSS Modules Page
-// ────────────────────────────────────────────────────────────────────────────────
-export default function CSSModulesPage() {
   return (
-    <div className="min-h-screen bg-black font-sans antialiased overflow-x-hidden">
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute inset-0 bg-black" />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-300 h-200 bg-linear-to-b from-cyan-500/5 via-sky-500/3 to-transparent rounded-full blur-3xl" />
+    <>
+      <div className="mb-12">
+        <P className="mb-4">
+          CSS Modules allow you to write component-scoped CSS without worrying about naming
+          conflicts. Vite processes <C>.module.css</C> files automatically - no configuration
+          needed.
+        </P>
+        <Callout>
+          <strong>Zero Configuration:</strong> Vite handles CSS Modules natively. Any file ending
+          in <C>.module.css</C> is automatically processed as a CSS Module.
+        </Callout>
+        <P className="mb-4">
+          Create a new project with CSS Modules using the <C>--css-modules</C> flag:
+        </P>
+        <MultiTerminal
+          tabs={[
+            {
+              id: 'npm',
+              label: 'npm',
+              command: `$ npx create-bini-app@latest my-app --css-modules`,
+            },
+            {
+              id: 'pnpm',
+              label: 'pnpm',
+              command: `$ pnpm dlx create-bini-app@latest my-app --css-modules`,
+            },
+            {
+              id: 'yarn',
+              label: 'yarn',
+              command: `$ yarn dlx create-bini-app@latest my-app --css-modules`,
+            },
+            {
+              id: 'bun',
+              label: 'bun',
+              command: `$ bunx create-bini-app@latest my-app --css-modules`,
+            },
+          ]}
+        />
+        <P className="mb-4">
+          Or use the interactive prompt and select <C>CSS Modules</C> under the styling question:
+        </P>
+        <PromptOutput
+          lines={[
+            { kind: 'question', text: 'Select a styling solution:' },
+            { kind: 'option', text: 'Tailwind CSS' },
+            { kind: 'option', text: 'CSS Modules', selected: true },
+            { kind: 'option', text: 'None' },
+            { kind: 'blank' },
+            { kind: 'hint', text: '↑↓ navigate • ⏎ select' },
+          ]}
+        />
+        <P className="mb-4">Or combine with TypeScript:</P>
+        <MultiTerminal
+          tabs={[
+            {
+              id: 'npm',
+              label: 'npm',
+              command: `$ npx create-bini-app@latest my-app --css-modules --typescript`,
+            },
+            {
+              id: 'pnpm',
+              label: 'pnpm',
+              command: `$ pnpm dlx create-bini-app@latest my-app --css-modules --typescript`,
+            },
+            {
+              id: 'yarn',
+              label: 'yarn',
+              command: `$ yarn dlx create-bini-app@latest my-app --css-modules --typescript`,
+            },
+            {
+              id: 'bun',
+              label: 'bun',
+              command: `$ bunx create-bini-app@latest my-app --css-modules --typescript`,
+            },
+          ]}
+        />
       </div>
 
-      <Header />
-
-      <div className="relative pt-16 lg:pt-20">
-        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 overflow-x-hidden">
-          
-          <DocLayout>
-            <div className="flex gap-10 xl:gap-14">
-              {/* Main content column */}
-              <div className="max-w-4xl min-w-0 flex-1">
-
-                {/* Title + Copy page button */}
-                <m.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex items-start justify-between gap-4 mb-4"
-                >
-                  <div>
-                    <h1 className="text-4xl font-bold text-white mb-2">{PAGE_TITLE}</h1>
-                    <p className="text-slate-400 text-sm">Learn how to use CSS Modules in Bini.js for component-scoped styling.</p>
-                  </div>
-                  <div className="shrink-0 pt-2 hidden sm:block">
-                    <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
-                  </div>
-                </m.div>
-                {/* Copy button on small screens */}
-                <div className="sm:hidden mb-8">
-                  <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
-                </div>
-
-                {/* Overview */}
-                <m.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-                  <p className="text-slate-300 mb-6">
-                    CSS Modules allow you to write component-scoped CSS without worrying about naming conflicts. Vite processes <code className="text-cyan-400">.module.css</code> files automatically — no configuration needed.
-                  </p>
-                  <Note>
-                    <strong>Zero Configuration:</strong> Vite handles CSS Modules natively. Any file ending in <code>.module.css</code> is automatically processed as a CSS Module.
-                  </Note>
-                </m.section>
-
-                {/* Basic Usage */}
-                <m.section id="basic-usage" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Basic Usage</h2>
-                  <p className="text-slate-300 mb-4">
-                    Create a <code className="text-cyan-400">.module.css</code> file and import it in your component:
-                  </p>
-                  <CodeBlock 
-                    code={`/* src/app/components/Button.module.css */
+      <Section id="basic-usage" title="Basic Usage">
+        <P className="mb-4">
+          Create a <C>.module.css</C> file next to your component and import it:
+        </P>
+        <FolderVisual
+          width={280}
+          rows={[
+            { n: 'src' },
+            { n: 'app', d: 1 },
+            { n: 'components', d: 2 },
+            { n: 'Button.module.css', d: 3, dot: true },
+            { n: `Button.${e}`, d: 3 },
+          ]}
+        />
+        <CodeBlock
+          filename="src/app/components/Button.module.css"
+          lang="text"
+          code={`/* src/app/components/Button.module.css */
 .button {
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
@@ -173,10 +175,25 @@ export default function CSSModulesPage() {
 .primary:hover {
   background: #0891b2;
 }`}
-                    filename="Button.module.css"
-                  />
-                  <CodeBlock 
-                    code={`// src/app/components/Button.tsx
+        />
+        <CodeBlock
+          filename={`src/app/components/Button.${e}`}
+          tsCode={`// src/app/components/Button.tsx
+import styles from './Button.module.css'
+
+type ButtonProps = {
+  variant?: 'primary'
+  children: React.ReactNode
+}
+
+export function Button({ variant = 'primary', children }: ButtonProps) {
+  return (
+    <button className={\`\${styles.button} \${styles[variant]}\`}>
+      {children}
+    </button>
+  )
+}`}
+          jsCode={`// src/app/components/Button.jsx
 import styles from './Button.module.css'
 
 export function Button({ variant = 'primary', children }) {
@@ -186,18 +203,26 @@ export function Button({ variant = 'primary', children }) {
     </button>
   )
 }`}
-                    filename="Button.tsx"
-                  />
-                </m.section>
+        />
+        <P className="mt-4 mb-4">
+          Vite rewrites every class name so it is unique to this file. The same <C>.button</C> in
+          another module never collides:
+        </P>
+        <ClassMapVisual
+          title="What the browser receives"
+          rows={[
+            ['.button', '._button_1k2x9_1'],
+            ['.primary', '._primary_1k2x9_11'],
+          ]}
+        />
+      </Section>
 
-                {/* Combining Classes */}
-                <m.section id="combining-classes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Combining Classes</h2>
-                  <p className="text-slate-300 mb-4">
-                    Combine multiple CSS Module classes using template literals:
-                  </p>
-                  <CodeBlock 
-                    code={`/* src/app/components/Card.module.css */
+      <Section id="combining-classes" title="Combining Classes">
+        <P className="mb-4">Combine multiple CSS Module classes using template literals:</P>
+        <CodeBlock
+          filename="src/app/components/Card.module.css"
+          lang="text"
+          code={`/* src/app/components/Card.module.css */
 .card {
   background: #0a0a0a;
   border: 1px solid #1e293b;
@@ -212,10 +237,26 @@ export function Button({ variant = 'primary', children }) {
 .large {
   padding: 2rem;
 }`}
-                    filename="Card.module.css"
-                  />
-                  <CodeBlock 
-                    code={`// src/app/components/Card.tsx
+        />
+        <CodeBlock
+          filename={`src/app/components/Card.${e}`}
+          tsCode={`// src/app/components/Card.tsx
+import styles from './Card.module.css'
+
+type CardProps = {
+  featured?: boolean
+  size?: 'normal' | 'large'
+  children: React.ReactNode
+}
+
+export function Card({ featured, size = 'normal', children }: CardProps) {
+  return (
+    <div className={\`\${styles.card} \${featured ? styles.featured : ''} \${size === 'large' ? styles.large : ''}\`}>
+      {children}
+    </div>
+  )
+}`}
+          jsCode={`// src/app/components/Card.jsx
 import styles from './Card.module.css'
 
 export function Card({ featured, size = 'normal', children }) {
@@ -225,24 +266,49 @@ export function Card({ featured, size = 'normal', children }) {
     </div>
   )
 }`}
-                    filename="Card.tsx"
-                  />
-                  <Note>
-                    Use the <code>clsx</code> or <code>classnames</code> library for cleaner conditional class composition.
-                  </Note>
-                </m.section>
+        />
+        <Callout>
+          Use the <C>clsx</C> or <C>classnames</C> library for cleaner conditional class
+          composition.
+        </Callout>
+      </Section>
 
-                {/* Using clsx */}
-                <m.section id="using-clsx" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Using clsx for Cleaner Code</h2>
-                  <p className="text-slate-300 mb-4">
-                    Install <code className="text-cyan-400">clsx</code> for cleaner conditional classes:
-                  </p>
-                  <CodeBlock 
-                    code={`npm install clsx`}
-                  />
-                  <CodeBlock 
-                    code={`// src/app/components/Card.tsx
+      <Section id="using-clsx" title="Using clsx for Cleaner Code">
+        <P className="mb-4">
+          Install <C>clsx</C> for cleaner conditional classes:
+        </P>
+        <MultiTerminal
+          tabs={[
+            { id: 'npm', label: 'npm', command: `$ npm install clsx` },
+            { id: 'pnpm', label: 'pnpm', command: `$ pnpm add clsx` },
+            { id: 'yarn', label: 'yarn', command: `$ yarn add clsx` },
+            { id: 'bun', label: 'bun', command: `$ bun add clsx` },
+          ]}
+        />
+        <CodeBlock
+          filename={`src/app/components/Card.${e}`}
+          tsCode={`// src/app/components/Card.tsx
+import clsx from 'clsx'
+import styles from './Card.module.css'
+
+type CardProps = {
+  featured?: boolean
+  size?: 'normal' | 'large'
+  children: React.ReactNode
+}
+
+export function Card({ featured, size = 'normal', children }: CardProps) {
+  return (
+    <div className={clsx(
+      styles.card,
+      featured && styles.featured,
+      size === 'large' && styles.large
+    )}>
+      {children}
+    </div>
+  )
+}`}
+          jsCode={`// src/app/components/Card.jsx
 import clsx from 'clsx'
 import styles from './Card.module.css'
 
@@ -257,18 +323,26 @@ export function Card({ featured, size = 'normal', children }) {
     </div>
   )
 }`}
-                    filename="Card.tsx"
-                  />
-                </m.section>
+        />
+      </Section>
 
-                {/* Global vs Local */}
-                <m.section id="global-vs-local" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Global vs Local Scope</h2>
-                  <p className="text-slate-300 mb-4">
-                    CSS Modules are locally scoped by default. Use <code className="text-cyan-400">:global</code> to target global selectors:
-                  </p>
-                  <CodeBlock 
-                    code={`/* src/app/components/Container.module.css */
+      <Section id="global-vs-local" title="Global vs Local Scope">
+        <P className="mb-4">
+          CSS Modules are locally scoped by default. Use <C>:global</C> to target global
+          selectors:
+        </P>
+        <ClassMapVisual
+          title="Local vs :global"
+          rows={[
+            ['.container', '._container_8f3ab_1'],
+            [':global(.heading)', '.heading'],
+            [':global(.dark)', '.dark'],
+          ]}
+        />
+        <CodeBlock
+          filename="src/app/components/Container.module.css"
+          lang="text"
+          code={`/* src/app/components/Container.module.css */
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -281,18 +355,42 @@ export function Card({ featured, size = 'normal', children }) {
 :global(.dark) .container {
   background: #000;
 }`}
-                    filename="Container.module.css"
-                  />
-                </m.section>
+        />
+        <CodeBlock
+          filename={`src/app/components/Container.${e}`}
+          tsCode={`// src/app/components/Container.tsx
+import styles from './Container.module.css'
 
-                {/* Composing Classes */}
-                <m.section id="composing-classes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Composing Classes</h2>
-                  <p className="text-slate-300 mb-4">
-                    Use <code className="text-cyan-400">composes</code> to reuse styles from other classes:
-                  </p>
-                  <CodeBlock 
-                    code={`/* src/app/components/Form.module.css */
+export function Container({ children }: { children: React.ReactNode }) {
+  return (
+    <div className={styles.container}>
+      <h2 className="heading">Global class, styled from the module</h2>
+      {children}
+    </div>
+  )
+}`}
+          jsCode={`// src/app/components/Container.jsx
+import styles from './Container.module.css'
+
+export function Container({ children }) {
+  return (
+    <div className={styles.container}>
+      <h2 className="heading">Global class, styled from the module</h2>
+      {children}
+    </div>
+  )
+}`}
+        />
+      </Section>
+
+      <Section id="composing-classes" title="Composing Classes">
+        <P className="mb-4">
+          Use <C>composes</C> to reuse styles from other classes:
+        </P>
+        <CodeBlock
+          filename="src/app/components/Form.module.css"
+          lang="text"
+          code={`/* src/app/components/Form.module.css */
 .baseInput {
   width: 100%;
   padding: 0.5rem 0.75rem;
@@ -310,54 +408,90 @@ export function Card({ featured, size = 'normal', children }) {
   composes: baseInput;
   border-color: #ef4444;
 }`}
-                    filename="Form.module.css"
-                  />
-                </m.section>
+        />
+        <CodeBlock
+          filename={`src/app/components/Form.${e}`}
+          code={`import styles from './Form.module.css'
 
-                {/* CSS Variables */}
-                <m.section id="css-variables" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">CSS Variables in Modules</h2>
-                  <p className="text-slate-300 mb-4">
-                    Use CSS variables for dynamic styling within modules:
-                  </p>
-                  <CodeBlock 
-                    code={`/* src/app/components/Progress.module.css */
+export function Form() {
+  return (
+    <form>
+      <input className={styles.textInput} placeholder="Name" />
+      <input className={styles.errorInput} placeholder="Email (invalid)" />
+    </form>
+  )
+}`}
+        />
+      </Section>
+
+      <Section id="css-variables" title="CSS Variables in Modules">
+        <P className="mb-4">Use CSS variables for dynamic styling within modules:</P>
+        <CodeBlock
+          filename="src/app/components/Progress.module.css"
+          lang="text"
+          code={`/* src/app/components/Progress.module.css */
+.progress {
+  height: 0.5rem;
+  overflow: hidden;
+  border-radius: 9999px;
+  background: #1e293b;
+}
+
 .bar {
   height: 100%;
   width: var(--progress);
   background: linear-gradient(to right, #06b6d4, #3b82f6);
   transition: width 0.3s ease;
 }`}
-                    filename="Progress.module.css"
-                  />
-                  <CodeBlock 
-                    code={`// src/app/components/Progress.tsx
+        />
+        <CodeBlock
+          filename={`src/app/components/Progress.${e}`}
+          tsCode={`// src/app/components/Progress.tsx
 import styles from './Progress.module.css'
 
-export function Progress({ value, max = 100 }) {
+type ProgressProps = {
+  value: number
+  max?: number
+}
+
+export function Progress({ value, max = 100 }: ProgressProps) {
   const percentage = (value / max) * 100
-  
+
   return (
     <div className={styles.progress}>
-      <div 
-        className={styles.bar} 
+      <div
+        className={styles.bar}
         style={{ '--progress': \`\${percentage}%\` } as React.CSSProperties}
       />
     </div>
   )
 }`}
-                    filename="Progress.tsx"
-                  />
-                </m.section>
+          jsCode={`// src/app/components/Progress.jsx
+import styles from './Progress.module.css'
 
-                {/* Animations */}
-                <m.section id="animations" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Animations</h2>
-                  <p className="text-slate-300 mb-4">
-                    Define animations in CSS Modules:
-                  </p>
-                  <CodeBlock 
-                    code={`/* src/app/components/Spinner.module.css */
+export function Progress({ value, max = 100 }) {
+  const percentage = (value / max) * 100
+
+  return (
+    <div className={styles.progress}>
+      <div
+        className={styles.bar}
+        style={{ '--progress': \`\${percentage}%\` }}
+      />
+    </div>
+  )
+}`}
+        />
+      </Section>
+
+      <Section id="animations" title="Animations">
+        <P className="mb-4">
+          Define animations in CSS Modules. <C>@keyframes</C> names are scoped to the module too:
+        </P>
+        <CodeBlock
+          filename="src/app/components/Spinner.module.css"
+          lang="text"
+          code={`/* src/app/components/Spinner.module.css */
 .spinner {
   width: 2rem;
   height: 2rem;
@@ -372,27 +506,23 @@ export function Progress({ value, max = 100 }) {
     transform: rotate(360deg);
   }
 }`}
-                    filename="Spinner.module.css"
-                  />
-                  <CodeBlock 
-                    code={`// src/app/components/Spinner.tsx
-import styles from './Spinner.module.css'
+        />
+        <CodeBlock
+          filename={`src/app/components/Spinner.${e}`}
+          code={`import styles from './Spinner.module.css'
 
 export function Spinner() {
   return <div className={styles.spinner} />
 }`}
-                    filename="Spinner.tsx"
-                  />
-                </m.section>
+        />
+      </Section>
 
-                {/* Media Queries */}
-                <m.section id="media-queries" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Media Queries</h2>
-                  <p className="text-slate-300 mb-4">
-                    Write responsive styles with media queries:
-                  </p>
-                  <CodeBlock 
-                    code={`/* src/app/components/Grid.module.css */
+      <Section id="media-queries" title="Media Queries">
+        <P className="mb-4">Write responsive styles with media queries:</P>
+        <CodeBlock
+          filename="src/app/components/Grid.module.css"
+          lang="text"
+          code={`/* src/app/components/Grid.module.css */
 .grid {
   display: grid;
   gap: 1rem;
@@ -410,18 +540,40 @@ export function Spinner() {
     grid-template-columns: repeat(3, 1fr);
   }
 }`}
-                    filename="Grid.module.css"
-                  />
-                </m.section>
+        />
+        <CodeBlock
+          filename={`src/app/components/Grid.${e}`}
+          tsCode={`// src/app/components/Grid.tsx
+import styles from './Grid.module.css'
 
-                {/* Complete Example */}
-                <m.section id="complete-example" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Complete Example</h2>
-                  <p className="text-slate-300 mb-4">
-                    A full-featured modal component using CSS Modules:
-                  </p>
-                  <CodeBlock 
-                    code={`/* src/app/components/Modal.module.css */
+export function Grid({ children }: { children: React.ReactNode }) {
+  return <div className={styles.grid}>{children}</div>
+}`}
+          jsCode={`// src/app/components/Grid.jsx
+import styles from './Grid.module.css'
+
+export function Grid({ children }) {
+  return <div className={styles.grid}>{children}</div>
+}`}
+        />
+      </Section>
+
+      <Section id="complete-example" title="Complete Example">
+        <P className="mb-4">A full-featured modal component using CSS Modules:</P>
+        <FolderVisual
+          width={280}
+          rows={[
+            { n: 'src' },
+            { n: 'app', d: 1 },
+            { n: 'components', d: 2 },
+            { n: 'Modal.module.css', d: 3, dot: true },
+            { n: `Modal.${e}`, d: 3 },
+          ]}
+        />
+        <CodeBlock
+          filename="src/app/components/Modal.module.css"
+          lang="text"
+          code={`/* src/app/components/Modal.module.css */
 .overlay {
   position: fixed;
   inset: 0;
@@ -441,6 +593,13 @@ export function Spinner() {
   width: 90%;
 }
 
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
 .title {
   font-size: 1.25rem;
   font-weight: 600;
@@ -456,11 +615,40 @@ export function Spinner() {
 
 .close:hover {
   color: white;
+}
+
+.body {
+  color: #94a3b8;
 }`}
-                    filename="Modal.module.css"
-                  />
-                  <CodeBlock 
-                    code={`// src/app/components/Modal.tsx
+        />
+        <CodeBlock
+          filename={`src/app/components/Modal.${e}`}
+          tsCode={`// src/app/components/Modal.tsx
+import styles from './Modal.module.css'
+
+type ModalProps = {
+  isOpen: boolean
+  onClose: () => void
+  title: string
+  children: React.ReactNode
+}
+
+export function Modal({ isOpen, onClose, title, children }: ModalProps) {
+  if (!isOpen) return null
+
+  return (
+    <div className={styles.overlay} onClick={onClose}>
+      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+        <div className={styles.header}>
+          <h2 className={styles.title}>{title}</h2>
+          <button className={styles.close} onClick={onClose}>✕</button>
+        </div>
+        <div className={styles.body}>{children}</div>
+      </div>
+    </div>
+  )
+}`}
+          jsCode={`// src/app/components/Modal.jsx
 import styles from './Modal.module.css'
 
 export function Modal({ isOpen, onClose, title, children }) {
@@ -468,49 +656,36 @@ export function Modal({ isOpen, onClose, title, children }) {
 
   return (
     <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={e => e.stopPropagation()}>
-        <div className="flex items-center justify-between mb-4">
+      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+        <div className={styles.header}>
           <h2 className={styles.title}>{title}</h2>
           <button className={styles.close} onClick={onClose}>✕</button>
         </div>
-        <div className="text-slate-400">{children}</div>
+        <div className={styles.body}>{children}</div>
       </div>
     </div>
   )
 }`}
-                    filename="Modal.tsx"
-                  />
-                </m.section>
+        />
+      </Section>
+    </>
+  )
+}
 
-                {/* Previous / Next Navigation */}
-                <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
-                  <Link to="/docs/tailwind" className="group flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
-                    <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                    <div>
-                      <div className="text-xs text-slate-500">Previous</div>
-                      <div className="text-sm font-medium">Tailwind CSS</div>
-                    </div>
-                  </Link>
-                  <Link to="/docs/platform-web" className="group flex items-center gap-2 text-right text-slate-400 hover:text-white transition-colors">
-                    <div>
-                      <div className="text-xs text-slate-500">Next</div>
-                      <div className="text-sm font-medium">Web</div>
-                    </div>
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                </m.div>
+/* ---------- page ---------- */
 
-              </div>
-
-              {/* Right-hand "On this page" sidebar */}
-              <aside className="hidden xl:block w-56 shrink-0">
-                <TableOfContents items={TOC_ITEMS} editUrl={EDIT_URL} />
-              </aside>
-            </div>
-          </DocLayout>
-          
-        </div>
-      </div>
-    </div>
+export default function CSSModulesPage() {
+  return (
+    <DocPage
+      title="CSS Modules"
+      description="Learn how to use CSS Modules in Bini.js for component-scoped styling."
+      url="https://bini.js.org/docs/css-modules"
+      editUrl="https://github.com/Binidu01/bini-official/edit/main/src/app/docs/css-modules.tsx"
+      toc={TOC_ITEMS}
+      prev={{ to: '/docs/tailwind', title: 'Tailwind CSS' }}
+      next={{ to: '/docs/platform-web', title: 'Web' }}
+    >
+      <Content />
+    </DocPage>
   )
 }

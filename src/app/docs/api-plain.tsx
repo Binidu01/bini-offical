@@ -1,21 +1,17 @@
-// src/pages/docs/api-plain/page.tsx
-import React from 'react'
-import { m } from 'framer-motion'
+// src/app/docs/api-plain.tsx
 import {
-  ArrowLeft,
-  ArrowRight,
-  CheckCircle,
-  XCircle,
-} from 'lucide-react'
-import { Link } from 'react-router-dom'
-import { Header } from '../../components/Layout'
-import { DocLayout } from '../../components/DocSidebar'
-import { CopyPageButton } from '../../components/CopyPageButton'
-import { TableOfContents, type TocItem } from '../../components/TableOfContents'
+  C,
+  Callout,
+  CodeBlock,
+  DocPage,
+  P,
+  Section,
+  Table,
+  useDocLang,
+} from '../../components/DocBlocks'
+import { RouteVisual } from '../../components/DocVisuals'
+import type { TocItem } from '../../components/TableOfContents'
 
-// ────────────────────────────────────────────────────────────────────────────────
-// "On this page" entries
-// ────────────────────────────────────────────────────────────────────────────────
 const TOC_ITEMS: TocItem[] = [
   { id: 'basic-handler', label: 'Basic Handler' },
   { id: 'route-mapping', label: 'Route Mapping' },
@@ -30,174 +26,82 @@ const TOC_ITEMS: TocItem[] = [
   { id: 'complete-example', label: 'Complete Example' },
 ]
 
-const PAGE_TITLE = 'Plain Function Handlers'
-const PAGE_URL = 'https://bini.js.org/docs/api-plain'
-const EDIT_URL = 'https://github.com/Binidu01/bini-offical/edit/main/src/app/docs/api-plain.tsx'
+/* ---------- content (reads the TS/JS choice from DocPage) ---------- */
 
-// ────────────────────────────────────────────────────────────────────────────────
-// Code Block Component with horizontal scrollbar
-// ────────────────────────────────────────────────────────────────────────────────
-function CodeBlock({ code, filename }: { code: string; filename?: string }) {
-  const [copied, setCopied] = React.useState(false)
-  const handleCopy = () => { 
-    const cleanCode = code.replace(/\$ /g, '')
-    navigator.clipboard.writeText(cleanCode)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000) 
-  }
+function Content() {
+  const lang = useDocLang()
+  // API files are plain .ts / .js (no JSX)
+  const e = lang === 'js' ? 'js' : 'ts'
 
   return (
-    <div className="relative group mb-6">
-      {filename && (
-        <div className="flex items-center justify-between px-4 py-2 bg-slate-900 border border-slate-800 border-b-0 rounded-t-lg">
-          <span className="text-sm text-slate-300 font-mono">{filename}</span>
-        </div>
-      )}
-      <button onClick={handleCopy} className="absolute top-2 right-2 p-1.5 rounded-md bg-slate-800 hover:bg-slate-700 transition-colors z-10 opacity-0 group-hover:opacity-100" style={{ top: filename ? '3rem' : '0.5rem' }}>
-        {copied ? (
-          <svg className="w-3.5 h-3.5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
-        ) : (
-          <svg className="w-3.5 h-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-          </svg>
-        )}
-      </button>
-      <div className={`bg-[#0a0a0a] border border-slate-700 ${filename ? 'rounded-t-none' : 'rounded-lg'} overflow-x-auto scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-transparent hover:scrollbar-thumb-slate-500`}>
-        <pre className="p-4 min-w-max">
-          <code className="text-sm font-mono text-slate-200 whitespace-pre">{code}</code>
-        </pre>
-      </div>
-    </div>
-  )
-}
-
-// ────────────────────────────────────────────────────────────────────────────────
-// Table Component
-// ────────────────────────────────────────────────────────────────────────────────
-function Table({ headers, rows }: { headers: string[]; rows: React.ReactNode[][] }) {
-  return (
-    <div className="overflow-x-auto rounded-lg border border-slate-700 my-6">
-      <table className="w-full text-sm">
-        <thead className="bg-slate-900 border-b border-slate-800">
-          <tr>{headers.map((h, i) => <th key={i} className="text-left py-3 px-4 font-medium text-white">{h}</th>)}</tr>
-        </thead>
-        <tbody className="divide-y divide-slate-800">
-          {rows.map((row, i) => <tr key={i}>{row.map((cell, j) => <td key={j} className="py-3 px-4 text-slate-300 text-xs">{cell}</td>)}</tr>)}
-        </tbody>
-      </table>
-    </div>
-  )
-}
-
-// ────────────────────────────────────────────────────────────────────────────────
-// Note Component
-// ────────────────────────────────────────────────────────────────────────────────
-function Note({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="p-4 rounded-lg bg-slate-900/50 border border-slate-800 my-6">
-      <div className="text-sm text-slate-300 [&>strong]:text-white [&>code]:text-cyan-400 [&>code]:bg-slate-800 [&>code]:px-1 [&>code]:py-0.5 [&>code]:rounded">{children}</div>
-    </div>
-  )
-}
-
-// ────────────────────────────────────────────────────────────────────────────────
-// Plain Function Handlers Page
-// ────────────────────────────────────────────────────────────────────────────────
-export default function ApiPlainPage() {
-  return (
-    <div className="min-h-screen bg-black font-sans antialiased overflow-x-hidden">
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute inset-0 bg-black" />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-300 h-200 bg-linear-to-b from-cyan-500/5 via-sky-500/3 to-transparent rounded-full blur-3xl" />
+    <>
+      <div className="mb-12">
+        <P>
+          Plain function handlers are the simplest way to create API routes. Ideal for single
+          endpoints that do not need Hono middleware or nested routing.
+        </P>
+        <Callout>
+          <strong>File-based routing:</strong> <C>src/app/api/hello.ts</C> is served at{' '}
+          <C>/api/hello</C>. There is no bare <C>/api</C> root route.
+        </Callout>
       </div>
 
-      <Header />
-
-      <div className="relative pt-16 lg:pt-20">
-        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 overflow-x-hidden">
-          
-          <DocLayout>
-            <div className="flex gap-10 xl:gap-14">
-              {/* Main content column */}
-              <div className="max-w-4xl min-w-0 flex-1">
-
-                {/* Title + Copy page button */}
-                <m.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex items-start justify-between gap-4 mb-4"
-                >
-                  <div>
-                    <h1 className="text-4xl font-bold text-white mb-2">{PAGE_TITLE}</h1>
-                    <p className="text-slate-400 text-sm">Learn how to create simple API endpoints using plain JavaScript functions in Bini.js.</p>
-                  </div>
-                  <div className="shrink-0 pt-2 hidden sm:block">
-                    <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
-                  </div>
-                </m.div>
-                {/* Copy button on small screens */}
-                <div className="sm:hidden mb-8">
-                  <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
-                </div>
-
-                {/* Overview */}
-                <m.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-                  <p className="text-slate-300 mb-6">
-                    Plain function handlers are the simplest way to create API routes in Bini.js. They're perfect for simple endpoints that don't need complex routing or middleware.
-                  </p>
-                  <Note>
-                    <strong>File-based routing:</strong> Your file path determines the API route. A file at <code>src/app/api/hello.ts</code> is served at <code>/api/hello</code>. There are no root <code>/</code> API routes — every file maps to a named route based on its filename.
-                  </Note>
-                </m.section>
-
-                {/* Basic Handler */}
-                <m.section id="basic-handler" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Basic Handler</h2>
-                  <p className="text-slate-300 mb-4">
-                    Export a default function that receives the <code className="text-cyan-400">Request</code> object. The function name doesn't matter — only the file path determines the route:
-                  </p>
-                  <CodeBlock 
-                    code={`// src/app/api/hello.ts → /api/hello
-export default function handler(req: Request) {
+      <Section id="basic-handler" title="Basic Handler">
+        <P>
+          Export a default function that receives <C>Request</C>. The file path sets the route - the
+          function name does not matter.
+        </P>
+        <CodeBlock
+          filename={`src/app/api/hello.${e}`}
+          tsCode={`export default function handler(req: Request) {
   return Response.json({ message: 'hello', method: req.method })
 }`}
-                    filename="src/app/api/hello.ts"
-                  />
-                  <p className="text-slate-300 mt-4">
-                    This creates an endpoint at <code className="text-cyan-400">/api/hello</code> that responds to all HTTP methods.
-                  </p>
-                </m.section>
+          jsCode={`export default function handler(req) {
+  return Response.json({ message: 'hello', method: req.method })
+}`}
+        />
+        <P>
+          This creates <C>/api/hello</C> and responds to all HTTP methods unless you branch on{' '}
+          <C>request.method</C>.
+        </P>
+      </Section>
 
-                {/* Route Mapping */}
-                <m.section id="route-mapping" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Route Mapping</h2>
-                  <p className="text-slate-300 mb-4">
-                    Your file structure directly maps to API routes:
-                  </p>
-                  <Table 
-                    headers={['File Path', 'API Route']}
-                    rows={[
-                      ['src/app/api/hello.ts', '/api/hello'],
-                      ['src/app/api/user.ts', '/api/user'],
-                      ['src/app/api/posts.ts', '/api/posts'],
-                      ['src/app/api/posts/[id].ts', '/api/posts/:id'],
-                      ['src/app/api/posts/index.ts', '/api/posts'],
-                      ['src/app/api/[...catch].ts', '/api/*'],
-                    ]}
-                  />
-                </m.section>
+      <Section id="route-mapping" title="Route Mapping">
+        <P>File structure maps directly to API paths:</P>
+        <RouteVisual
+          fileWidth={260}
+          rows={[
+            { n: 'app' },
+            { n: 'api', d: 1 },
+            { n: `hello.${e}`, d: 2, fn: true, url: '/api/hello', dot: true },
+            { n: `user.${e}`, d: 2, fn: true, url: '/api/user' },
+            { n: `posts.${e}`, d: 2, fn: true, url: '/api/posts' },
+            { n: 'posts', d: 2 },
+            { n: `index.${e}`, d: 3, fn: true, url: '/api/posts' },
+            { n: `[id].${e}`, d: 3, fn: true, url: '/api/posts/:id' },
+            { n: `[...catch].${e}`, d: 2, fn: true, url: '/api/*' },
+          ]}
+        />
+        <Table
+          headers={['File Path', 'API Route']}
+          rows={[
+            [`src/app/api/hello.${e}`, '/api/hello'],
+            [`src/app/api/user.${e}`, '/api/user'],
+            [`src/app/api/posts.${e}`, '/api/posts'],
+            [`src/app/api/posts/[id].${e}`, '/api/posts/:id'],
+            [`src/app/api/posts/index.${e}`, '/api/posts'],
+            [`src/app/api/[...catch].${e}`, '/api/*'],
+          ]}
+        />
+      </Section>
 
-                {/* Handling Methods */}
-                <m.section id="handling-methods" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Handling HTTP Methods</h2>
-                  <p className="text-slate-300 mb-4">
-                    Check <code className="text-cyan-400">request.method</code> to handle different HTTP verbs:
-                  </p>
-                  <CodeBlock 
-                    code={`// src/app/api/posts.ts → /api/posts
-export default function handler(request: Request) {
+      <Section id="handling-methods" title="Handling HTTP Methods">
+        <P>
+          Branch on <C>request.method</C> for different verbs:
+        </P>
+        <CodeBlock
+          filename={`src/app/api/posts.${e}`}
+          tsCode={`export default function handler(request: Request) {
   if (request.method === 'GET') {
     return Response.json({ posts: [] })
   }
@@ -212,34 +116,44 @@ export default function handler(request: Request) {
   }
   return Response.json({ error: 'Method not allowed' }, { status: 405 })
 }`}
-                    filename="src/app/api/posts.ts"
-                  />
-                  <Table 
-                    headers={['Method', 'Typical Use']}
-                    rows={[
-                      ['GET', 'Retrieve data'],
-                      ['POST', 'Create new data'],
-                      ['PUT', 'Replace existing data'],
-                      ['PATCH', 'Partially update data'],
-                      ['DELETE', 'Remove data'],
-                    ]}
-                  />
-                </m.section>
+          jsCode={`export default function handler(request) {
+  if (request.method === 'GET') {
+    return Response.json({ posts: [] })
+  }
+  if (request.method === 'POST') {
+    return Response.json({ message: 'Post created' }, { status: 201 })
+  }
+  if (request.method === 'PUT') {
+    return Response.json({ message: 'Post updated' })
+  }
+  if (request.method === 'DELETE') {
+    return Response.json({ message: 'Post deleted' })
+  }
+  return Response.json({ error: 'Method not allowed' }, { status: 405 })
+}`}
+        />
+        <Table
+          headers={['Method', 'Typical Use']}
+          rows={[
+            ['GET', 'Retrieve data'],
+            ['POST', 'Create new data'],
+            ['PUT', 'Replace existing data'],
+            ['PATCH', 'Partially update data'],
+            ['DELETE', 'Remove data'],
+          ]}
+        />
+      </Section>
 
-                {/* Reading Request */}
-                <m.section id="reading-request" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Reading Request Data</h2>
-                  <p className="text-slate-300 mb-4">
-                    Access different parts of the incoming request:
-                  </p>
-                  <CodeBlock 
-                    code={`// src/app/api/echo.ts → /api/echo
-export default async function handler(request: Request) {
+      <Section id="reading-request" title="Reading Request Data">
+        <P>Body, headers, and query params:</P>
+        <CodeBlock
+          filename={`src/app/api/echo.${e}`}
+          tsCode={`export default async function handler(request: Request) {
   const body = await request.json().catch(() => null)
   const userAgent = request.headers.get('User-Agent')
   const url = new URL(request.url)
   const page = url.searchParams.get('page')
-  
+
   return Response.json({
     method: request.method,
     body,
@@ -247,275 +161,371 @@ export default async function handler(request: Request) {
     query: { page },
   })
 }`}
-                    filename="src/app/api/echo.ts"
-                  />
-                </m.section>
+          jsCode={`export default async function handler(request) {
+  const body = await request.json().catch(() => null)
+  const userAgent = request.headers.get('User-Agent')
+  const url = new URL(request.url)
+  const page = url.searchParams.get('page')
 
-                {/* Sending Responses */}
-                <m.section id="sending-responses" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Sending Responses</h2>
-                  <p className="text-slate-300 mb-4">
-                    Return different types of responses:
-                  </p>
-                  <CodeBlock 
-                    code={`// src/app/api/responses.ts → /api/responses
-export default function handler(request: Request) {
-  // JSON response
-  return Response.json({ message: 'Hello JSON' })
-  
-  // Plain text response
-  return new Response('Hello Text', {
-    headers: { 'Content-Type': 'text/plain' }
+  return Response.json({
+    method: request.method,
+    body,
+    headers: { userAgent },
+    query: { page },
   })
-  
-  // Response with custom status
-  return Response.json(
-    { message: 'Created' }, 
-    { status: 201 }
-  )
-  
-  // Redirect response
-  return Response.redirect('https://example.com', 302)
 }`}
-                    filename="src/app/api/responses.ts"
-                  />
-                </m.section>
+        />
+      </Section>
 
-                {/* Dynamic Routes */}
-                <m.section id="dynamic-routes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Dynamic Routes</h2>
-                  <p className="text-slate-300 mb-4">
-                    For dynamic routes, parameters are passed via the <code className="text-cyan-400">x-bini-params</code> header:
-                  </p>
-                  <CodeBlock 
-                    code={`// src/app/api/posts/[id].ts → /api/posts/:id
-export default async function handler(request: Request) {
+      <Section id="sending-responses" title="Sending Responses">
+        <P>Common response patterns:</P>
+        <CodeBlock
+          filename={`src/app/api/responses.${e}`}
+          tsCode={`export default function handler(request: Request) {
+  // JSON
+  return Response.json({ message: 'Hello JSON' })
+
+  // Plain text
+  // return new Response('Hello Text', {
+  //   headers: { 'Content-Type': 'text/plain' },
+  // })
+
+  // Custom status
+  // return Response.json({ message: 'Created' }, { status: 201 })
+
+  // Redirect
+  // return Response.redirect('https://example.com', 302)
+}`}
+          jsCode={`export default function handler(request) {
+  // JSON
+  return Response.json({ message: 'Hello JSON' })
+
+  // Plain text
+  // return new Response('Hello Text', {
+  //   headers: { 'Content-Type': 'text/plain' },
+  // })
+
+  // Custom status
+  // return Response.json({ message: 'Created' }, { status: 201 })
+
+  // Redirect
+  // return Response.redirect('https://example.com', 302)
+}`}
+        />
+      </Section>
+
+      <Section id="dynamic-routes" title="Dynamic Routes">
+        <P>
+          Path params are available via the <C>x-bini-params</C> header:
+        </P>
+        <CodeBlock
+          filename={`src/app/api/posts/[id].${e}`}
+          tsCode={`export default async function handler(request: Request) {
   const paramsHeader = request.headers.get('x-bini-params')
-  const params = paramsHeader ? JSON.parse(paramsHeader) : {}
+  let params: Record<string, string> = {}
+  try {
+    params = paramsHeader ? JSON.parse(paramsHeader) : {}
+  } catch {
+    return Response.json({ error: 'Invalid params' }, { status: 400 })
+  }
+
   const id = params.id
-  
   if (request.method === 'GET') {
     return Response.json({ id, title: \`Post \${id}\` })
   }
-  
+
   return Response.json({ error: 'Method not allowed' }, { status: 405 })
 }`}
-                    filename="src/app/api/posts/[id].ts"
-                  />
-                </m.section>
+          jsCode={`export default async function handler(request) {
+  const paramsHeader = request.headers.get('x-bini-params')
+  let params = {}
+  try {
+    params = paramsHeader ? JSON.parse(paramsHeader) : {}
+  } catch {
+    return Response.json({ error: 'Invalid params' }, { status: 400 })
+  }
 
-                {/* Catch-all */}
-                <m.section id="catch-all" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Catch-all Routes</h2>
-                  <p className="text-slate-300 mb-4">
-                    Handle all unmatched API routes with <code className="text-cyan-400">[...catch]</code>:
-                  </p>
-                  <CodeBlock 
-                    code={`// src/app/api/[...catch].ts → /api/*
-export default function handler(request: Request) {
-  const url = new URL(request.url)
-  return Response.json({
-    error: 'Not Found',
-    path: url.pathname,
-    method: request.method,
-  }, { status: 404 })
+  const id = params.id
+  if (request.method === 'GET') {
+    return Response.json({ id, title: \`Post \${id}\` })
+  }
+
+  return Response.json({ error: 'Method not allowed' }, { status: 405 })
 }`}
-                    filename="src/app/api/[...catch].ts"
-                  />
-                </m.section>
+        />
+      </Section>
 
-                {/* Environment Variables */}
-                <m.section id="environment-variables" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Environment Variables</h2>
-                  <p className="text-slate-300 mb-4">
-                    Use <code className="text-cyan-400">getEnv()</code> and <code className="text-cyan-400">requireEnv()</code> — both are auto-imported in API routes:
-                  </p>
-                  <CodeBlock 
-                    code={`// src/app/api/config.ts → /api/config
-import { getEnv, requireEnv } from 'bini-env'
+      <Section id="catch-all" title="Catch-all Routes">
+        <P>
+          <C>[...catch]</C> handles unmatched <C>/api/*</C> paths:
+        </P>
+        <CodeBlock
+          filename={`src/app/api/[...catch].${e}`}
+          tsCode={`export default function handler(request: Request) {
+  console.warn('Unmatched API route', { method: request.method })
+
+  return Response.json(
+    {
+      error: 'Not Found',
+      message: 'The requested endpoint does not exist',
+    },
+    { status: 404, headers: { 'Cache-Control': 'no-store' } }
+  )
+}`}
+          jsCode={`export default function handler(request) {
+  console.warn('Unmatched API route', { method: request.method })
+
+  return Response.json(
+    {
+      error: 'Not Found',
+      message: 'The requested endpoint does not exist',
+    },
+    { status: 404, headers: { 'Cache-Control': 'no-store' } }
+  )
+}`}
+        />
+      </Section>
+
+      <Section id="environment-variables" title="Environment Variables">
+        <P>
+          Use <C>getEnv</C> and <C>requireEnv</C> from <C>bini-env</C>:
+        </P>
+        <CodeBlock
+          filename={`src/app/api/config.${e}`}
+          tsCode={`import { getEnv, requireEnv } from 'bini-env'
 
 export default function handler(request: Request) {
-  const apiKey = requireEnv('MY_API_KEY')
-  const debug = getEnv('DEBUG_MODE') ?? 'false'
-  const appName = getEnv('APP_NAME') ?? 'Bini.js'
-  
-  return Response.json({ appName, debug: debug === 'true' })
-}`}
-                    filename="src/app/api/config.ts"
-                  />
-                  <Note>
-                    <code>getEnv</code> and <code>requireEnv</code> read from the Hono request context, resolving from the correct source on every platform automatically — Node.js, Bun, Deno, Vercel Edge, Netlify Edge, or Cloudflare Workers.
-                  </Note>
-                  <Table 
-                    headers={['Function', 'Returns', 'Behavior']}
-                    rows={[
-                      ['getEnv(key)', 'string | undefined', 'Returns undefined if missing — use ?? for defaults'],
-                      ['requireEnv(key)', 'string', 'Throws immediately if missing or empty'],
-                    ]}
-                  />
-                </m.section>
+  const apiKey = requireEnv(request as any, 'MY_API_KEY')
+  const debug = getEnv(request as any, 'DEBUG_MODE') ?? 'false'
+  const appName = getEnv(request as any, 'APP_NAME') ?? 'Bini.js'
 
-                {/* Error Handling */}
-                <m.section id="error-handling" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Error Handling</h2>
-                  <p className="text-slate-300 mb-4">
-                    Properly handle errors in your API routes:
-                  </p>
-                  <CodeBlock 
-                    code={`// src/app/api/safe.ts → /api/safe
-import { getEnv } from 'bini-env'
+  return Response.json({ appName, debug: debug === 'true', hasKey: !!apiKey })
+}`}
+          jsCode={`import { getEnv, requireEnv } from 'bini-env'
+
+export default function handler(request) {
+  const apiKey = requireEnv(request, 'MY_API_KEY')
+  const debug = getEnv(request, 'DEBUG_MODE') ?? 'false'
+  const appName = getEnv(request, 'APP_NAME') ?? 'Bini.js'
+
+  return Response.json({ appName, debug: debug === 'true', hasKey: !!apiKey })
+}`}
+        />
+        <Table
+          headers={['Function', 'Returns', 'Behavior']}
+          rows={[
+            ['getEnv(ctx, key)', 'string | undefined', 'Undefined if missing - use ?? for defaults'],
+            ['requireEnv(ctx, key)', 'string', 'Throws if missing or empty'],
+          ]}
+        />
+      </Section>
+
+      <Section id="error-handling" title="Error Handling">
+        <P>Validate input and catch unexpected failures:</P>
+        <CodeBlock
+          filename={`src/app/api/safe.${e}`}
+          tsCode={`import { getEnv } from 'bini-env'
 
 export default async function handler(request: Request) {
   try {
     const body = await request.json()
-    
+
     if (!body.email) {
-      return Response.json(
-        { error: 'Email is required' }, 
-        { status: 400 }
-      )
+      return Response.json({ error: 'Email is required' }, { status: 400 })
     }
-    
+
     return Response.json({ success: true })
-    
   } catch (error: any) {
-    const isDev = getEnv('NODE_ENV') === 'development'
+    const isDev = getEnv(request as any, 'NODE_ENV') === 'development'
     return Response.json(
-      { 
+      {
         error: 'Internal Server Error',
-        ...(isDev && { details: error.message })
-      }, 
+        ...(isDev && { details: error.message }),
+      },
       { status: 500 }
     )
   }
 }`}
-                    filename="src/app/api/safe.ts"
-                  />
-                </m.section>
+          jsCode={`import { getEnv } from 'bini-env'
 
-                {/* When to Use */}
-                <m.section id="when-to-use" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">When to Use Plain Handlers</h2>
-                  <Table 
-                    headers={['Scenario', 'Recommendation']}
-                    rows={[
-                      ['Single endpoint with simple logic', <span className="flex items-center gap-1"><CheckCircle className="w-3.5 h-3.5 text-emerald-400" /> Plain handler</span>],
-                      ['Quick prototypes', <span className="flex items-center gap-1"><CheckCircle className="w-3.5 h-3.5 text-emerald-400" /> Plain handler</span>],
-                      ['Simple CRUD operations', <span className="flex items-center gap-1"><CheckCircle className="w-3.5 h-3.5 text-emerald-400" /> Plain handler</span>],
-                      ['Multiple endpoints in one file', <span className="flex items-center gap-1"><XCircle className="w-3.5 h-3.5 text-rose-400" /> Use Hono</span>],
-                      ['Need middleware', <span className="flex items-center gap-1"><XCircle className="w-3.5 h-3.5 text-rose-400" /> Use Hono</span>],
-                      ['Complex routing patterns', <span className="flex items-center gap-1"><XCircle className="w-3.5 h-3.5 text-rose-400" /> Use Hono</span>],
-                      ['Production APIs with many routes', <span className="flex items-center gap-1"><XCircle className="w-3.5 h-3.5 text-rose-400" /> Use Hono</span>],
-                    ]}
-                  />
-                  <Note>
-                    Start with plain handlers for simple endpoints. Switch to Hono when you need middleware, complex routing, or better organization.
-                  </Note>
-                </m.section>
+export default async function handler(request) {
+  try {
+    const body = await request.json()
 
-                {/* Complete Example */}
-                <m.section id="complete-example" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Complete Example</h2>
-                  <p className="text-slate-300 mb-4">
-                    A full-featured plain function handler with validation, error handling, and multiple methods:
-                  </p>
-                  <CodeBlock 
-                    code={`// src/app/api/todos.ts → /api/todos
-import { getEnv } from 'bini-env'
+    if (!body.email) {
+      return Response.json({ error: 'Email is required' }, { status: 400 })
+    }
 
-const todos: any[] = []
+    return Response.json({ success: true })
+  } catch (error) {
+    const isDev = getEnv(request, 'NODE_ENV') === 'development'
+    return Response.json(
+      {
+        error: 'Internal Server Error',
+        ...(isDev && { details: error.message }),
+      },
+      { status: 500 }
+    )
+  }
+}`}
+        />
+      </Section>
+
+      <Section id="when-to-use" title="When to Use Plain Handlers">
+        <Table
+          headers={['Scenario', 'Recommendation']}
+          rows={[
+            ['Single endpoint with simple logic', 'Plain handler'],
+            ['Quick prototypes', 'Plain handler'],
+            ['Simple CRUD', 'Plain handler'],
+            ['Multiple endpoints in one file', 'Use Hono'],
+            ['Need middleware', 'Use Hono'],
+            ['Complex routing', 'Use Hono'],
+            ['Large production API surface', 'Use Hono'],
+          ]}
+        />
+        <Callout>
+          Start with plain handlers. Switch to Hono when you need middleware, nested routes, or
+          larger organization.
+        </Callout>
+      </Section>
+
+      <Section id="complete-example" title="Complete Example">
+        <P>A small todos API with validation and method branching:</P>
+        <CodeBlock
+          filename={`src/app/api/todos.${e}`}
+          tsCode={`import { getEnv } from 'bini-env'
+
+const todos: { id: string; title: string; completed: boolean }[] = []
 
 export default async function handler(request: Request) {
   const url = new URL(request.url)
   const id = url.searchParams.get('id')
-  
+
   try {
-    // GET /api/todos — list all todos
     if (request.method === 'GET' && !id) {
       return Response.json(todos)
     }
-    
-    // GET /api/todos?id=123 — get single todo
+
     if (request.method === 'GET' && id) {
-      const todo = todos.find(t => t.id === id)
+      const todo = todos.find((t) => t.id === id)
       if (!todo) {
         return Response.json({ error: 'Todo not found' }, { status: 404 })
       }
       return Response.json(todo)
     }
-    
-    // POST /api/todos — create a new todo
+
     if (request.method === 'POST') {
       const body = await request.json()
-      
       if (!body.title) {
-        return Response.json(
-          { error: 'Title is required' }, 
-          { status: 400 }
-        )
+        return Response.json({ error: 'Title is required' }, { status: 400 })
       }
-      
-      const todo = { id: Date.now().toString(), title: body.title, completed: false }
+      const todo = {
+        id: Date.now().toString(),
+        title: body.title,
+        completed: false,
+      }
       todos.push(todo)
       return Response.json(todo, { status: 201 })
     }
-    
-    // DELETE /api/todos?id=123 — delete a todo
+
     if (request.method === 'DELETE' && id) {
-      const index = todos.findIndex(t => t.id === id)
+      const index = todos.findIndex((t) => t.id === id)
       if (index === -1) {
         return Response.json({ error: 'Todo not found' }, { status: 404 })
       }
       todos.splice(index, 1)
       return Response.json({ message: 'Todo deleted' })
     }
-    
+
     return Response.json({ error: 'Method not allowed' }, { status: 405 })
-    
   } catch (error: any) {
-    const isDev = getEnv('NODE_ENV') === 'development'
+    const isDev = getEnv(request as any, 'NODE_ENV') === 'development'
     return Response.json(
-      { 
+      {
         error: 'Internal Server Error',
-        ...(isDev && { details: error.message })
-      }, 
+        ...(isDev && { details: error.message }),
+      },
       { status: 500 }
     )
   }
 }`}
-                    filename="src/app/api/todos.ts"
-                  />
-                </m.section>
+          jsCode={`import { getEnv } from 'bini-env'
 
-                {/* Previous / Next Navigation */}
-                <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
-                  <Link to="/docs/api-routes" className="group flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
-                    <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                    <div>
-                      <div className="text-xs text-slate-500">Previous</div>
-                      <div className="text-sm font-medium">API Routes Overview</div>
-                    </div>
-                  </Link>
-                  <Link to="/docs/api-hono" className="group flex items-center gap-2 text-right text-slate-400 hover:text-white transition-colors">
-                    <div>
-                      <div className="text-xs text-slate-500">Next</div>
-                      <div className="text-sm font-medium">Hono Integration</div>
-                    </div>
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                </m.div>
+const todos = []
 
-              </div>
+export default async function handler(request) {
+  const url = new URL(request.url)
+  const id = url.searchParams.get('id')
 
-              {/* Right-hand "On this page" sidebar */}
-              <aside className="hidden xl:block w-56 shrink-0">
-                <TableOfContents items={TOC_ITEMS} editUrl={EDIT_URL} />
-              </aside>
-            </div>
-          </DocLayout>
-          
-        </div>
-      </div>
-    </div>
+  try {
+    if (request.method === 'GET' && !id) {
+      return Response.json(todos)
+    }
+
+    if (request.method === 'GET' && id) {
+      const todo = todos.find((t) => t.id === id)
+      if (!todo) {
+        return Response.json({ error: 'Todo not found' }, { status: 404 })
+      }
+      return Response.json(todo)
+    }
+
+    if (request.method === 'POST') {
+      const body = await request.json()
+      if (!body.title) {
+        return Response.json({ error: 'Title is required' }, { status: 400 })
+      }
+      const todo = {
+        id: Date.now().toString(),
+        title: body.title,
+        completed: false,
+      }
+      todos.push(todo)
+      return Response.json(todo, { status: 201 })
+    }
+
+    if (request.method === 'DELETE' && id) {
+      const index = todos.findIndex((t) => t.id === id)
+      if (index === -1) {
+        return Response.json({ error: 'Todo not found' }, { status: 404 })
+      }
+      todos.splice(index, 1)
+      return Response.json({ message: 'Todo deleted' })
+    }
+
+    return Response.json({ error: 'Method not allowed' }, { status: 405 })
+  } catch (error) {
+    const isDev = getEnv(request, 'NODE_ENV') === 'development'
+    return Response.json(
+      {
+        error: 'Internal Server Error',
+        ...(isDev && { details: error.message }),
+      },
+      { status: 500 }
+    )
+  }
+}`}
+        />
+      </Section>
+    </>
+  )
+}
+
+/* ---------- page ---------- */
+
+export default function ApiPlainPage() {
+  return (
+    <DocPage
+      title="Plain Function Handlers"
+      description="Simple API endpoints with a default-exported Request → Response function."
+      url="https://bini.js.org/docs/api-plain"
+      editUrl="https://github.com/Binidu01/bini-official/edit/main/src/app/docs/api-plain.tsx"
+      toc={TOC_ITEMS}
+      prev={{ to: '/docs/api-routes', title: 'API Routes Overview' }}
+      next={{ to: '/docs/api-hono', title: 'Hono Integration' }}
+    >
+      <Content />
+    </DocPage>
   )
 }

@@ -1,20 +1,19 @@
-// src/pages/docs/metadata/page.tsx
-import React from 'react'
-import { m } from 'framer-motion'
+// src/app/docs/metadata.tsx
 import {
-  ArrowLeft,
-  ArrowRight,
-} from 'lucide-react'
-import { Link } from 'react-router-dom'
-import { Header } from '../../components/Layout'
-import { DocLayout } from '../../components/DocSidebar'
-import { CopyPageButton } from '../../components/CopyPageButton'
-import { TableOfContents, type TocItem } from '../../components/TableOfContents'
+  C,
+  Callout,
+  CodeBlock,
+  DocPage,
+  P,
+  Section,
+  Table,
+  useDocLang,
+} from '../../components/DocBlocks'
+import { FolderVisual, RouteVisual } from '../../components/DocVisuals'
+import type { TocItem } from '../../components/TableOfContents'
 
-// ────────────────────────────────────────────────────────────────────────────────
-// "On this page" entries
-// ────────────────────────────────────────────────────────────────────────────────
 const TOC_ITEMS: TocItem[] = [
+  { id: 'overview', label: 'Overview' },
   { id: 'what-is-metadata', label: 'What is Metadata?' },
   { id: 'basic-metadata', label: 'Basic Metadata' },
   { id: 'open-graph', label: 'Open Graph' },
@@ -22,177 +21,95 @@ const TOC_ITEMS: TocItem[] = [
   { id: 'default-images', label: 'Default Images' },
   { id: 'icons', label: 'Icons' },
   { id: 'nested-metadata', label: 'Nested Metadata' },
+  { id: 'bini-ssg-injection', label: 'bini-ssg Injection' },
+  { id: 'complete-example', label: 'Complete Example' },
 ]
 
-const PAGE_TITLE = 'Metadata'
-const PAGE_URL = 'https://bini.js.org/docs/metadata'
-const EDIT_URL = 'https://github.com/Binidu01/bini-offical/edit/main/src/app/docs/metadata.tsx'
+/* ---------- content (reads the TS/JS choice from DocPage) ---------- */
 
-// ────────────────────────────────────────────────────────────────────────────────
-// Code Block Component with horizontal scrollbar
-// ────────────────────────────────────────────────────────────────────────────────
-function CodeBlock({ code, filename }: { code: string; filename?: string }) {
-  const [copied, setCopied] = React.useState(false)
-  const handleCopy = () => { 
-    const cleanCode = code.replace(/\$ /g, '')
-    navigator.clipboard.writeText(cleanCode)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000) 
-  }
+function Content() {
+  const lang = useDocLang()
+  const e = lang === 'js' ? 'jsx' : 'tsx'
 
   return (
-    <div className="relative group mb-6">
-      {filename && (
-        <div className="flex items-center justify-between px-4 py-2 bg-slate-900 border border-slate-800 border-b-0 rounded-t-lg">
-          <span className="text-sm text-slate-300 font-mono">{filename}</span>
-        </div>
-      )}
-      <button onClick={handleCopy} className="absolute top-2 right-2 p-1.5 rounded-md bg-slate-800 hover:bg-slate-700 transition-colors z-10 opacity-0 group-hover:opacity-100" style={{ top: filename ? '3rem' : '0.5rem' }}>
-        {copied ? (
-          <svg className="w-3.5 h-3.5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
-        ) : (
-          <svg className="w-3.5 h-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-          </svg>
-        )}
-      </button>
-      <div className={`bg-[#0a0a0a] border border-slate-700 ${filename ? 'rounded-t-none' : 'rounded-lg'} overflow-x-auto scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-transparent hover:scrollbar-thumb-slate-500`}>
-        <pre className="p-4 min-w-max">
-          <code className="text-sm font-mono text-slate-200 whitespace-pre">{code}</code>
-        </pre>
-      </div>
-    </div>
-  )
-}
+    <>
+      <Section id="overview" title="Overview">
+        <P>
+          Metadata describes your page to search engines, social platforms, and browsers. Export a{' '}
+          <C>metadata</C> object from any layout or page for titles, descriptions, Open Graph,
+          Twitter cards, and icons.
+        </P>
+        <P>
+          <C>bini-ssg</C> reads route metadata via <C>getMetadataForRoute</C> and injects it into
+          each pre-rendered page <C>head</C> during <C>vite build</C>.
+        </P>
+        <Table
+          headers={['Feature', 'How bini-ssg uses it']}
+          rows={[
+            ['title, description, robots, canonical', 'Injected as title and meta tags'],
+            ['icons', 'icon, shortcut, apple-touch-icon'],
+            ['openGraph', 'og:title, og:type, og:description, og:url, og:image'],
+            ['twitter', 'twitter:card, twitter:title, twitter:description, twitter:image'],
+          ]}
+        />
+      </Section>
 
-// ────────────────────────────────────────────────────────────────────────────────
-// Table Component
-// ────────────────────────────────────────────────────────────────────────────────
-function Table({ headers, rows }: { headers: string[]; rows: string[][] }) {
-  return (
-    <div className="overflow-x-auto rounded-lg border border-slate-700 my-6">
-      <table className="w-full text-sm">
-        <thead className="bg-slate-900 border-b border-slate-800">
-          <tr>{headers.map((h, i) => <th key={i} className="text-left py-3 px-4 font-medium text-white">{h}</th>)}</tr>
-        </thead>
-        <tbody className="divide-y divide-slate-800">
-          {rows.map((row, i) => <tr key={i}>{row.map((cell, j) => <td key={j} className="py-3 px-4 text-slate-300 text-xs">{cell}</td>)}</tr>)}
-        </tbody>
-      </table>
-    </div>
-  )
-}
+      <Section id="what-is-metadata" title="What is Metadata?">
+        <P>
+          Metadata controls how links look when shared on Twitter, Facebook, LinkedIn, and Slack.
+          You author it in route and layout files. The router merges layout-level metadata before{' '}
+          <C>bini-ssg</C> sees it.
+        </P>
+        <Callout>
+          <C>getMetadataForRoute</C> returns the already-merged entry for a route. <C>bini-ssg</C>{' '}
+          does not invent metadata - it only injects what you export.
+        </Callout>
+      </Section>
 
-// ────────────────────────────────────────────────────────────────────────────────
-// Metadata Page
-// ────────────────────────────────────────────────────────────────────────────────
-export default function MetadataPage() {
-  return (
-    <div className="min-h-screen bg-black font-sans antialiased overflow-x-hidden">
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute inset-0 bg-black" />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-300 h-200 bg-linear-to-b from-cyan-500/5 via-sky-500/3 to-transparent rounded-full blur-3xl" />
-      </div>
-
-      <Header />
-
-      <div className="relative pt-16 lg:pt-20">
-        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 overflow-x-hidden">
-          
-          <DocLayout>
-            <div className="flex gap-10 xl:gap-14">
-              {/* Main content column */}
-              <div className="max-w-4xl min-w-0 flex-1">
-
-                {/* Title + Copy page button */}
-                <m.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex items-start justify-between gap-4 mb-4"
-                >
-                  <div>
-                    <h1 className="text-4xl font-bold text-white mb-2">{PAGE_TITLE}</h1>
-                    <p className="text-slate-400 text-sm">Learn how to add metadata to your pages for better SEO and social sharing.</p>
-                  </div>
-                  <div className="shrink-0 pt-2 hidden sm:block">
-                    <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
-                  </div>
-                </m.div>
-                {/* Copy button on small screens */}
-                <div className="sm:hidden mb-8">
-                  <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
-                </div>
-
-                {/* What is Metadata? */}
-                <m.section id="what-is-metadata" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">What is Metadata?</h2>
-                  <p className="text-slate-300 mb-4">
-                    Metadata provides information about your webpage to search engines, social media platforms, and browsers. In Bini.js, you can export a <code className="text-cyan-400">metadata</code> object from any layout to control page titles, descriptions, Open Graph tags, Twitter cards, and icons.
-                  </p>
-                  <p className="text-slate-300 mb-4">
-                    Metadata is essential for SEO and social sharing, helping your pages look great when shared on platforms like Twitter, Facebook, and LinkedIn.
-                  </p>
-                </m.section>
-
-                {/* Basic Metadata */}
-                <m.section id="basic-metadata" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Basic Metadata</h2>
-                  <p className="text-slate-300 mb-4">
-                    Export a <code className="text-cyan-400">metadata</code> object from your root layout or any nested layout:
-                  </p>
-                  <CodeBlock 
-                    code={`// src/app/layout.tsx
-export const metadata = {
+      <Section id="basic-metadata" title="Basic Metadata">
+        <P>Export <C>metadata</C> from the root layout or any nested layout or page.</P>
+        <CodeBlock
+          filename={`app/layout.${e}`}
+          tsCode={`export const metadata = {
   title: 'My Bini.js App',
   description: 'Built with Bini.js - a native React framework',
-  viewport: 'width=device-width, initial-scale=1.0',
-  themeColor: '#00CFFF',
-  charset: 'UTF-8',
   robots: 'index, follow',
-  manifest: '/site.webmanifest',
-  keywords: ['react', 'vite', 'framework', 'bini'],
-  authors: [{ name: 'Your Name', url: 'https://example.com' }],
   canonical: 'https://myapp.com',
-}
-
-export default function RootLayout() {
-  return <Outlet />
+  themeColor: '#0a0a0a',
+  keywords: ['react', 'vite', 'framework', 'bini'],
 }`}
-                    filename="app/layout.tsx"
-                  />
-                  <Table 
-                    headers={['Field', 'Description']}
-                    rows={[
-                      ['title', 'Page title shown in browser tab and search results'],
-                      ['description', 'Page description for search results'],
-                      ['viewport', 'Viewport configuration for responsive design'],
-                      ['themeColor', 'Browser UI theme color'],
-                      ['charset', 'Character encoding'],
-                      ['robots', 'Instructions for search engine crawlers'],
-                      ['manifest', 'Path to web app manifest'],
-                      ['keywords', 'Array or string of keywords'],
-                      ['authors', 'Author information'],
-                      ['canonical', 'Canonical URL for SEO'],
-                    ]}
-                  />
-                </m.section>
+          jsCode={`export const metadata = {
+  title: 'My Bini.js App',
+  description: 'Built with Bini.js - a native React framework',
+  robots: 'index, follow',
+  canonical: 'https://myapp.com',
+  themeColor: '#0a0a0a',
+  keywords: ['react', 'vite', 'framework', 'bini'],
+}`}
+        />
+        <Table
+          headers={['Field', 'Description']}
+          rows={[
+            ['title', 'Document title'],
+            ['description', 'Meta description'],
+            ['robots', 'Crawler instructions'],
+            ['canonical', 'Canonical URL'],
+            ['themeColor', 'Browser UI color'],
+            ['keywords', 'Optional keyword list'],
+          ]}
+        />
+      </Section>
 
-                {/* Open Graph */}
-                <m.section id="open-graph" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Open Graph</h2>
-                  <p className="text-slate-300 mb-4">
-                    Open Graph tags control how your page appears when shared on social media platforms like Facebook, LinkedIn, and Slack.
-                  </p>
-                  <CodeBlock 
-                    code={`// src/app/about/page.tsx
-export const metadata = {
+      <Section id="open-graph" title="Open Graph">
+        <P>Open Graph tags control previews on Facebook, LinkedIn, and Slack.</P>
+        <CodeBlock
+          filename={`app/about/page.${e}`}
+          tsCode={`export const metadata = {
   title: 'About Us',
-  description: 'Learn more about our company and team',
+  description: 'Learn more about our company',
   openGraph: {
     title: 'About Us - My Bini.js App',
-    description: 'Learn more about our company and team',
+    description: 'Learn more about our company',
     url: 'https://myapp.com/about',
     type: 'website',
     images: [
@@ -206,38 +123,36 @@ export const metadata = {
     siteName: 'My Bini.js App',
     locale: 'en_US',
   },
-}
-
-export default function AboutPage() {
-  return <h1>About Us</h1>
 }`}
-                    filename="app/about/page.tsx"
-                  />
-                  <Table 
-                    headers={['Field', 'Description']}
-                    rows={[
-                      ['title', 'Title for social sharing'],
-                      ['description', 'Description for social sharing'],
-                      ['url', 'Canonical URL for the page'],
-                      ['type', 'Type of content (website, article, etc.)'],
-                      ['images', 'Array of image objects for social cards'],
-                      ['siteName', 'Name of the site'],
-                      ['locale', 'Language locale'],
-                    ]}
-                  />
-                </m.section>
+          jsCode={`export const metadata = {
+  title: 'About Us',
+  description: 'Learn more about our company',
+  openGraph: {
+    title: 'About Us - My Bini.js App',
+    description: 'Learn more about our company',
+    url: 'https://myapp.com/about',
+    type: 'website',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'About Us',
+      },
+    ],
+    siteName: 'My Bini.js App',
+    locale: 'en_US',
+  },
+}`}
+        />
+      </Section>
 
-                {/* Twitter Cards */}
-                <m.section id="twitter-cards" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Twitter Cards</h2>
-                  <p className="text-slate-300 mb-4">
-                    Twitter Cards control how your page appears when shared on Twitter/X.
-                  </p>
-                  <CodeBlock 
-                    code={`// src/app/blog/[slug]/page.tsx
-export const metadata = {
+      <Section id="twitter-cards" title="Twitter Cards">
+        <P>Twitter (X) card fields control how links appear in the feed.</P>
+        <CodeBlock
+          filename={`app/blog/[slug]/page.${e}`}
+          tsCode={`export const metadata = {
   title: 'Blog Post',
-  description: 'A comprehensive guide to Bini.js',
   twitter: {
     card: 'summary_large_image',
     title: 'Blog Post - My Bini.js App',
@@ -247,156 +162,193 @@ export const metadata = {
   },
   openGraph: {
     title: 'Blog Post',
-    description: 'A comprehensive guide to Bini.js',
     images: ['/og-image.png'],
   },
-}
-
-export default function BlogPost() {
-  return <h1>Blog Post</h1>
 }`}
-                    filename="app/blog/[slug]/page.tsx"
-                  />
-                  <Table 
-                    headers={['Field', 'Description']}
-                    rows={[
-                      ['card', 'Card type (summary, summary_large_image, app, player)'],
-                      ['title', 'Title for Twitter card'],
-                      ['description', 'Description for Twitter card'],
-                      ['creator', 'Twitter handle of the content creator'],
-                      ['images', 'Array of image URLs for the card'],
-                    ]}
-                  />
-                </m.section>
+          jsCode={`export const metadata = {
+  title: 'Blog Post',
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Blog Post - My Bini.js App',
+    description: 'A comprehensive guide to Bini.js',
+    creator: '@bini_js',
+    images: ['/og-image.png'],
+  },
+  openGraph: {
+    title: 'Blog Post',
+    images: ['/og-image.png'],
+  },
+}`}
+        />
+      </Section>
 
-                {/* Default Images */}
-                <m.section id="default-images" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Default Images</h2>
-                  <p className="text-slate-300 mb-4">
-                    Bini.js comes with default images pre-configured. Just replace these files in your <code className="text-cyan-400">public/</code> directory:
-                  </p>
-                  <CodeBlock 
-                    code={`public/
-├── favicon.ico           ← Your favicon
-├── apple-touch-icon.png  ← iOS home screen icon
-├── og-image.png          ← Open Graph image
-├── logo.png              ← Your app logo
-└── site.webmanifest      ← Web app manifest`}
-                    filename="public/"
-                  />
-                  <p className="text-slate-300 mt-4">
-                    <strong className="text-white">No configuration needed.</strong> Bini.js already has all the metadata configured. Just drop your images in the <code className="text-cyan-400">public/</code> folder and they'll automatically be used.
-                  </p>
-                  <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-4 mt-4">
-                    <p className="text-slate-300 text-sm">
-                      <strong className="text-white">Tip:</strong> For best results, use images that are at least 1200x630 pixels for Open Graph images.
-                    </p>
-                  </div>
-                </m.section>
+      <Section id="default-images" title="Default Images">
+        <P>
+          Put static assets in <C>public/</C>. Reference them by absolute path in metadata.
+        </P>
+        <FolderVisual
+          width={240}
+          rows={[
+            { n: 'public' },
+            { n: 'favicon.ico', d: 1 },
+            { n: 'apple-touch-icon.png', d: 1 },
+            { n: 'og-image.png', d: 1, dot: true },
+            { n: 'logo.png', d: 1 },
+            { n: 'site.webmanifest', d: 1 },
+          ]}
+        />
+        <Callout>
+          Recommended Open Graph size is 1200×630. No extra config - files in <C>public/</C> are
+          served as-is.
+        </Callout>
+      </Section>
 
-                {/* Icons */}
-                <m.section id="icons" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Icons</h2>
-                  <p className="text-slate-300 mb-4">
-                    Define favicons, Apple touch icons, and other icons for your application.
-                  </p>
-                  <CodeBlock 
-                    code={`// src/app/layout.tsx
-export const metadata = {
-  title: 'My App',
+      <Section id="icons" title="Icons">
+        <CodeBlock
+          filename={`app/layout.${e}`}
+          tsCode={`export const metadata = {
   icons: {
     icon: [
       { url: '/favicon.svg', type: 'image/svg+xml' },
       { url: '/favicon.ico' },
-      { url: '/favicon-32x32.png', sizes: '32x32' },
-      { url: '/favicon-16x16.png', sizes: '16x16' },
     ],
-    shortcut: '/favicon.ico',
-    apple: [
-      { url: '/apple-touch-icon.png', sizes: '180x180' },
-      { url: '/apple-touch-icon-precomposed.png' },
-    ],
+    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180' }],
   },
-}
-
-export default function RootLayout() {
-  return <Outlet />
 }`}
-                    filename="app/layout.tsx"
-                  />
-                  <Table 
-                    headers={['Field', 'Description']}
-                    rows={[
-                      ['icon', 'Standard favicon (array of icon objects)'],
-                      ['shortcut', 'Shortcut icon URL'],
-                      ['apple', 'Apple touch icons (array of icon objects)'],
-                    ]}
-                  />
-                </m.section>
+          jsCode={`export const metadata = {
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.ico' },
+    ],
+    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180' }],
+  },
+}`}
+        />
+      </Section>
 
-                {/* Nested Metadata */}
-                <m.section id="nested-metadata" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Nested Metadata</h2>
-                  <p className="text-slate-300 mb-4">
-                    Nested layouts can export their own metadata. Page titles are automatically combined using the template defined in the root layout.
-                  </p>
-                  <CodeBlock 
-                    code={`// src/app/layout.tsx - Root layout
-export const metadata = {
+      <Section id="nested-metadata" title="Nested Metadata">
+        <P>
+          Layout and page metadata merge. Use a title template at the root so child pages can set a
+          short title.
+        </P>
+        <RouteVisual
+          fileWidth={260}
+          rows={[
+            { n: 'app' },
+            { n: `layout.${e}`, d: 1, dot: true },
+            { n: `page.${e}`, d: 1, url: '/' },
+            { n: 'blog', d: 1 },
+            { n: `layout.${e}`, d: 2, dot: true },
+            { n: `page.${e}`, d: 2, url: '/blog' },
+            { n: '[slug]', d: 2 },
+            { n: `page.${e}`, d: 3, url: '/blog/:slug', dot: true },
+          ]}
+        />
+        <CodeBlock
+          filename={`app/layout.${e}`}
+          tsCode={`export const metadata = {
   title: {
     default: 'My App',
     template: '%s | My App',
   },
-  description: 'Built with Bini.js',
-}
-
-// src/app/blog/layout.tsx - Blog layout
-export const metadata = {
-  title: 'Blog',
-  description: 'Blog posts about Bini.js',
-}
-
-// src/app/blog/[slug]/page.tsx - Blog post
-export const metadata = {
+}`}
+          jsCode={`export const metadata = {
+  title: {
+    default: 'My App',
+    template: '%s | My App',
+  },
+}`}
+        />
+        <CodeBlock
+          filename={`app/blog/[slug]/page.${e}`}
+          tsCode={`export const metadata = {
   title: 'Getting Started with Bini.js',
   // Result: "Getting Started with Bini.js | My App"
-  description: 'Learn how to get started with Bini.js',
 }`}
-                  />
-                  <p className="text-slate-300 mt-4">
-                    When nested layouts export metadata, the <code className="text-cyan-400">title</code> is automatically combined with the root layout's template. Other fields like <code className="text-cyan-400">description</code>, <code className="text-cyan-400">openGraph</code>, and <code className="text-cyan-400">twitter</code> override ancestor values.
-                  </p>
-                </m.section>
+          jsCode={`export const metadata = {
+  title: 'Getting Started with Bini.js',
+  // Result: "Getting Started with Bini.js | My App"
+}`}
+        />
+      </Section>
 
-                {/* Previous / Next Navigation */}
-                <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
-                  <Link to="/docs/notfound" className="group flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
-                    <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                    <div>
-                      <div className="text-xs text-slate-500">Previous</div>
-                      <div className="text-sm font-medium">Not Found (404)</div>
-                    </div>
-                  </Link>
-                  <Link to="/docs/og-twitter" className="group flex items-center gap-2 text-right text-slate-400 hover:text-white transition-colors">
-                    <div>
-                      <div className="text-xs text-slate-500">Next</div>
-                      <div className="text-sm font-medium">Open Graph & Twitter</div>
-                    </div>
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                </m.div>
+      <Section id="bini-ssg-injection" title="bini-ssg Injection">
+        <P>
+          During <C>vite build</C>, <C>bini-ssg</C> merges metadata into static HTML.
+        </P>
+        <Callout>
+          <ul className="list-disc space-y-2 pl-5">
+            <li>
+              <strong>SEO fields:</strong> title, description, icons, Open Graph, Twitter - existing
+              matching tags updated in place
+            </li>
+            <li>
+              <strong>Head tree:</strong> element / text / raw nodes (raw for JSON-LD)
+            </li>
+            <li>
+              <strong>Dynamic routes:</strong> metadata is keyed by the route pattern (e.g.{' '}
+              <C>/blog/:slug</C>), not each concrete URL
+            </li>
+          </ul>
+        </Callout>
+      </Section>
 
-              </div>
+      <Section id="complete-example" title="Complete Example">
+        <CodeBlock
+          filename={`app/blog/[slug]/page.${e}`}
+          tsCode={`export const metadata = {
+  title: 'How bini-ssg pre-renders routes',
+  description:
+    'A look at link crawling, shells, and metadata injection.',
+  robots: 'index, follow',
+  canonical: 'https://example.com/blog/how-bini-ssg-works',
+  openGraph: {
+    title: 'How bini-ssg pre-renders routes',
+    type: 'article',
+    images: ['https://example.com/og/how-bini-ssg-works.png'],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    creator: '@bini_js',
+  },
+}`}
+          jsCode={`export const metadata = {
+  title: 'How bini-ssg pre-renders routes',
+  description:
+    'A look at link crawling, shells, and metadata injection.',
+  robots: 'index, follow',
+  canonical: 'https://example.com/blog/how-bini-ssg-works',
+  openGraph: {
+    title: 'How bini-ssg pre-renders routes',
+    type: 'article',
+    images: ['https://example.com/og/how-bini-ssg-works.png'],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    creator: '@bini_js',
+  },
+}`}
+        />
+      </Section>
+    </>
+  )
+}
 
-              {/* Right-hand "On this page" sidebar */}
-              <aside className="hidden xl:block w-56 shrink-0">
-                <TableOfContents items={TOC_ITEMS} editUrl={EDIT_URL} />
-              </aside>
-            </div>
-          </DocLayout>
-          
-        </div>
-      </div>
-    </div>
+/* ---------- page ---------- */
+
+export default function MetadataPage() {
+  return (
+    <DocPage
+      title="Metadata"
+      description="Export metadata from layouts and pages for SEO and social sharing. Consumed by bini-ssg at build time."
+      url="https://bini.js.org/docs/metadata"
+      editUrl="https://github.com/Binidu01/bini-official/edit/main/src/app/docs/metadata.tsx"
+      toc={TOC_ITEMS}
+      prev={{ to: '/docs/notfound', title: 'Not Found (404)' }}
+      next={{ to: '/docs/og-twitter', title: 'Open Graph & Twitter' }}
+    >
+      <Content />
+    </DocPage>
   )
 }

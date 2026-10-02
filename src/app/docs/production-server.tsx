@@ -1,23 +1,31 @@
-// src/pages/docs/production-server/page.tsx
-import React from 'react'
-import { m } from 'framer-motion'
-import {
-  ArrowLeft,
-  ArrowRight,
-  CheckCircle,
-  XCircle,
-} from 'lucide-react'
-import { Link } from 'react-router-dom'
-import { Header } from '../../components/Layout'
-import { DocLayout } from '../../components/DocSidebar'
-import { CopyPageButton } from '../../components/CopyPageButton'
-import { TableOfContents, type TocItem } from '../../components/TableOfContents'
+// src/app/docs/production-server.tsx
 import { siNodedotjs } from 'simple-icons'
-import type { SimpleIcon as SimpleIconType } from 'simple-icons'
 
-// ────────────────────────────────────────────────────────────────────────────────
-// "On this page" entries
-// ────────────────────────────────────────────────────────────────────────────────
+import {
+  BrandIcon,
+  C,
+  Callout,
+  CodeBlock,
+  DocPage,
+  H3,
+  MultiTerminal,
+  OutputBlock,
+  P,
+  Section,
+  Table,
+  UL,
+  useDocLang,
+} from '../../components/DocBlocks'
+import {
+  Arrow,
+  CARD,
+  FeatureCard,
+  FolderVisual,
+  GridBg,
+  RouteVisual,
+} from '../../components/DocVisuals'
+import type { TocItem } from '../../components/TableOfContents'
+
 const TOC_ITEMS: TocItem[] = [
   { id: 'overview', label: 'Overview' },
   { id: 'features', label: 'Features' },
@@ -35,573 +43,703 @@ const TOC_ITEMS: TocItem[] = [
   { id: 'api-reference', label: 'API Reference' },
 ]
 
-const PAGE_TITLE = 'Production Server'
-const PAGE_URL = 'https://bini.js.org/docs/production-server'
-const EDIT_URL = 'https://github.com/Binidu01/bini-offical/edit/main/src/app/docs/production-server.tsx'
+const STRONG = 'font-medium text-neutral-900 dark:text-neutral-100'
+const OL =
+  'mb-6 list-decimal space-y-1 pl-5 text-[15px] leading-relaxed text-neutral-600 dark:text-neutral-400'
 
-// ────────────────────────────────────────────────────────────────────────────────
-// Simple Icon component
-// ────────────────────────────────────────────────────────────────────────────────
-function SimpleIcon({
-  icon,
-  className = "",
-  size = 20
-}: {
-  icon: SimpleIconType
-  className?: string
-  size?: number
-}) {
+const Yes = () => <span className="text-emerald-600 dark:text-emerald-400">Yes</span>
+const No = () => <span className="text-neutral-500">No</span>
+
+/* ---------- visuals ---------- */
+
+const BOX = `${CARD} flex items-center px-3 text-[12px] text-neutral-800 dark:text-neutral-200`
+
+/** How a request is routed. */
+function RequestFlowVisual() {
   return (
-    <svg
-      role="img"
-      viewBox="0 0 24 24"
-      width={size}
-      height={size}
-      fill="currentColor"
-      className={className}
-      dangerouslySetInnerHTML={{ __html: icon.svg }}
-    />
-  )
-}
-
-// ────────────────────────────────────────────────────────────────────────────────
-// Code Block Component with horizontal scrollbar
-// ────────────────────────────────────────────────────────────────────────────────
-function CodeBlock({ code, filename }: { code: string; filename?: string }) {
-  const [copied, setCopied] = React.useState(false)
-  const handleCopy = () => {
-    const cleanCode = code.replace(/\$ /g, '')
-    navigator.clipboard.writeText(cleanCode)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
-
-  return (
-    <div className="relative group mb-6">
-      {filename && (
-        <div className="flex items-center justify-between px-4 py-2 bg-slate-900 border border-slate-800 border-b-0 rounded-t-lg">
-          <span className="text-sm text-slate-300 font-mono">{filename}</span>
-        </div>
-      )}
-      <button onClick={handleCopy} className="absolute top-2 right-2 p-1.5 rounded-md bg-slate-800 hover:bg-slate-700 transition-colors z-10 opacity-0 group-hover:opacity-100" style={{ top: filename ? '3rem' : '0.5rem' }}>
-        {copied ? (
-          <svg className="w-3.5 h-3.5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
-        ) : (
-          <svg className="w-3.5 h-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-          </svg>
-        )}
-      </button>
-      <div className={`bg-[#0a0a0a] border border-slate-700 ${filename ? 'rounded-t-none' : 'rounded-lg'} overflow-x-auto scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-transparent hover:scrollbar-thumb-slate-500`}>
-        <pre className="p-4 min-w-max">
-          <code className="text-sm font-mono text-slate-200 whitespace-pre">{code}</code>
-        </pre>
-      </div>
-    </div>
-  )
-}
-
-// ────────────────────────────────────────────────────────────────────────────────
-// Table Component
-// ────────────────────────────────────────────────────────────────────────────────
-function Table({ headers, rows }: { headers: string[]; rows: React.ReactNode[][] }) {
-  return (
-    <div className="overflow-x-auto rounded-lg border border-slate-700 my-6">
-      <table className="w-full text-sm">
-        <thead className="bg-slate-900 border-b border-slate-800">
-          <tr>{headers.map((h, i) => <th key={i} className="text-left py-3 px-4 font-medium text-white">{h}</th>)}</tr>
-        </thead>
-        <tbody className="divide-y divide-slate-800">
-          {rows.map((row, i) => <tr key={i}>{row.map((cell, j) => <td key={j} className="py-3 px-4 text-slate-300 text-xs">{cell}</td>)}</tr>)}
-        </tbody>
-      </table>
-    </div>
-  )
-}
-
-// ────────────────────────────────────────────────────────────────────────────────
-// Note Component
-// ────────────────────────────────────────────────────────────────────────────────
-function Note({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-4 my-6">
-      <div className="text-sm text-slate-300 [&>strong]:text-white [&>code]:text-cyan-400 [&>code]:bg-slate-800 [&>code]:px-1 [&>code]:py-0.5 [&>code]:rounded">
-        {children}
-      </div>
-    </div>
-  )
-}
-
-// ────────────────────────────────────────────────────────────────────────────────
-// Feature Card Component
-// ────────────────────────────────────────────────────────────────────────────────
-function FeatureCard({ emoji, title, description }: { emoji: string; title: string; description: string }) {
-  return (
-    <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-4 hover:border-slate-700 transition-colors">
-      <div className="flex items-start gap-3">
-        <span className="text-xl leading-none">{emoji}</span>
-        <div>
-          <h4 className="text-sm font-semibold text-white mb-1">{title}</h4>
-          <p className="text-xs text-slate-400 leading-relaxed">{description}</p>
+    <GridBg>
+      <div className="flex items-center gap-3">
+        <span className={`${BOX} h-10 w-24 shrink-0 justify-center`}>Request</span>
+        <Arrow />
+        <span className={`${BOX} h-10 w-32 shrink-0 justify-center font-semibold`}>
+          bini-server
+        </span>
+        <Arrow />
+        <div className="flex flex-col gap-2">
+          <span className={`${BOX} h-10 w-64 shrink-0`}>
+            <span className="mr-2 text-neutral-500">dist/</span>
+            static files + SPA fallback
+          </span>
+          <span className={`${BOX} h-10 w-64 shrink-0`}>
+            <span className="mr-2 text-neutral-500">src/app/api/</span>
+            /api/* routes
+          </span>
         </div>
       </div>
-    </div>
+    </GridBg>
   )
 }
 
-// ────────────────────────────────────────────────────────────────────────────────
-// Production Server Page
-// ────────────────────────────────────────────────────────────────────────────────
-export default function ProductionServerPage() {
+const BANNER_TEXT = `  ß Bini.js (production)
+  ->  Environments: .env, .env.local
+  ->  Local:   http://localhost:3000/
+  ->  Network: http://192.168.1.5:3000/
+  press h + enter to show help`
+
+/** Colored startup banner, matching the real terminal output. */
+function ServerBanner() {
+  const arrow = <span className="text-green-600 dark:text-green-400">➜</span>
+  const label = (s: string) => (
+    <strong className="font-bold text-neutral-900 dark:text-white">{s}</strong>
+  )
+  const url = (host: string) => (
+    <span className="text-cyan-700 dark:text-cyan-400">
+      http://{host}:<strong className="font-bold">3000</strong>/
+    </span>
+  )
   return (
-    <div className="min-h-screen bg-black font-sans antialiased overflow-x-hidden">
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute inset-0 bg-black" />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-300 h-200 bg-linear-to-b from-cyan-500/5 via-sky-500/3 to-transparent rounded-full blur-3xl" />
-      </div>
+    <OutputBlock code={BANNER_TEXT}>
+      {'  '}
+      <span className="font-bold text-cyan-700 dark:text-cyan-400">ß Bini.js</span>{' '}
+      <span className="text-neutral-500">(production)</span>
+      {'\n  '}
+      {arrow}
+      {'  '}
+      {label('Environments:')}{' '}
+      <span className="text-neutral-600 dark:text-neutral-400">.env, .env.local</span>
+      {'\n  '}
+      {arrow}
+      {'  '}
+      {label('Local:')}
+      {'   '}
+      {url('localhost')}
+      {'\n  '}
+      {arrow}
+      {'  '}
+      {label('Network:')} {url('192.168.1.5')}
+      {'\n  '}
+      <span className="text-neutral-500">
+        ➜ press <strong className="font-bold text-neutral-700 dark:text-neutral-300">h + enter</strong>{' '}
+        to show help
+      </span>
+    </OutputBlock>
+  )
+}
 
-      <Header />
+/* ---------- content (reads the TS/JS choice from DocPage) ---------- */
 
-      <div className="relative pt-16 lg:pt-20">
-        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 overflow-x-hidden">
+function Content() {
+  const lang = useDocLang()
+  const t = lang === 'js' ? 'js' : 'ts' // plain .ts / .js files
+  const e = lang === 'js' ? 'jsx' : 'tsx' // React files
 
-          <DocLayout>
-            <div className="flex gap-10 xl:gap-14">
-              {/* Main content column */}
-              <div className="max-w-4xl min-w-0 flex-1">
+  return (
+    <>
+      <Section id="overview" title="Overview">
+        <P className="mb-4">
+          <C>bini-server</C> is the default production server for the Node.js hosting target. It
+          streams your built <C>dist/</C> folder, serves <C>/api/*</C> routes directly from{' '}
+          <C>src/app/api/</C>, and adds everything <C>vite preview</C> intentionally leaves out -
+          ETag caching, timeouts, graceful shutdown, and configurable body limits.
+        </P>
+        <RequestFlowVisual />
+        <P className="mb-6">
+          It has <strong className={STRONG}>zero runtime dependencies</strong> - only Node.js
+          built-in modules - and works identically on Windows, macOS, and Linux.
+        </P>
+        <Callout>
+          <strong>Requirements:</strong> Node.js <C>≥ 20.19.0</C>, a built <C>dist/</C> folder, and
+          API handlers under <C>src/app/api/</C> (if your app uses any).
+        </Callout>
+      </Section>
 
-                {/* Title + Copy page button */}
-                <m.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex items-start justify-between gap-4 mb-4"
-                >
-                  <div>
-                    <h1 className="text-4xl font-bold text-white mb-2">{PAGE_TITLE}</h1>
-                    <p className="text-slate-400 text-sm">A zero-dependency, secure-by-default production server for your Bini.js app, powered by <code className="text-cyan-400 bg-slate-800 px-1 py-0.5 rounded">bini-server</code>.</p>
-                  </div>
-                  <div className="shrink-0 pt-2 hidden sm:block">
-                    <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
-                  </div>
-                </m.div>
-                {/* Copy button on small screens */}
-                <div className="sm:hidden mb-8">
-                  <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
-                </div>
+      <Section id="features" title="Features">
+        <H3 className="mb-3 mt-2">Core</H3>
+        <div className="mb-6 grid gap-3 sm:grid-cols-2">
+          <FeatureCard
+            title="Static file serving"
+            text="Streams dist/ with correct MIME types, ETag, and cache headers."
+          />
+          <FeatureCard
+            title="API routes"
+            text="Serves /api/* from src/app/api/ - Hono apps and plain functions both work."
+          />
+          <FeatureCard
+            title="SPA fallback"
+            text="Unknown routes automatically serve dist/index.html."
+          />
+          <FeatureCard title="ETag support" text="304 Not Modified responses for unchanged static files." />
+          <FeatureCard
+            title="Lazy route loading"
+            text="API routes are scanned on first request for fast cold starts."
+          />
+        </div>
+        <H3 className="mb-3 mt-2">Security & Performance</H3>
+        <div className="mb-6 grid gap-3 sm:grid-cols-2">
+          <FeatureCard
+            title="CORS"
+            text="Enabled by default, configurable via CORS_ENABLED (BINI_*, VITE_*, or no prefix)."
+          />
+          <FeatureCard
+            title="Body limits"
+            text="Configurable request body size limit, defaults to 10MB."
+          />
+          <FeatureCard
+            title="Timeouts"
+            text="Configurable body-read and handler timeouts, default 30s each."
+          />
+          <FeatureCard
+            title="Path traversal protection"
+            text="Guards against .. and // in request URLs."
+          />
+          <FeatureCard
+            title="Module cache"
+            text="Caches imported handlers with mtime invalidation."
+          />
+          <FeatureCard
+            title="Port auto-increment"
+            text="Starts at 3000, auto-increments if the port is busy."
+          />
+        </div>
+        <H3 className="mb-3 mt-2">Developer Experience</H3>
+        <div className="mb-4 grid gap-3 sm:grid-cols-2">
+          <FeatureCard
+            title="Auto env loading"
+            text=".env files are detected and listed in the startup banner."
+          />
+          <FeatureCard
+            title="Interactive shortcuts"
+            text="Press h for help, o to open the browser, q to quit."
+          />
+          <FeatureCard
+            title="Cross-platform"
+            text="Works identically on Windows, macOS, and Linux."
+          />
+          <FeatureCard
+            title="Graceful shutdown"
+            text="Handles SIGTERM + SIGINT with a timeout fallback."
+          />
+          <FeatureCard
+            title="Zero dependencies"
+            text="Only Node.js built-in modules - nothing to audit or update."
+          />
+          <FeatureCard
+            title="Flexible config"
+            text="Every setting supports BINI_*, VITE_*, or no-prefix env vars."
+          />
+        </div>
+      </Section>
 
-                {/* Overview */}
-                <m.section id="overview" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="scroll-mt-24">
-                  <p className="text-slate-300 mb-4">
-                    <code className="text-cyan-400">bini-server</code> is the default production server for the Node.js hosting target. It streams your built <code className="text-cyan-400">dist/</code> folder, serves <code className="text-cyan-400">/api/*</code> routes directly from <code className="text-cyan-400">src/app/api/</code>, and adds everything <code className="text-cyan-400">vite preview</code> intentionally leaves out — ETag caching, timeouts, graceful shutdown, and configurable body limits.
-                  </p>
-                  <p className="text-slate-300 mb-6">
-                    It has <strong className="text-white">zero runtime dependencies</strong> — only Node.js built-in modules — and works identically on Windows, macOS, and Linux.
-                  </p>
-                  <Note>
-                    <strong>Requirements:</strong> Node.js <code>≥ 20.19.0</code>, a built <code>dist/</code> folder, and API handlers under <code>src/app/api/</code> (if your app uses any).
-                  </Note>
-                </m.section>
+      <Section id="installation" title="Installation">
+        <P className="mb-4">
+          Every Bini.js web scaffold already includes <C>bini-server</C>. To add it to an existing
+          project:
+        </P>
+        <MultiTerminal
+          tabs={[
+            { id: 'npm', label: 'npm', command: `$ npm install bini-server` },
+            { id: 'pnpm', label: 'pnpm', command: `$ pnpm add bini-server` },
+            { id: 'yarn', label: 'yarn', command: `$ yarn add bini-server` },
+            { id: 'bun', label: 'bun', command: `$ bun add bini-server` },
+          ]}
+        />
+      </Section>
 
-                {/* Features */}
-                <m.section id="features" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Features</h2>
-
-                  <h3 className="text-lg font-semibold text-white mt-2 mb-3">Core</h3>
-                  <div className="grid sm:grid-cols-2 gap-3 mb-6">
-                    <FeatureCard emoji="🗂️" title="Static file serving" description="Streams dist/ with correct MIME types, ETag, and cache headers." />
-                    <FeatureCard emoji="🌐" title="API routes" description="Serves /api/* from src/app/api/ — Hono apps and plain functions both work." />
-                    <FeatureCard emoji="🔀" title="SPA fallback" description="Unknown routes automatically serve dist/index.html." />
-                    <FeatureCard emoji="🏷️" title="ETag support" description="304 Not Modified responses for unchanged static files." />
-                    <FeatureCard emoji="⚡" title="Lazy route loading" description="API routes are scanned on first request for fast cold starts." />
-                  </div>
-
-                  <h3 className="text-lg font-semibold text-white mt-2 mb-3">Security & Performance</h3>
-                  <div className="grid sm:grid-cols-2 gap-3 mb-6">
-                    <FeatureCard emoji="🛡️" title="CORS" description="Enabled by default, configurable via CORS_ENABLED (BINI_*, VITE_*, or no prefix)." />
-                    <FeatureCard emoji="🔒" title="Body limits" description="Configurable request body size limit, defaults to 10MB." />
-                    <FeatureCard emoji="⏱️" title="Timeouts" description="Configurable body-read and handler timeouts, default 30s each." />
-                    <FeatureCard emoji="🚫" title="Path traversal protection" description="Guards against .. and // in request URLs." />
-                    <FeatureCard emoji="💾" title="Module cache" description="Caches imported handlers with mtime invalidation." />
-                    <FeatureCard emoji="🔌" title="Port auto-increment" description="Starts at 3000, auto-increments if the port is busy." />
-                  </div>
-
-                  <h3 className="text-lg font-semibold text-white mt-2 mb-3">Developer Experience</h3>
-                  <div className="grid sm:grid-cols-2 gap-3 mb-4">
-                    <FeatureCard emoji="🌿" title="Auto env loading" description=".env files are detected and listed in the startup banner." />
-                    <FeatureCard emoji="⌨️" title="Interactive shortcuts" description="Press h for help, o to open the browser, q to quit." />
-                    <FeatureCard emoji="🖥️" title="Cross-platform" description="Works identically on Windows, macOS, and Linux." />
-                    <FeatureCard emoji="🪄" title="Graceful shutdown" description="Handles SIGTERM + SIGINT with a timeout fallback." />
-                    <FeatureCard emoji="📦" title="Zero dependencies" description="Only Node.js built-in modules — nothing to audit or update." />
-                    <FeatureCard emoji="🔧" title="Flexible config" description="Every setting supports BINI_*, VITE_*, or no-prefix env vars." />
-                  </div>
-                </m.section>
-
-                {/* Installation */}
-                <m.section id="installation" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Installation</h2>
-                  <p className="text-slate-300 mb-4">
-                    Every Bini.js web scaffold already includes <code className="text-cyan-400">bini-server</code>. To add it to an existing project:
-                  </p>
-                  <CodeBlock code={`npm install bini-server`} />
-                </m.section>
-
-                {/* Usage */}
-                <m.section id="usage" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Usage</h2>
-
-                  <h3 className="text-lg font-semibold text-white mt-2 mb-3">1. Add scripts to package.json</h3>
-                  <CodeBlock
-                    filename="package.json"
-                    code={`{
+      <Section id="usage" title="Usage">
+        <H3 className="mb-3 mt-2">1. Add scripts to package.json</H3>
+        <CodeBlock
+          filename="package.json"
+          lang="json"
+          code={`{
   "scripts": {
     "build": "vite build",
     "start": "bini-server"
   }
 }`}
-                  />
+        />
+        <H3 className="mt-6 mb-3">2. Build and start</H3>
+        <MultiTerminal
+          tabs={[
+            {
+              id: 'npm',
+              label: 'npm',
+              command: `$ npm run build
+$ npm start`,
+            },
+            {
+              id: 'pnpm',
+              label: 'pnpm',
+              command: `$ pnpm build
+$ pnpm start`,
+            },
+            {
+              id: 'yarn',
+              label: 'yarn',
+              command: `$ yarn build
+$ yarn start`,
+            },
+            {
+              id: 'bun',
+              label: 'bun',
+              command: `$ bun run build
+$ bun run start`,
+            },
+          ]}
+        />
+        <H3 className="mt-6 mb-3">3. Terminal output</H3>
+        <ServerBanner />
+      </Section>
 
-                  <h3 className="text-lg font-semibold text-white mt-6 mb-3">2. Build and start</h3>
-                  <CodeBlock
-                    code={`npm run build   # Build your app
-npm start       # Serve in production`}
-                  />
+      <Section id="keyboard-shortcuts" title="Keyboard Shortcuts">
+        <P className="mb-4">While the server is running, type a key and press enter:</P>
+        <Table
+          headers={['Key', 'Action']}
+          rows={[
+            ['h', 'Show available shortcuts'],
+            ['o', 'Open your app in the default browser'],
+            ['q', 'Quit the server'],
+          ]}
+        />
+        <Callout>
+          Keyboard shortcuts are automatically disabled in non-interactive environments, like
+          Render or CI/CD.
+        </Callout>
+      </Section>
 
-                  <h3 className="text-lg font-semibold text-white mt-6 mb-3">3. Terminal output</h3>
-                  <CodeBlock
-                    code={`  ß Bini.js  (production)
-  ➜  Environments: .env, .env.local
-  ➜  Local:   http://localhost:3000/
-  ➜  Network: http://192.168.1.5:3000/
-  ➜  press h + enter to show help`}
-                  />
-                </m.section>
+      <Section id="environment-variables" title="Environment Variables">
+        <H3 className="mb-3 mt-2">Auto-detected .env files</H3>
+        <P className="mb-4">
+          At startup, bini-server automatically detects and loads, in priority order:
+        </P>
+        <FolderVisual
+          width={300}
+          rows={[
+            { n: '.env.local', dot: true },
+            { n: '.env.production.local' },
+            { n: '.env.production' },
+            { n: '.env' },
+          ]}
+        />
+        <UL className="mb-4 space-y-2">
+          <li>
+            <C>.env.local</C>
+          </li>
+          <li>
+            <C>.env.[NODE_ENV].local</C> (e.g. <C>.env.production.local</C>)
+          </li>
+          <li>
+            <C>.env.[NODE_ENV]</C> (e.g. <C>.env.production</C>)
+          </li>
+          <li>
+            <C>.env</C>
+          </li>
+        </UL>
+        <P className="mb-6">All detected files are listed in the startup banner.</P>
 
-                {/* Keyboard Shortcuts */}
-                <m.section id="keyboard-shortcuts" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Keyboard Shortcuts</h2>
-                  <p className="text-slate-300 mb-4">
-                    While the server is running, type a key and press enter:
-                  </p>
-                  <Table
-                    headers={['Key', 'Action']}
-                    rows={[
-                      [<code className="text-cyan-400">h</code>, 'Show available shortcuts'],
-                      [<code className="text-cyan-400">o</code>, 'Open your app in the default browser'],
-                      [<code className="text-cyan-400">q</code>, 'Quit the server'],
-                    ]}
-                  />
-                  <Note>
-                    Keyboard shortcuts are automatically disabled in non-interactive environments, like Render or CI/CD.
-                  </Note>
-                </m.section>
+        <H3 className="mb-3 mt-2">Naming conventions</H3>
+        <P className="mb-4">Every setting supports three naming conventions, in priority order:</P>
+        <Table
+          headers={['Convention', 'Example', 'Priority']}
+          rows={[
+            ['BINI_*', 'BINI_PORT=3000', 'Highest'],
+            ['VITE_*', 'VITE_PORT=3000', 'Medium'],
+            ['No prefix', 'PORT=3000', 'Lowest'],
+          ]}
+        />
 
-                {/* Environment Variables */}
-                <m.section id="environment-variables" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Environment Variables</h2>
+        <H3 className="mt-6 mb-3">Server configuration</H3>
+        <Table
+          headers={['Variable', 'Default', 'Description']}
+          rows={[
+            ['PORT', '3000', 'HTTP port to listen on'],
+            ['CORS_ENABLED', 'true', 'Enable/disable CORS on API routes'],
+            ['API_DIR', 'src/app/api', 'Path to API handlers directory'],
+            ['DIST_DIR', 'dist', 'Path to static files directory'],
+            ['BODY_TIMEOUT_SECS', '30', 'Max seconds to read the request body'],
+            ['HANDLER_TIMEOUT_SECS', '30', 'Max seconds for a handler to respond'],
+            ['BODY_SIZE_LIMIT', '10485760', 'Max request body size in bytes (10MB)'],
+          ]}
+        />
 
-                  <h3 className="text-lg font-semibold text-white mt-2 mb-3">Auto-detected .env files</h3>
-                  <p className="text-slate-300 mb-4">At startup, bini-server automatically detects and loads, in priority order:</p>
-                  <ul className="space-y-2 text-slate-300 mb-4 list-disc list-inside">
-                    <li><code className="text-cyan-400">.env.local</code></li>
-                    <li><code className="text-cyan-400">.env.[NODE_ENV].local</code> (e.g. <code className="text-cyan-400">.env.production.local</code>)</li>
-                    <li><code className="text-cyan-400">.env.[NODE_ENV]</code> (e.g. <code className="text-cyan-400">.env.production</code>)</li>
-                    <li><code className="text-cyan-400">.env</code></li>
-                  </ul>
-                  <p className="text-slate-300 mb-6">All detected files are listed in the startup banner.</p>
-
-                  <h3 className="text-lg font-semibold text-white mt-2 mb-3">Naming conventions</h3>
-                  <p className="text-slate-300 mb-4">Every setting supports three naming conventions, in priority order:</p>
-                  <Table
-                    headers={['Convention', 'Example', 'Priority']}
-                    rows={[
-                      [<code className="text-cyan-400">BINI_*</code>, <code className="text-cyan-400">BINI_PORT=3000</code>, 'Highest'],
-                      [<code className="text-cyan-400">VITE_*</code>, <code className="text-cyan-400">VITE_PORT=3000</code>, 'Medium'],
-                      ['No prefix', <code className="text-cyan-400">PORT=3000</code>, 'Lowest'],
-                    ]}
-                  />
-
-                  <h3 className="text-lg font-semibold text-white mt-6 mb-3">Server configuration</h3>
-                  <Table
-                    headers={['Variable', 'Default', 'Description']}
-                    rows={[
-                      [<code className="text-cyan-400">PORT</code>, '3000', 'HTTP port to listen on'],
-                      [<code className="text-cyan-400">CORS_ENABLED</code>, 'true', 'Enable/disable CORS on API routes'],
-                      [<code className="text-cyan-400">API_DIR</code>, <code className="text-cyan-400">src/app/api</code>, 'Path to API handlers directory'],
-                      [<code className="text-cyan-400">DIST_DIR</code>, <code className="text-cyan-400">dist</code>, 'Path to static files directory'],
-                      [<code className="text-cyan-400">BODY_TIMEOUT_SECS</code>, '30', 'Max seconds to read the request body'],
-                      [<code className="text-cyan-400">HANDLER_TIMEOUT_SECS</code>, '30', 'Max seconds for a handler to respond'],
-                      [<code className="text-cyan-400">BODY_SIZE_LIMIT</code>, '10485760', 'Max request body size in bytes (10MB)'],
-                    ]}
-                  />
-
-                  <h3 className="text-lg font-semibold text-white mt-6 mb-3">Examples</h3>
-                  <CodeBlock
-                    filename=".env"
-                    code={`PORT=8080
+        <H3 className="mt-6 mb-3">Examples</H3>
+        <CodeBlock
+          filename=".env"
+          lang="text"
+          code={`# .env
+PORT=8080
 CORS_ENABLED=false
 API_DIR=src/api
 BODY_SIZE_LIMIT=5242880  # 5MB`}
-                  />
-                  <CodeBlock
-                    code={`# Inline
-PORT=3001 BINI_CORS_ENABLED=false bini-server
+        />
+        <CodeBlock
+          filename="Terminal"
+          lang="shell"
+          code={`$ PORT=3001 BINI_CORS_ENABLED=false bini-server
 
 # Or with the VITE prefix
-VITE_PORT=3000 VITE_CORS_ENABLED=false bini-server`}
-                  />
-                </m.section>
+$ VITE_PORT=3000 VITE_CORS_ENABLED=false bini-server`}
+        />
+      </Section>
 
-                {/* Project Structure */}
-                <m.section id="project-structure" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Project Structure</h2>
-                  <CodeBlock
-                    code={`my-app/
-├── dist/                    # Built static files (required)
-│   ├── index.html
-│   ├── assets/
-│   └── ...
-├── src/
-│   ├── app/
-│   │   ├── api/            # API handlers (optional)
-│   │   │   ├── users.ts
-│   │   │   └── posts/
-│   │   │       ├── index.ts
-│   │   │       └── [id].ts
-│   │   └── layout.tsx
-│   └── main.tsx
-├── .env                     # Environment variables
-├── package.json
-└── vite.config.ts`}
-                  />
-                </m.section>
+      <Section id="project-structure" title="Project Structure">
+        <FolderVisual
+          width={300}
+          rows={[
+            { n: 'my-app' },
+            { n: 'dist', d: 1, dot: true },
+            { n: 'index.html', d: 2 },
+            { n: 'assets', d: 2 },
+            { n: 'src', d: 1 },
+            { n: 'app', d: 2 },
+            { n: 'api', d: 3, dot: true },
+            { n: `users.${t}`, d: 4, fn: true },
+            { n: 'posts', d: 4 },
+            { n: `index.${t}`, d: 5, fn: true },
+            { n: `[id].${t}`, d: 5, fn: true },
+            { n: `layout.${e}`, d: 3 },
+            { n: `main.${e}`, d: 2 },
+            { n: '.env', d: 1 },
+            { n: 'package.json', d: 1 },
+            { n: `vite.config.${t}`, d: 1 },
+          ]}
+        />
+        <UL>
+          <li>
+            <C>dist/</C> - built static files (required)
+          </li>
+          <li>
+            <C>src/app/api/</C> - API handlers (optional)
+          </li>
+          <li>
+            <C>.env</C> - environment variables
+          </li>
+        </UL>
+      </Section>
 
-                {/* API Routes */}
-                <m.section id="api-routes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">API Routes</h2>
+      <Section id="api-routes" title="API Routes">
+        <H3 className="mb-3 mt-2">Supported formats</H3>
+        <P className="mb-4">A Hono app (recommended):</P>
+        <CodeBlock
+          filename={`src/app/api/users.${t}`}
+          code={`import { Hono } from 'hono'
 
-                  <h3 className="text-lg font-semibold text-white mt-2 mb-3">Supported formats</h3>
-                  <CodeBlock
-                    code={`// 1. Hono App (recommended)
-import { Hono } from 'hono';
-const app = new Hono();
-app.get('/users', (c) => c.json({ users: [] }));
-export default app;
+const app = new Hono()
 
-// 2. Plain function
+app.get('/users', (c) => c.json({ users: [] }))
+
+export default app`}
+        />
+        <P className="mb-4">Or a plain function:</P>
+        <CodeBlock
+          filename={`src/app/api/hello.${t}`}
+          tsCode={`// src/app/api/hello.ts
 export default (req: Request) => {
-  return Response.json({ message: 'Hello' });
-};`}
-                  />
-                  <Note>
-                    Only <code>.ts</code> and <code>.js</code> files are supported for API routes — the same convention used by <code>bini-router</code>.
-                  </Note>
+  return Response.json({ message: 'Hello' })
+}`}
+          jsCode={`// src/app/api/hello.js
+export default (req) => {
+  return Response.json({ message: 'Hello' })
+}`}
+        />
+        <Callout>
+          Only <C>.ts</C> and <C>.js</C> files are supported for API routes - the same convention
+          used by <C>bini-router</C>.
+        </Callout>
 
-                  <h3 className="text-lg font-semibold text-white mt-6 mb-3">Dynamic routes</h3>
-                  <CodeBlock
-                    code={`src/app/api/
-  users/
-    [id].ts      → /api/users/:id
-  posts/
-    [...slug].ts → /api/posts/*`}
-                  />
+        <H3 className="mt-6 mb-3">Dynamic routes</H3>
+        <RouteVisual
+          fileWidth={280}
+          rows={[
+            { n: 'src' },
+            { n: 'app', d: 1 },
+            { n: 'api', d: 2 },
+            { n: 'users', d: 3 },
+            { n: `[id].${t}`, d: 4, fn: true, dot: true, url: '/api/users/:id' },
+            { n: 'posts', d: 3 },
+            { n: `[...slug].${t}`, d: 4, fn: true, dot: true, url: '/api/posts/*' },
+          ]}
+        />
 
-                  <h3 className="text-lg font-semibold text-white mt-6 mb-3">Route parameters</h3>
-                  <p className="text-slate-300 mb-4">
-                    For plain function handlers, route params are passed as JSON via the <code className="text-cyan-400">x-bini-params</code> request header:
-                  </p>
-                  <CodeBlock
-                    filename="src/app/api/users/[id].ts"
-                    code={`export default (req: Request) => {
-  const params = JSON.parse(req.headers.get('x-bini-params') || '{}');
-  // params.id → '123'
-  return Response.json({ id: params.id });
-};`}
-                  />
-                </m.section>
+        <H3 className="mt-6 mb-3">Route parameters</H3>
+        <P className="mb-4">
+          For plain function handlers, route params are passed as JSON via the{' '}
+          <C>x-bini-params</C> request header:
+        </P>
+        <CodeBlock
+          filename={`src/app/api/users/[id].${t}`}
+          tsCode={`// src/app/api/users/[id].ts
+export default (req: Request) => {
+  const params = JSON.parse(req.headers.get('x-bini-params') || '{}')
+  // params.id -> '123'
+  return Response.json({ id: params.id })
+}`}
+          jsCode={`// src/app/api/users/[id].js
+export default (req) => {
+  const params = JSON.parse(req.headers.get('x-bini-params') || '{}')
+  // params.id -> '123'
+  return Response.json({ id: params.id })
+}`}
+        />
+      </Section>
 
-                {/* CORS */}
-                <m.section id="cors" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">CORS</h2>
-                  <p className="text-slate-300 mb-4">CORS is enabled by default with these headers:</p>
-                  <CodeBlock
-                    code={`Access-Control-Allow-Origin: *
+      <Section id="cors" title="CORS">
+        <P className="mb-4">CORS is enabled by default with these headers:</P>
+        <CodeBlock
+          filename="Response headers"
+          lang="text"
+          code={`Access-Control-Allow-Origin: *
 Access-Control-Allow-Methods: GET,POST,PUT,PATCH,DELETE,OPTIONS,HEAD
 Access-Control-Allow-Headers: Content-Type,Authorization,X-Request-ID`}
-                  />
-                  <p className="text-slate-300 mb-2">
-                    Disable it with <code className="text-cyan-400">CORS_ENABLED=false</code>, <code className="text-cyan-400">BINI_CORS_ENABLED=false</code>, or <code className="text-cyan-400">VITE_CORS_ENABLED=false</code>.
-                  </p>
-                </m.section>
+        />
+        <P className="mb-2">
+          Disable it with <C>CORS_ENABLED=false</C>, <C>BINI_CORS_ENABLED=false</C>, or{' '}
+          <C>VITE_CORS_ENABLED=false</C>:
+        </P>
+        <CodeBlock
+          filename=".env"
+          lang="text"
+          code={`# .env
+CORS_ENABLED=false`}
+        />
+      </Section>
 
-                {/* Static File Serving */}
-                <m.section id="static-file-serving" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Static File Serving</h2>
+      <Section id="static-file-serving" title="Static File Serving">
+        <H3 className="mb-3 mt-2">Supported MIME types</H3>
+        <UL>
+          <li>HTML, CSS, JavaScript, JSON</li>
+          <li>Images - PNG, JPEG, GIF, SVG, WebP, AVIF, ICO</li>
+          <li>Fonts - WOFF, WOFF2, TTF, EOT</li>
+          <li>Documents - TXT, XML</li>
+          <li>Web manifests</li>
+        </UL>
+        <H3 className="mt-6 mb-3">Cache headers</H3>
+        <Table
+          headers={['File Type', 'Cache Policy']}
+          rows={[
+            ['/assets/*', 'public, max-age=31536000, immutable'],
+            ['All other files', 'no-cache'],
+          ]}
+        />
+        <H3 className="mt-6 mb-3">ETag support</H3>
+        <P className="mb-2">ETags are generated automatically from file size + mtimeMs:</P>
+        <UL>
+          <li>
+            Sends an <C>ETag</C> header on the first request
+          </li>
+          <li>
+            Handles <C>If-None-Match</C> for 304 Not Modified responses
+          </li>
+          <li>Uses an MD5 hash (16 chars) for efficient caching</li>
+        </UL>
+      </Section>
 
-                  <h3 className="text-lg font-semibold text-white mt-2 mb-3">Supported MIME types</h3>
-                  <ul className="space-y-2 text-slate-300 mb-6 list-disc list-inside">
-                    <li>HTML, CSS, JavaScript, JSON</li>
-                    <li>Images — PNG, JPEG, GIF, SVG, WebP, AVIF, ICO</li>
-                    <li>Fonts — WOFF, WOFF2, TTF, EOT</li>
-                    <li>Documents — TXT, XML</li>
-                    <li>Web manifests</li>
-                  </ul>
+      <Section id="vs-vite-preview" title="vs vite preview">
+        <Table
+          headers={['Feature', 'vite preview', 'bini-server']}
+          rows={[
+            ['Serves dist/', <Yes key="a" />, <Yes key="b" />],
+            ['API routes', <Yes key="a" />, <Yes key="b" />],
+            ['SPA fallback', <Yes key="a" />, <Yes key="b" />],
+            ['Auto env loading', <Yes key="a" />, <Yes key="b" />],
+            ['ETag / 304 support', <No key="a" />, <Yes key="b" />],
+            ['Body timeout', <No key="a" />, '30s'],
+            ['Body size limit', <No key="a" />, '10MB'],
+            ['Handler timeout', <No key="a" />, '30s'],
+            ['Graceful shutdown', <No key="a" />, <Yes key="b" />],
+            ['Module cache', <No key="a" />, <Yes key="b" />],
+            ['Configurable dirs', <No key="a" />, <Yes key="b" />],
+            ['CORS control', <No key="a" />, <Yes key="b" />],
+            ['Zero dependencies', <No key="a" />, <Yes key="b" />],
+            [
+              'Production use',
+              <span key="a" className="text-amber-600 dark:text-amber-400">
+                Not recommended
+              </span>,
+              <span key="b" className="text-emerald-600 dark:text-emerald-400">
+                Production-ready
+              </span>,
+            ],
+          ]}
+        />
+      </Section>
 
-                  <h3 className="text-lg font-semibold text-white mt-2 mb-3">Cache headers</h3>
-                  <Table
-                    headers={['File Type', 'Cache Policy']}
-                    rows={[
-                      [<code className="text-cyan-400">/assets/*</code>, <code className="text-cyan-400">public, max-age=31536000, immutable</code>],
-                      ['All other files', <code className="text-cyan-400">no-cache</code>],
-                    ]}
-                  />
+      <Section id="security" title="Security">
+        <Table
+          headers={['Feature', 'Default', 'Configurable']}
+          rows={[
+            ['CORS', 'Enabled', <>via <C>CORS_ENABLED</C></>],
+            ['Body size limit', '10MB', <>via <C>BODY_SIZE_LIMIT</C></>],
+            ['Request timeout', '30s', <>via <C>BODY_TIMEOUT_SECS</C></>],
+            ['Handler timeout', '30s', <>via <C>HANDLER_TIMEOUT_SECS</C></>],
+            ['Path traversal', 'Blocked', 'guard in place'],
+          ]}
+        />
 
-                  <h3 className="text-lg font-semibold text-white mt-6 mb-3">ETag support</h3>
-                  <p className="text-slate-300 mb-2">ETags are generated automatically from file size + mtimeMs:</p>
-                  <ul className="space-y-2 text-slate-300 mb-2 list-disc list-inside">
-                    <li>Sends an <code className="text-cyan-400">ETag</code> header on the first request</li>
-                    <li>Handles <code className="text-cyan-400">If-None-Match</code> for 304 Not Modified responses</li>
-                    <li>Uses an MD5 hash (16 chars) for efficient caching</li>
-                  </ul>
-                </m.section>
-
-                {/* vs vite preview */}
-                <m.section id="vs-vite-preview" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">vs vite preview</h2>
-                  <Table
-                    headers={['Feature', 'vite preview', 'bini-server']}
-                    rows={[
-                      ['Serves dist/', <CheckCircle className="w-4 h-4 text-emerald-400" />, <CheckCircle className="w-4 h-4 text-emerald-400" />],
-                      ['API routes', <CheckCircle className="w-4 h-4 text-emerald-400" />, <CheckCircle className="w-4 h-4 text-emerald-400" />],
-                      ['SPA fallback', <CheckCircle className="w-4 h-4 text-emerald-400" />, <CheckCircle className="w-4 h-4 text-emerald-400" />],
-                      ['Auto env loading', <CheckCircle className="w-4 h-4 text-emerald-400" />, <CheckCircle className="w-4 h-4 text-emerald-400" />],
-                      ['ETag / 304 support', <XCircle className="w-4 h-4 text-rose-400" />, <CheckCircle className="w-4 h-4 text-emerald-400" />],
-                      ['Body timeout', <XCircle className="w-4 h-4 text-rose-400" />, <span>✅ (30s)</span>],
-                      ['Body size limit', <XCircle className="w-4 h-4 text-rose-400" />, <span>✅ (10MB)</span>],
-                      ['Handler timeout', <XCircle className="w-4 h-4 text-rose-400" />, <span>✅ (30s)</span>],
-                      ['Graceful shutdown', <XCircle className="w-4 h-4 text-rose-400" />, <CheckCircle className="w-4 h-4 text-emerald-400" />],
-                      ['Module cache', <XCircle className="w-4 h-4 text-rose-400" />, <CheckCircle className="w-4 h-4 text-emerald-400" />],
-                      ['Configurable dirs', <XCircle className="w-4 h-4 text-rose-400" />, <CheckCircle className="w-4 h-4 text-emerald-400" />],
-                      ['CORS control', <XCircle className="w-4 h-4 text-rose-400" />, <CheckCircle className="w-4 h-4 text-emerald-400" />],
-                      ['Zero dependencies', <XCircle className="w-4 h-4 text-rose-400" />, <CheckCircle className="w-4 h-4 text-emerald-400" />],
-                      ['Production use', <span className="text-amber-400">⚠️ Not recommended</span>, <span className="text-emerald-400">✅ Production-ready</span>],
-                    ]}
-                  />
-                </m.section>
-
-                {/* Security */}
-                <m.section id="security" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Security</h2>
-                  <Table
-                    headers={['Feature', 'Default', 'Configurable']}
-                    rows={[
-                      ['CORS', 'Enabled', <span>✅ via <code className="text-cyan-400 bg-slate-800 px-1 py-0.5 rounded">CORS_ENABLED</code></span>],
-                      ['Body size limit', '10MB', <span>✅ via <code className="text-cyan-400 bg-slate-800 px-1 py-0.5 rounded">BODY_SIZE_LIMIT</code></span>],
-                      ['Request timeout', '30s', <span>✅ via <code className="text-cyan-400 bg-slate-800 px-1 py-0.5 rounded">BODY_TIMEOUT_SECS</code></span>],
-                      ['Handler timeout', '30s', <span>✅ via <code className="text-cyan-400 bg-slate-800 px-1 py-0.5 rounded">HANDLER_TIMEOUT_SECS</code></span>],
-                      ['Path traversal', 'Blocked', '✅ (guard in place)'],
-                    ]}
-                  />
-
-                  <h3 className="text-lg font-semibold text-white mt-6 mb-3">Testing your server</h3>
-                  <CodeBlock
-                    code={`# Check static files
-curl http://localhost:3000/
+        <H3 className="mt-6 mb-3">Testing your server</H3>
+        <CodeBlock
+          filename="Terminal"
+          lang="shell"
+          code={`# Check static files
+$ curl http://localhost:3000/
 
 # Check API routes
-curl http://localhost:3000/api/hello
+$ curl http://localhost:3000/api/hello
 
 # Check ETag
-curl -I http://localhost:3000/styles.css
+$ curl -I http://localhost:3000/styles.css
 
 # Test 304 Not Modified
-curl -I http://localhost:3000/styles.css \\
+$ curl -I http://localhost:3000/styles.css \\
   -H "If-None-Match: [etag_from_previous_request]"
 
 # Test CORS
-curl -X OPTIONS http://localhost:3000/api/hello \\
+$ curl -X OPTIONS http://localhost:3000/api/hello \\
   -H "Origin: http://example.com"`}
-                  />
+        />
 
-                  <h3 className="text-lg font-semibold text-white mt-6 mb-3">Configuration examples</h3>
-                  <p className="text-slate-300 mb-2 text-sm font-medium">Development (all security disabled)</p>
-                  <CodeBlock
-                    filename=".env"
-                    code={`CORS_ENABLED=true
+        <H3 className="mt-6 mb-3">Configuration examples</H3>
+        <P className="mb-2">
+          <strong className={STRONG}>Development</strong> (all security disabled)
+        </P>
+        <CodeBlock
+          filename=".env"
+          lang="text"
+          code={`# .env
+CORS_ENABLED=true
 BODY_TIMEOUT_SECS=0
 HANDLER_TIMEOUT_SECS=0
 BODY_SIZE_LIMIT=0
 NODE_ENV=development`}
-                  />
-                  <p className="text-slate-300 mb-2 text-sm font-medium">Production (secure defaults)</p>
-                  <CodeBlock
-                    filename=".env"
-                    code={`CORS_ENABLED=true
+        />
+        <P className="mb-2">
+          <strong className={STRONG}>Production</strong> (secure defaults)
+        </P>
+        <CodeBlock
+          filename=".env"
+          lang="text"
+          code={`# .env
+CORS_ENABLED=true
 BODY_TIMEOUT_SECS=30
 HANDLER_TIMEOUT_SECS=30
 BODY_SIZE_LIMIT=10485760
 NODE_ENV=production`}
-                  />
-                  <p className="text-slate-300 mb-2 text-sm font-medium">Internal API (no CORS)</p>
-                  <CodeBlock
-                    filename=".env"
-                    code={`CORS_ENABLED=false
+        />
+        <P className="mb-2">
+          <strong className={STRONG}>Internal API</strong> (no CORS)
+        </P>
+        <CodeBlock
+          filename=".env"
+          lang="text"
+          code={`# .env
+CORS_ENABLED=false
 BODY_SIZE_LIMIT=5242880  # 5MB`}
-                  />
-                  <p className="text-slate-300 mb-2 text-sm font-medium">File upload service</p>
-                  <CodeBlock
-                    filename=".env"
-                    code={`CORS_ENABLED=true
+        />
+        <P className="mb-2">
+          <strong className={STRONG}>File upload service</strong>
+        </P>
+        <CodeBlock
+          filename=".env"
+          lang="text"
+          code={`# .env
+CORS_ENABLED=true
 BODY_SIZE_LIMIT=1073741824  # 1GB
 BODY_TIMEOUT_SECS=300  # 5 minutes`}
-                  />
-                </m.section>
+        />
+      </Section>
 
-                {/* Deployment */}
-                <m.section id="deployment" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2 flex items-center gap-2">
-                    <SimpleIcon icon={siNodedotjs} className="text-green-400" size={20} />
-                    Deployment
-                  </h2>
-                  <Note>
-                    <strong>Ship your src/ folder.</strong> bini-server runs API handlers directly from <code>src/app/api/</code> — they are not compiled into <code>dist/</code>. Make sure your host has access to both <code>dist/</code> and <code>src/app/api/</code>.
-                  </Note>
+      <Section
+        id="deployment"
+        title="Deployment"
+        icon={
+          <BrandIcon
+            icon={siNodedotjs}
+            size={20}
+            className="shrink-0 text-black dark:text-white"
+          />
+        }
+      >
+        <Callout>
+          <strong>Ship your src/ folder.</strong> bini-server runs API handlers directly from{' '}
+          <C>src/app/api/</C> - they are not compiled into <C>dist/</C>. Make sure your host has
+          access to both <C>dist/</C> and <C>src/app/api/</C>.
+        </Callout>
+        <H3 className="mb-3 mt-4">Where it works</H3>
+        <UL>
+          <li>
+            <strong className={STRONG}>VPS / pm2</strong> - deploy the full project directory
+          </li>
+          <li>
+            <strong className={STRONG}>Railway / Render / Fly.io</strong> - automatic, since these
+            clone your repository
+          </li>
+          <li>
+            <strong className={STRONG}>Docker</strong> - copy both <C>dist/</C> and <C>src/</C>{' '}
+            into the image
+          </li>
+        </UL>
 
-                  <h3 className="text-lg font-semibold text-white mt-4 mb-3">Where it works</h3>
-                  <ul className="space-y-2 text-slate-300 mb-6 list-disc list-inside">
-                    <li><strong className="text-white">VPS / pm2</strong> — deploy the full project directory</li>
-                    <li><strong className="text-white">Railway / Render / Fly.io</strong> — automatic, since these clone your repository</li>
-                    <li><strong className="text-white">Docker</strong> — copy both <code>dist/</code> and <code>src/</code> into the image</li>
-                  </ul>
+        <H3 className="mb-3 mt-2">VPS / dedicated server</H3>
+        <MultiTerminal
+          tabs={[
+            {
+              id: 'npm',
+              label: 'npm',
+              command: `$ npm run build
+$ npm start
+$ npm install -g pm2
+$ pm2 start "npm start" --name my-app
+$ pm2 save
+$ pm2 startup`,
+            },
+            {
+              id: 'pnpm',
+              label: 'pnpm',
+              command: `$ pnpm build
+$ pnpm start
+$ pnpm add -g pm2
+$ pm2 start "pnpm start" --name my-app
+$ pm2 save
+$ pm2 startup`,
+            },
+            {
+              id: 'yarn',
+              label: 'yarn',
+              command: `$ yarn build
+$ yarn start
+$ yarn global add pm2
+$ pm2 start "yarn start" --name my-app
+$ pm2 save
+$ pm2 startup`,
+            },
+            {
+              id: 'bun',
+              label: 'bun',
+              command: `$ bun run build
+$ bun run start
+$ bun add -g pm2
+$ pm2 start "bun run start" --name my-app
+$ pm2 save
+$ pm2 startup`,
+            },
+          ]}
+        />
 
-                  <h3 className="text-lg font-semibold text-white mt-2 mb-3">VPS / dedicated server</h3>
-                  <CodeBlock
-                    code={`npm run build
-npm start
+        <H3 className="mt-6 mb-3">Platform as a Service</H3>
+        <Table
+          headers={['Platform', 'Start Command', 'Notes']}
+          rows={[
+            ['Railway', 'npm start', 'PORT injected automatically'],
+            ['Render', 'npm start', 'PORT injected automatically'],
+            ['Fly.io', 'npm start', 'See fly.toml example below'],
+            ['Heroku', 'npm start', 'PORT injected automatically'],
+          ]}
+        />
 
-# With pm2 (recommended)
-npm install -g pm2
-pm2 start "npm start" --name my-app
-pm2 save
-pm2 startup`}
-                  />
-
-                  <h3 className="text-lg font-semibold text-white mt-6 mb-3">Platform as a Service</h3>
-                  <Table
-                    headers={['Platform', 'Start Command', 'Notes']}
-                    rows={[
-                      ['Railway', <code className="text-cyan-400">npm start</code>, 'PORT injected automatically'],
-                      ['Render', <code className="text-cyan-400">npm start</code>, 'PORT injected automatically'],
-                      ['Fly.io', <code className="text-cyan-400">npm start</code>, 'See fly.toml example below'],
-                      ['Heroku', <code className="text-cyan-400">npm start</code>, 'PORT injected automatically'],
-                    ]}
-                  />
-
-                  <h3 className="text-lg font-semibold text-white mt-6 mb-3">Docker</h3>
-                  <CodeBlock
-                    filename="Dockerfile"
-                    code={`FROM node:20-alpine
+        <H3 className="mt-6 mb-3">Docker</H3>
+        <CodeBlock
+          filename="Dockerfile"
+          lang="text"
+          code={`FROM node:20-alpine
 WORKDIR /app
 COPY package*.json ./
 RUN npm install --production
@@ -609,77 +747,68 @@ COPY . .
 RUN npm run build
 EXPOSE 3000
 CMD ["npm", "start"]`}
-                  />
+        />
 
-                  <h3 className="text-lg font-semibold text-white mt-6 mb-3">Fly.io</h3>
-                  <CodeBlock
-                    filename="fly.toml"
-                    code={`[processes]
+        <H3 className="mt-6 mb-3">Fly.io</H3>
+        <CodeBlock
+          filename="fly.toml"
+          lang="text"
+          code={`[processes]
   app = "npm start"`}
-                  />
-                </m.section>
+        />
+      </Section>
 
-                {/* API Reference */}
-                <m.section id="api-reference" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.75 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">API Reference</h2>
+      <Section id="api-reference" title="API Reference">
+        <H3 className="mb-3 mt-2">Environment variable priority</H3>
+        <ol className={OL}>
+          <li>
+            <C>BINI_*</C> (highest)
+          </li>
+          <li>
+            <C>VITE_*</C> (medium)
+          </li>
+          <li>No prefix (lowest)</li>
+        </ol>
 
-                  <h3 className="text-lg font-semibold text-white mt-2 mb-3">Environment variable priority</h3>
-                  <ol className="space-y-1 text-slate-300 mb-6 list-decimal list-inside">
-                    <li><code className="text-cyan-400">BINI_*</code> (highest)</li>
-                    <li><code className="text-cyan-400">VITE_*</code> (medium)</li>
-                    <li>No prefix (lowest)</li>
-                  </ol>
+        <H3 className="mt-6 mb-3">HTTP status codes</H3>
+        <Table
+          headers={['Code', 'Description']}
+          rows={[
+            ['200', 'Success'],
+            ['204', 'OPTIONS preflight success'],
+            ['304', 'Not Modified (ETag match)'],
+            ['400', 'Bad request URL'],
+            ['404', 'Route not found'],
+            ['408', 'Request timeout'],
+            ['413', 'Payload too large'],
+            ['500', 'Internal server error'],
+          ]}
+        />
 
-                  <h3 className="text-lg font-semibold text-white mt-2 mb-3">HTTP status codes</h3>
-                  <Table
-                    headers={['Code', 'Description']}
-                    rows={[
-                      [<code className="text-cyan-400">200</code>, 'Success'],
-                      [<code className="text-cyan-400">204</code>, 'OPTIONS preflight success'],
-                      [<code className="text-cyan-400">304</code>, 'Not Modified (ETag match)'],
-                      [<code className="text-cyan-400">400</code>, 'Bad request URL'],
-                      [<code className="text-cyan-400">404</code>, 'Route not found'],
-                      [<code className="text-cyan-400">408</code>, 'Request timeout'],
-                      [<code className="text-cyan-400">413</code>, 'Payload too large'],
-                      [<code className="text-cyan-400">500</code>, 'Internal server error'],
-                    ]}
-                  />
+        <H3 className="mt-6 mb-3">Supported HTTP methods</H3>
+        <P className="mb-0">
+          <C>GET</C>, <C>POST</C>, <C>PUT</C>, <C>PATCH</C>, <C>DELETE</C>, <C>OPTIONS</C> (CORS
+          preflight), and <C>HEAD</C> (with ETag support).
+        </P>
+      </Section>
+    </>
+  )
+}
 
-                  <h3 className="text-lg font-semibold text-white mt-6 mb-3">Supported HTTP methods</h3>
-                  <p className="text-slate-300">
-                    <code className="text-cyan-400">GET</code>, <code className="text-cyan-400">POST</code>, <code className="text-cyan-400">PUT</code>, <code className="text-cyan-400">PATCH</code>, <code className="text-cyan-400">DELETE</code>, <code className="text-cyan-400">OPTIONS</code> (CORS preflight), and <code className="text-cyan-400">HEAD</code> (with ETag support).
-                  </p>
-                </m.section>
+/* ---------- page ---------- */
 
-                {/* Previous / Next Navigation */}
-                <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
-                  <Link to="/docs/deploying" className="group flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
-                    <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                    <div>
-                      <div className="text-xs text-slate-500">Previous</div>
-                      <div className="text-sm font-medium">Deploying</div>
-                    </div>
-                  </Link>
-                  <Link to="/docs/static-export" className="group flex items-center gap-2 text-right text-slate-400 hover:text-white transition-colors">
-                    <div>
-                      <div className="text-xs text-slate-500">Next</div>
-                      <div className="text-sm font-medium">Static Export</div>
-                    </div>
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                </m.div>
-
-              </div>
-
-              {/* Right-hand "On this page" sidebar */}
-              <aside className="hidden xl:block w-56 shrink-0">
-                <TableOfContents items={TOC_ITEMS} editUrl={EDIT_URL} />
-              </aside>
-            </div>
-          </DocLayout>
-
-        </div>
-      </div>
-    </div>
+export default function ProductionServerPage() {
+  return (
+    <DocPage
+      title="Production Server"
+      description="A zero-dependency, secure-by-default production server for your Bini.js app, powered by bini-server."
+      url="https://bini.js.org/docs/production-server"
+      editUrl="https://github.com/Binidu01/bini-official/edit/main/src/app/docs/production-server.tsx"
+      toc={TOC_ITEMS}
+      prev={{ to: '/docs/deploying', title: 'Deploying' }}
+      next={{ to: '/docs/static-export', title: 'Static Export' }}
+    >
+      <Content />
+    </DocPage>
   )
 }

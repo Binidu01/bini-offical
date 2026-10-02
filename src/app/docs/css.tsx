@@ -1,465 +1,573 @@
-// src/pages/docs/css/page.tsx
-import React from 'react'
-import { m } from 'framer-motion'
-import {
-  ArrowLeft,
-  ArrowRight,
-} from 'lucide-react'
-import { Link } from 'react-router-dom'
-import { Header } from '../../components/Layout'
-import { DocLayout } from '../../components/DocSidebar'
-import { CopyPageButton } from '../../components/CopyPageButton'
-import { TableOfContents, type TocItem } from '../../components/TableOfContents'
+// src/app/docs/css.tsx
+import { Globe } from 'lucide-react'
 
-// ────────────────────────────────────────────────────────────────────────────────
-// "On this page" entries
-// ────────────────────────────────────────────────────────────────────────────────
+import {
+  C,
+  Callout,
+  CodeBlock,
+  DocLink,
+  DocPage,
+  H3,
+  MultiTerminal,
+  P,
+  PromptOutput,
+  Section,
+  useDocLang,
+} from '../../components/DocBlocks'
+import { GridBg, ICON } from '../../components/DocVisuals'
+import type { TocItem } from '../../components/TableOfContents'
+
 const TOC_ITEMS: TocItem[] = [
-  { id: 'styling-options', label: 'Styling Options' },
-  { id: 'tailwind-css', label: 'Tailwind CSS v4' },
-  { id: 'css-modules', label: 'CSS Modules' },
+  { id: 'plain-css', label: 'Plain CSS in Bini.js' },
   { id: 'global-css', label: 'Global CSS' },
-  { id: 'none-option', label: 'None Option' },
+  { id: 'route-css', label: 'CSS for Specific Routes' },
+  { id: 'component-css', label: 'Component CSS' },
   { id: 'external-stylesheets', label: 'External Stylesheets' },
   { id: 'css-ordering', label: 'CSS Ordering' },
-  { id: 'sass-support', label: 'Sass/SCSS Support' },
-  { id: 'css-in-js', label: 'CSS-in-JS' },
-  { id: 'css-variables', label: 'CSS Variables for Theming' },
+  { id: 'css-variables', label: 'CSS Variables' },
+  { id: 'sass-support', label: 'Sass/SCSS' },
+  { id: 'css-in-js', label: 'CSS-in-JS Alternative' },
 ]
 
-const PAGE_TITLE = 'CSS'
-const PAGE_URL = 'https://bini.js.org/docs/css'
-const EDIT_URL = 'https://github.com/Binidu01/bini-offical/edit/main/src/app/docs/css.tsx'
+/* ---------- visuals ---------- */
 
-// ────────────────────────────────────────────────────────────────────────────────
-// Code Block Component with horizontal scrollbar
-// ────────────────────────────────────────────────────────────────────────────────
-function CodeBlock({ code, filename }: { code: string; filename?: string }) {
-  const [copied, setCopied] = React.useState(false)
-  const handleCopy = () => { 
-    const cleanCode = code.replace(/\$ /g, '')
-    navigator.clipboard.writeText(cleanCode)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000) 
-  }
-
+/** A stack of URLs that do (or do not) receive a stylesheet. */
+function ScopeVisual({ title, ok, urls }: { title: string; ok: boolean; urls: string[] }) {
   return (
-    <div className="relative group mb-6">
-      {filename && (
-        <div className="flex items-center justify-between px-4 py-2 bg-slate-900 border border-slate-800 border-b-0 rounded-t-lg">
-          <span className="text-sm text-slate-300 font-mono">{filename}</span>
+    <GridBg>
+      <div className="w-72">
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <span className="text-[13px] font-semibold text-neutral-900 dark:text-neutral-100">
+            {title}
+          </span>
+          <span
+            className={`shrink-0 rounded-[5px] border-[1.5px] px-1.5 py-px font-mono text-[10px] font-medium ${
+              ok
+                ? 'border-emerald-500 bg-emerald-500/10 text-emerald-700 dark:border-emerald-500/80 dark:text-emerald-300'
+                : 'border-red-500 bg-red-500/10 text-red-600 dark:border-red-500/80 dark:text-red-300'
+            }`}
+          >
+            {ok ? 'Loaded' : 'Not loaded'}
+          </span>
         </div>
-      )}
-      <button onClick={handleCopy} className="absolute top-2 right-2 p-1.5 rounded-md bg-slate-800 hover:bg-slate-700 transition-colors z-10 opacity-0 group-hover:opacity-100" style={{ top: filename ? '3rem' : '0.5rem' }}>
-        {copied ? (
-          <svg className="w-3.5 h-3.5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
-        ) : (
-          <svg className="w-3.5 h-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-          </svg>
-        )}
-      </button>
-      <div className={`bg-[#0a0a0a] border border-slate-700 ${filename ? 'rounded-t-none' : 'rounded-lg'} overflow-x-auto scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-transparent hover:scrollbar-thumb-slate-500`}>
-        <pre className="p-4 min-w-max">
-          <code className="text-sm font-mono text-slate-200 whitespace-pre">{code}</code>
-        </pre>
+        <div>
+          {urls.map((url, i) => (
+            <div
+              key={url}
+              className={`flex h-8 items-center gap-1.5 border-x border-b border-neutral-200 bg-white px-2.5 text-xs text-neutral-800 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-200 ${
+                i === 0 ? 'rounded-t-lg border-t' : ''
+              } ${i === urls.length - 1 ? 'rounded-b-lg' : ''}`}
+            >
+              <Globe className={ICON} strokeWidth={1.5} />
+              {url}
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+    </GridBg>
   )
 }
 
-// ────────────────────────────────────────────────────────────────────────────────
-// Table Component
-// ────────────────────────────────────────────────────────────────────────────────
-function Table({ headers, rows }: { headers: string[]; rows: React.ReactNode[][] }) {
+/* ---------- content (reads the TS/JS choice from DocPage) ---------- */
+
+function Content() {
+  const lang = useDocLang()
+  const e = lang === 'js' ? 'jsx' : 'tsx'
+
   return (
-    <div className="overflow-x-auto rounded-lg border border-slate-700 my-6">
-      <table className="w-full text-sm">
-        <thead className="bg-slate-900 border-b border-slate-800">
-          <tr>{headers.map((h, i) => <th key={i} className="text-left py-3 px-4 font-medium text-white">{h}</th>)}</tr>
-        </thead>
-        <tbody className="divide-y divide-slate-800">
-          {rows.map((row, i) => <tr key={i}>{row.map((cell, j) => <td key={j} className="py-3 px-4 text-slate-300 text-xs">{cell}</td>)}</tr>)}
-        </tbody>
-      </table>
-    </div>
-  )
-}
+    <>
+      <Section id="plain-css" title="Plain CSS in Bini.js">
+        <P className="mb-4">
+          Bini.js supports plain <C>.css</C> files natively via Vite. No config needed - just
+          import a <C>.css</C> file and it works. This page covers plain CSS only.
+        </P>
+        <MultiTerminal
+          tabs={[
+            { id: 'npm', label: 'npm', command: `$ npx create-bini-app@latest my-app --none` },
+            {
+              id: 'pnpm',
+              label: 'pnpm',
+              command: `$ pnpm dlx create-bini-app@latest my-app --none`,
+            },
+            {
+              id: 'yarn',
+              label: 'yarn',
+              command: `$ yarn dlx create-bini-app@latest my-app --none`,
+            },
+            { id: 'bun', label: 'bun', command: `$ bunx create-bini-app@latest my-app --none` },
+          ]}
+        />
+        <P className="mb-4">
+          Or use the interactive prompt and select <C>None</C> under the styling question:
+        </P>
+        <PromptOutput
+          lines={[
+            { kind: 'question', text: 'Select a styling solution:' },
+            { kind: 'option', text: 'Tailwind CSS' },
+            { kind: 'option', text: 'CSS Modules' },
+            { kind: 'option', text: 'None', selected: true },
+            { kind: 'blank' },
+            { kind: 'hint', text: '↑↓ navigate • ⏎ select' },
+          ]}
+        />
+      </Section>
 
-// ────────────────────────────────────────────────────────────────────────────────
-// Note Component
-// ────────────────────────────────────────────────────────────────────────────────
-function Note({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="p-4 rounded-lg bg-slate-900/50 border border-slate-800 my-6">
-      <div className="text-sm text-slate-300 [&>strong]:text-white [&>code]:text-cyan-400 [&>code]:bg-slate-800 [&>code]:px-1 [&>code]:py-0.5 [&>code]:rounded">{children}</div>
-    </div>
-  )
-}
-
-// ────────────────────────────────────────────────────────────────────────────────
-// CSS Page
-// ────────────────────────────────────────────────────────────────────────────────
-export default function CSSPage() {
-  return (
-    <div className="min-h-screen bg-black font-sans antialiased overflow-x-hidden">
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute inset-0 bg-black" />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-300 h-200 bg-linear-to-b from-cyan-500/5 via-sky-500/3 to-transparent rounded-full blur-3xl" />
-      </div>
-
-      <Header />
-
-      <div className="relative pt-16 lg:pt-20">
-        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 overflow-x-hidden">
-          
-          <DocLayout>
-            <div className="flex gap-10 xl:gap-14">
-              {/* Main content column */}
-              <div className="max-w-4xl min-w-0 flex-1">
-
-                {/* Title + Copy page button */}
-                <m.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex items-start justify-between gap-4 mb-4"
-                >
-                  <div>
-                    <h1 className="text-4xl font-bold text-white mb-2">{PAGE_TITLE}</h1>
-                    <p className="text-slate-400 text-sm">Learn about the different ways to add CSS to your Bini.js application.</p>
-                  </div>
-                  <div className="shrink-0 pt-2 hidden sm:block">
-                    <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
-                  </div>
-                </m.div>
-                {/* Copy button on small screens */}
-                <div className="sm:hidden mb-8">
-                  <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
-                </div>
-
-                {/* Overview */}
-                <m.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-                  <p className="text-slate-300 mb-6">
-                    Bini.js provides several ways to style your application. You can use Tailwind CSS v4 (default), CSS Modules, or plain CSS — choose what works best for your project.
-                  </p>
-                </m.section>
-
-                {/* Styling Options */}
-                <m.section id="styling-options" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Styling Options</h2>
-                  <Table 
-                    headers={['Option', 'Description', 'Best For']}
-                    rows={[
-                      ['Tailwind CSS v4', 'Utility-first CSS framework with Vite plugin (default)', 'Rapid development, consistent design'],
-                      ['CSS Modules', 'Locally scoped CSS by default', 'Component-specific styles, avoiding conflicts'],
-                      ['Global CSS', 'Traditional stylesheet applied globally', 'Base styles, resets, utilities'],
-                      ['None', 'No styling — bring your own', 'Custom setups, CSS-in-JS libraries'],
-                    ]}
-                  />
-                </m.section>
-
-                {/* Tailwind CSS v4 */}
-                <m.section id="tailwind-css" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Tailwind CSS v4</h2>
-                  <p className="text-slate-300 mb-4">
-                    Tailwind CSS v4 is pre-configured using the official Vite plugin. No PostCSS configuration needed — it just works.
-                  </p>
-                  <Note>
-                    <strong>Zero Configuration:</strong> Bini.js uses the <code>@tailwindcss/vite</code> plugin. Everything is configured automatically — no <code>postcss.config.js</code> or <code>tailwind.config.js</code> required.
-                  </Note>
-                  <CodeBlock 
-                    code={`// src/app/page.tsx
-export default function HomePage() {
-  return (
-    <div className="flex min-h-screen flex-col items-center justify-center">
-      <h1 className="text-4xl font-bold text-cyan-400">
-        Welcome to Bini.js!
-      </h1>
-      <p className="mt-4 text-lg text-slate-400">
-        Styled with Tailwind CSS v4
-      </p>
-      <button className="mt-6 rounded-lg bg-cyan-500 px-4 py-2 text-black hover:bg-cyan-400">
-        Get Started
-      </button>
-    </div>
-  )
-}`}
-                    filename="app/page.tsx"
-                  />
-                  <p className="text-slate-300 mt-4">
-                    The global CSS file simply imports Tailwind:
-                  </p>
-                  <CodeBlock 
-                    code={`/* src/app/globals.css */
-@import 'tailwindcss';`}
-                    filename="app/globals.css"
-                  />
-                  <p className="text-slate-300 mt-4">
-                    The Vite config includes the Tailwind plugin automatically:
-                  </p>
-                  <CodeBlock 
-                    code={`// vite.config.ts
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
-import { biniroute } from 'bini-router'
-
-export default defineConfig({
-  plugins: [
-    react(),
-    tailwindcss(),  // Automatically added when Tailwind is selected
-    biniroute(),
-  ],
-})`}
-                    filename="vite.config.ts"
-                  />
-                </m.section>
-
-                {/* CSS Modules */}
-                <m.section id="css-modules" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">CSS Modules</h2>
-                  <p className="text-slate-300 mb-4">
-                    CSS Modules scope styles locally to avoid naming conflicts. Files must end with <code className="text-cyan-400">.module.css</code>:
-                  </p>
-                  <CodeBlock 
-                    code={`/* src/app/components/Button.module.css */
-.button {
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  font-weight: 500;
-  transition: all 0.2s;
-}
-
-.primary {
-  background: #06b6d4;
-  color: black;
-}
-
-.primary:hover {
-  background: #0891b2;
-}`}
-                    filename="Button.module.css"
-                  />
-                  <CodeBlock 
-                    code={`// src/app/components/Button.tsx
-import styles from './Button.module.css'
-
-export function Button({ variant = 'primary', children }) {
-  return (
-    <button className={\`\${styles.button} \${styles[variant]}\`}>
-      {children}
-    </button>
-  )
-}`}
-                    filename="Button.tsx"
-                  />
-                  <Note>
-                    CSS Modules are processed by Vite automatically — no configuration needed.
-                  </Note>
-                </m.section>
-
-                {/* Global CSS */}
-                <m.section id="global-css" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Global CSS</h2>
-                  <p className="text-slate-300 mb-4">
-                    Import CSS files directly to apply styles globally:
-                  </p>
-                  <CodeBlock 
-                    code={`/* src/app/globals.css */
+      <Section id="global-css" title="Global CSS">
+        <P className="mb-4">
+          For base styles, resets, and utilities that should apply everywhere, import a global
+          stylesheet in your root layout:
+        </P>
+        <CodeBlock
+          filename="src/app/globals.css"
+          code={`/* src/app/globals.css - base reset and variables */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+:root {
+  --bg: #ffffff;
+  --text: #0a0a0a;
+  --border: #e5e5e5;
+}
+
 body {
   font-family: system-ui, -apple-system, sans-serif;
-  background: black;
-  color: white;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
 }`}
-                    filename="app/globals.css"
-                  />
-                  <CodeBlock 
-                    code={`// src/app/layout.tsx
+        />
+        <CodeBlock
+          filename={`src/app/layout.${e}`}
+          tsCode={`// src/app/layout.tsx - root layout
 import './globals.css'
 
-export default function RootLayout() {
-  return <Outlet />
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en">
+      <body>{children}</body>
+    </html>
+  )
 }`}
-                    filename="app/layout.tsx"
-                  />
-                </m.section>
+          jsCode={`// src/app/layout.jsx - root layout
+import './globals.css'
 
-                {/* None Option */}
-                <m.section id="none-option" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">None Option</h2>
-                  <p className="text-slate-300 mb-4">
-                    Choose <code className="text-cyan-400">--none</code> during project creation for a clean slate:
-                  </p>
-                  <CodeBlock 
-                    code={`npx create-bini-app@latest my-app --none`}
-                  />
-                  <Note>
-                    Even with <code>--none</code>, Vite still handles <code>.css</code> imports natively. You can add any CSS file and it will work.
-                  </Note>
-                </m.section>
-
-                {/* External Stylesheets */}
-                <m.section id="external-stylesheets" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">External Stylesheets</h2>
-                  <p className="text-slate-300 mb-4">
-                    Import styles from npm packages or external URLs:
-                  </p>
-                  <CodeBlock 
-                    code={`// src/app/layout.tsx
-import 'bootstrap/dist/css/bootstrap.min.css'
-import 'animate.css'
-
-export default function RootLayout() {
-  return <Outlet />
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en">
+      <body>{children}</body>
+    </html>
+  )
 }`}
-                    filename="app/layout.tsx"
-                  />
-                </m.section>
+        />
+        <Callout>
+          Keep global CSS minimal - only resets, CSS variables, and truly global utilities. Route
+          and component specific styles should be imported closer to where they are used.
+        </Callout>
+      </Section>
 
-                {/* CSS Ordering */}
-                <m.section id="css-ordering" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">CSS Ordering</h2>
-                  <p className="text-slate-300 mb-4">
-                    CSS is applied in the order you import it:
-                  </p>
-                  <CodeBlock 
-                    code={`import './globals.css'        // Base styles first
-import './utilities.css'      // Utilities second
-import styles from './Component.module.css'  // Component styles last`}
-                  />
-                  <Note>
-                    Keep CSS imports in a consistent order to avoid specificity issues. Global styles → utilities → component styles.
-                  </Note>
-                </m.section>
+      <Section id="route-css" title="CSS for Specific Routes">
+        <P className="mb-4">
+          Import CSS only for the routes that need it. This keeps bundles small and avoids loading
+          unused styles. Each route can have its own stylesheet:
+        </P>
+        <CodeBlock
+          filename="src/app/(marketing)/page.css"
+          code={`/* src/app/(marketing)/page.css - only loaded for marketing route */
+.hero {
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
 
-                {/* Sass/SCSS Support */}
-                <m.section id="sass-support" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Sass/SCSS Support</h2>
-                  <p className="text-slate-300 mb-4">
-                    Vite has built-in support for Sass:
-                  </p>
-                  <CodeBlock 
-                    code={`npm install -D sass`}
-                  />
-                  <CodeBlock 
-                    code={`/* src/app/components/Card.module.scss */
-.card {
-  background: #0a0a0a;
-  border: 1px solid #1e293b;
-  padding: 1.5rem;
-  border-radius: 0.75rem;
-  
-  &:hover {
-    border-color: #06b6d4;
+.hero h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}`}
+        />
+        <CodeBlock
+          filename={`src/app/(marketing)/page.${e}`}
+          tsCode={`// src/app/(marketing)/page.tsx
+import './page.css'
+
+export default function MarketingPage() {
+  return (
+    <div className="hero">
+      <h1>Welcome to Bini.js</h1>
+      <p>Build fast, ship faster</p>
+    </div>
+  )
+}`}
+          jsCode={`// src/app/(marketing)/page.jsx
+import './page.css'
+
+export default function MarketingPage() {
+  return (
+    <div className="hero">
+      <h1>Welcome to Bini.js</h1>
+      <p>Build fast, ship faster</p>
+    </div>
+  )
+}`}
+        />
+        <CodeBlock
+          filename="src/app/dashboard/page.css"
+          code={`/* src/app/dashboard/page.css - only for dashboard */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 1.5rem;
+}
+
+.sidebar {
+  border-right: 1px solid var(--border);
+  padding-right: 1.5rem;
+}`}
+        />
+        <CodeBlock
+          filename={`src/app/dashboard/layout.${e}`}
+          tsCode={`// src/app/dashboard/layout.tsx - layout level CSS for dashboard
+import './page.css'
+
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  return <div className="dashboard-grid">{children}</div>
+}`}
+          jsCode={`// src/app/dashboard/layout.jsx - layout level CSS for dashboard
+import './page.css'
+
+export default function DashboardLayout({ children }) {
+  return <div className="dashboard-grid">{children}</div>
+}`}
+        />
+        <Callout>
+          Route-level CSS is code-split automatically by Vite. A user visiting <C>/</C> will not
+          download <C>dashboard/page.css</C>. Import CSS as close as possible to the route that
+          uses it.
+        </Callout>
+
+        <H3 className="mb-3 mt-8">Blog Layout Example - Scoped CSS</H3>
+        <P className="mb-4">
+          If your blogs layout has a <C>blog.css</C>, that CSS only applies to routes inside the{' '}
+          <C>blog</C> folder. Other routes do not get it:
+        </P>
+        <CodeBlock
+          filename="src/app/blog/blog.css"
+          code={`/* src/app/blog/blog.css - only for /blog/* */
+.blog-wrapper {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  line-height: 1.7;
+}
+
+.blog-wrapper h1 {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.blog-wrapper article {
+  color: var(--text);
+}`}
+        />
+        <CodeBlock
+          filename={`src/app/blog/layout.${e}`}
+          tsCode={`// src/app/blog/layout.tsx - import here, scoped to /blog only
+import './blog.css'
+
+export default function BlogLayout({ children }: { children: React.ReactNode }) {
+  return <div className="blog-wrapper">{children}</div>
+}`}
+          jsCode={`// src/app/blog/layout.jsx - import here, scoped to /blog only
+import './blog.css'
+
+export default function BlogLayout({ children }) {
+  return <div className="blog-wrapper">{children}</div>
+}`}
+        />
+        <ScopeVisual
+          title="Gets blog.css"
+          ok
+          urls={['/blog', '/blog/my-post', '/blog/category/tech']}
+        />
+        <ScopeVisual
+          title="Does NOT get blog.css"
+          ok={false}
+          urls={['/', '/dashboard', '/about', '/docs']}
+        />
+        <Callout>
+          <strong>How it works:</strong> Vite code-splits by route. When you visit <C>/</C>, Vite
+          loads only <C>globals.css</C> + <C>/(marketing)/page.css</C>. When you visit{' '}
+          <C>/blog</C>, the <C>{`blog/layout.${e}`}</C> chain is loaded, so <C>blog.css</C> is
+          included. If you import <C>blog.css</C> in the root <C>{`src/app/layout.${e}`}</C>{' '}
+          instead, every route would get it - avoid that for scoped styles.
+        </Callout>
+      </Section>
+
+      <Section id="component-css" title="Component CSS">
+        <P className="mb-4">
+          For reusable components, keep a plain <C>.css</C> file next to the component. This still
+          works without CSS Modules - just use clear naming to avoid conflicts:
+        </P>
+        <CodeBlock
+          filename="src/app/components/Button.css"
+          code={`/* src/app/components/Button.css */
+.btn {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.btn-primary {
+  background: black;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #222;
+}`}
+        />
+        <CodeBlock
+          filename={`src/app/components/Button.${e}`}
+          tsCode={`// src/app/components/Button.tsx
+import './Button.css'
+
+export function Button({ variant = 'primary', children, ...props }: any) {
+  return <button className={\`btn btn-\${variant}\`} {...props}>{children}</button>
+}`}
+          jsCode={`// src/app/components/Button.jsx
+import './Button.css'
+
+export function Button({ variant = 'primary', children, ...props }) {
+  return <button className={\`btn btn-\${variant}\`} {...props}>{children}</button>
+}`}
+        />
+        <Callout>
+          If you need scoped styles to avoid conflicts, use{' '}
+          <DocLink to="/docs/css-modules">CSS Modules</DocLink> (<C>.module.css</C>) instead. For
+          plain CSS, use BEM or prefixed class names like <C>btn-</C>, <C>card-</C>.
+        </Callout>
+      </Section>
+
+      <Section id="external-stylesheets" title="External Stylesheets">
+        <P className="mb-4">Import CSS from npm packages only in routes that need them:</P>
+        <CodeBlock
+          filename={`src/app/docs/page.${e}`}
+          tsCode={`// src/app/docs/page.tsx - only docs needs syntax highlighting
+import 'prismjs/themes/prism.css'
+
+export default function DocsPage() {
+  return <article>...</article>
+}`}
+          jsCode={`// src/app/docs/page.jsx - only docs needs syntax highlighting
+import 'prismjs/themes/prism.css'
+
+export default function DocsPage() {
+  return <article>...</article>
+}`}
+        />
+        <CodeBlock
+          filename={`src/app/blog/page.${e}`}
+          tsCode={`// src/app/blog/page.tsx - only blog needs markdown styles
+import './markdown.css'
+
+export default function BlogPage() {
+  return <div className="markdown-body">...</div>
+}`}
+          jsCode={`// src/app/blog/page.jsx - only blog needs markdown styles
+import './markdown.css'
+
+export default function BlogPage() {
+  return <div className="markdown-body">...</div>
+}`}
+        />
+        <Callout>
+          Do not import external CSS globally if only one route needs it. Import it in the specific
+          route or layout to keep other routes lean.
+        </Callout>
+      </Section>
+
+      <Section id="css-ordering" title="CSS Ordering">
+        <P className="mb-4">CSS is applied in the order you import it. Keep a consistent order:</P>
+        <CodeBlock
+          filename={`src/app/layout.${e}`}
+          tsCode={`// layout.tsx - order matters
+import './globals.css'      // 1. Base reset and variables first
+import './theme.css'        // 2. Theme and utilities
+// Route or component CSS comes after, imported inside page.tsx or component.tsx`}
+          jsCode={`// layout.jsx - order matters
+import './globals.css'      // 1. Base reset and variables first
+import './theme.css'        // 2. Theme and utilities
+// Route or component CSS comes after, imported inside page.jsx or component.jsx`}
+        />
+        <CodeBlock
+          filename={`src/app/dashboard/page.${e}`}
+          tsCode={`// src/app/dashboard/page.tsx
+import './page.css'  // 3. Route-specific CSS - loaded only for this route
+
+export default function DashboardPage() {
+  return <div className="dashboard">...</div>
+}`}
+          jsCode={`// src/app/dashboard/page.jsx
+import './page.css'  // 3. Route-specific CSS - loaded only for this route
+
+export default function DashboardPage() {
+  return <div className="dashboard">...</div>
+}`}
+        />
+        <Callout>
+          Global to specific: <C>globals.css</C> first, then layout CSS, then route CSS, then
+          component CSS. This avoids specificity surprises.
+        </Callout>
+      </Section>
+
+      <Section id="css-variables" title="CSS Variables">
+        <P className="mb-4">
+          Use CSS variables for theming - define them once in global CSS, use everywhere:
+        </P>
+        <CodeBlock
+          filename="src/app/globals.css"
+          code={`/* src/app/globals.css */
+:root {
+  --bg: #ffffff;
+  --text: #0a0a0a;
+  --border: #e5e5e5;
+  --radius: 0.5rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #000000;
+    --text: #fafafa;
+    --border: #262626;
+  }
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+}`}
+        />
+      </Section>
+
+      <Section id="sass-support" title="Sass/SCSS">
+        <P className="mb-4">
+          Vite supports Sass out of the box. Install and use <C>.scss</C> only where needed:
+        </P>
+        <MultiTerminal
+          tabs={[
+            { id: 'npm', label: 'npm', command: `$ npm install -D sass` },
+            { id: 'pnpm', label: 'pnpm', command: `$ pnpm add -D sass` },
+            { id: 'yarn', label: 'yarn', command: `$ yarn add -D sass` },
+            { id: 'bun', label: 'bun', command: `$ bun add -d sass` },
+          ]}
+        />
+        <CodeBlock
+          filename="src/app/dashboard/page.scss"
+          code={`/* src/app/dashboard/page.scss - only for dashboard */
+.dashboard {
+  display: grid;
+  gap: 1rem;
+
+  .card {
+    padding: 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+
+    &:hover {
+      border-color: black;
+    }
   }
 }`}
-                    filename="Card.module.scss"
-                  />
-                  <Note>
-                    Vite handles Sass compilation automatically. No additional configuration needed.
-                  </Note>
-                </m.section>
+        />
+        <CodeBlock
+          filename={`src/app/dashboard/page.${e}`}
+          tsCode={`import './page.scss'  // only dashboard loads this
 
-                {/* CSS-in-JS */}
-                <m.section id="css-in-js" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">CSS-in-JS</h2>
-                  <p className="text-slate-300 mb-4">
-                    Use CSS-in-JS libraries with the <code className="text-cyan-400">--none</code> option:
-                  </p>
-                  <CodeBlock 
-                    code={`npm install styled-components`}
-                  />
-                  <CodeBlock 
-                    code={`// src/app/components/StyledButton.tsx
+export default function DashboardPage() {
+  return <div className="dashboard">...</div>
+}`}
+          jsCode={`import './page.scss'  // only dashboard loads this
+
+export default function DashboardPage() {
+  return <div className="dashboard">...</div>
+}`}
+        />
+      </Section>
+
+      <Section id="css-in-js" title="CSS-in-JS Alternative">
+        <P className="mb-4">
+          If you prefer CSS-in-JS, use plain CSS setup (<C>--none</C>) and install your library.
+          Only load it in routes that need it:
+        </P>
+        <MultiTerminal
+          tabs={[
+            { id: 'npm', label: 'npm', command: `$ npm install styled-components` },
+            { id: 'pnpm', label: 'pnpm', command: `$ pnpm add styled-components` },
+            { id: 'yarn', label: 'yarn', command: `$ yarn add styled-components` },
+            { id: 'bun', label: 'bun', command: `$ bun add styled-components` },
+          ]}
+        />
+        <CodeBlock
+          filename={`src/app/components/StyledButton.${e}`}
+          tsCode={`// src/app/components/StyledButton.tsx
 import styled from 'styled-components'
 
 const Button = styled.button\`
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
-  background: #06b6d4;
-  color: black;
-  cursor: pointer;
-  
-  &:hover {
-    background: #0891b2;
-  }
+  background: black;
+  color: white;
+\`
+
+export function StyledButton({ children }: any) {
+  return <Button>{children}</Button>
+}`}
+          jsCode={`// src/app/components/StyledButton.jsx
+import styled from 'styled-components'
+
+const Button = styled.button\`
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  background: black;
+  color: white;
 \`
 
 export function StyledButton({ children }) {
   return <Button>{children}</Button>
 }`}
-                    filename="StyledButton.tsx"
-                  />
-                </m.section>
-
-                {/* CSS Variables */}
-                <m.section id="css-variables" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">CSS Variables for Theming</h2>
-                  <p className="text-slate-300 mb-4">
-                    Define CSS variables for consistent theming:
-                  </p>
-                  <CodeBlock 
-                    code={`/* src/app/globals.css */
-:root {
-  --bg-primary: #000000;
-  --text-primary: #ffffff;
-  --accent: #06b6d4;
-  --border: #1e293b;
+        />
+        <Callout>
+          For most projects, plain CSS with route-level imports is simpler and faster. Use
+          CSS-in-JS only when you need dynamic theming based on props.
+        </Callout>
+      </Section>
+    </>
+  )
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    --bg-primary: #ffffff;
-    --text-primary: #0f172a;
-    --border: #e2e8f0;
-  }
-}
+/* ---------- page ---------- */
 
-body {
-  background: var(--bg-primary);
-  color: var(--text-primary);
-}`}
-                    filename="app/globals.css"
-                  />
-                </m.section>
-
-                {/* Previous / Next Navigation */}
-                <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
-                  <Link to="/docs/env-api" className="group flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
-                    <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                    <div>
-                      <div className="text-xs text-slate-500">Previous</div>
-                      <div className="text-sm font-medium">Using in API Routes</div>
-                    </div>
-                  </Link>
-                  <Link to="/docs/tailwind" className="group flex items-center gap-2 text-right text-slate-400 hover:text-white transition-colors">
-                    <div>
-                      <div className="text-xs text-slate-500">Next</div>
-                      <div className="text-sm font-medium">Tailwind CSS</div>
-                    </div>
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                </m.div>
-
-              </div>
-
-              {/* Right-hand "On this page" sidebar */}
-              <aside className="hidden xl:block w-56 shrink-0">
-                <TableOfContents items={TOC_ITEMS} editUrl={EDIT_URL} />
-              </aside>
-            </div>
-          </DocLayout>
-          
-        </div>
-      </div>
-    </div>
+export default function CSSPage() {
+  return (
+    <DocPage
+      title="Plain CSS"
+      description="Use plain CSS in Bini.js - import only what you need, where you need it. No framework required."
+      url="https://bini.js.org/docs/css"
+      editUrl="https://github.com/Binidu01/bini-official/edit/main/src/app/docs/css.tsx"
+      toc={TOC_ITEMS}
+      prev={{ to: '/docs/env-api', title: 'Using in API Routes' }}
+      next={{ to: '/docs/tailwind', title: 'Tailwind CSS' }}
+    >
+      <Content />
+    </DocPage>
   )
 }

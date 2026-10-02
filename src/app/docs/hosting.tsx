@@ -1,25 +1,25 @@
-// src/pages/docs/hosting/page.tsx
-import React from 'react'
-import { m } from 'framer-motion'
-import { ArrowLeft } from 'lucide-react'
-import { Link } from 'react-router-dom'
-import { Header } from '../../components/Layout'
-import { DocLayout } from '../../components/DocSidebar'
-import { CopyPageButton } from '../../components/CopyPageButton'
-import { TableOfContents, type TocItem } from '../../components/TableOfContents'
-import {
-  siNodedotjs,
-  siNetlify,
-  siVercel,
-  siCloudflare,
-  siDeno,
-  siGithub,
-} from 'simple-icons'
-import type { SimpleIcon as SimpleIconType } from 'simple-icons'
+// src/app/docs/hosting.tsx
+import { siCloudflare, siDeno, siNetlify, siNodedotjs, siVercel } from 'simple-icons'
 
-// ────────────────────────────────────────────────────────────────────────────────
-// "On this page" entries
-// ────────────────────────────────────────────────────────────────────────────────
+import {
+  BrandIcon,
+  C,
+  Callout,
+  CodeBlock,
+  DocLink,
+  DocPage,
+  H3,
+  MultiTerminal,
+  P,
+  PromptOutput,
+  Section,
+  Table,
+  UL,
+  useDocLang,
+} from '../../components/DocBlocks'
+import { RouteVisual } from '../../components/DocVisuals'
+import type { TocItem } from '../../components/TableOfContents'
+
 const TOC_ITEMS: TocItem[] = [
   { id: 'overview', label: 'Overview' },
   { id: 'installation', label: 'Installation' },
@@ -35,250 +35,254 @@ const TOC_ITEMS: TocItem[] = [
   { id: 'requirements', label: 'Requirements' },
 ]
 
-const PAGE_TITLE = 'Hosting Providers'
-const PAGE_URL = 'https://bini.js.org/docs/hosting'
-const EDIT_URL = 'https://github.com/Binidu01/bini-offical/edit/main/src/app/docs/hosting.tsx'
+const STRONG = 'font-medium text-black dark:text-white'
+const OL =
+  'mb-6 list-decimal space-y-2 pl-5 text-[15px] leading-relaxed text-neutral-600 dark:text-neutral-400'
+const ICON_COLOR = 'text-black dark:text-white'
 
-// ────────────────────────────────────────────────────────────────────────────────
-// Simple Icon component
-// ────────────────────────────────────────────────────────────────────────────────
-function SimpleIcon({
-  icon,
-  className = "",
-  size = 20
-}: {
-  icon: SimpleIconType
-  className?: string
-  size?: number
-}) {
+const INSTALL_TABS = [
+  { id: 'npm', label: 'npm', command: '$ npm install --save-dev bini-deploy' },
+  { id: 'pnpm', label: 'pnpm', command: '$ pnpm add -D bini-deploy' },
+  { id: 'yarn', label: 'yarn', command: '$ yarn add --dev bini-deploy' },
+  { id: 'bun', label: 'bun', command: '$ bun add -d bini-deploy' },
+]
+
+const DEPLOY_TABS = [
+  { id: 'npm', label: 'npm', command: '$ npm run deploy' },
+  { id: 'pnpm', label: 'pnpm', command: '$ pnpm deploy' },
+  { id: 'yarn', label: 'yarn', command: '$ yarn deploy' },
+  { id: 'bun', label: 'bun', command: '$ bun run deploy' },
+]
+
+const WRANGLER_TABS = [
+  { id: 'npm', label: 'npm', command: '$ npx wrangler deploy' },
+  { id: 'pnpm', label: 'pnpm', command: '$ pnpm dlx wrangler deploy' },
+  { id: 'yarn', label: 'yarn', command: '$ yarn dlx wrangler deploy' },
+  { id: 'bun', label: 'bun', command: '$ bunx wrangler deploy' },
+]
+
+function Brand({ icon, size = 16 }: { icon: { path: string }; size?: number }) {
+  return <BrandIcon icon={icon} size={size} className={ICON_COLOR} />
+}
+
+function ProviderName({ icon, name }: { icon: { path: string }; name: string }) {
   return (
-    <svg
-      role="img"
-      viewBox="0 0 24 24"
-      width={size}
-      height={size}
-      fill="currentColor"
-      className={className}
-      dangerouslySetInnerHTML={{ __html: icon.svg }}
-    />
+    <span className="flex items-center gap-2">
+      <Brand icon={icon} />
+      {name}
+    </span>
   )
 }
 
-// ────────────────────────────────────────────────────────────────────────────────
-// Code Block Component with horizontal scrollbar
-// ────────────────────────────────────────────────────────────────────────────────
-function CodeBlock({ code, filename }: { code: string; filename?: string }) {
-  const [copied, setCopied] = React.useState(false)
-  const handleCopy = () => {
-    navigator.clipboard.writeText(code)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
+/**
+ * The interactive hosting-provider prompt as bini-deploy shows it,
+ * with the provider for the current section highlighted.
+ */
+function PickHosting({ provider, isDefault = false }: { provider: string; isDefault?: boolean }) {
+  const providers = [
+    { id: 'node', label: 'Node.js (default - bini-server)' },
+    { id: 'netlify', label: 'Netlify' },
+    { id: 'vercel', label: 'Vercel' },
+    { id: 'cloudflare', label: 'Cloudflare Workers' },
+    { id: 'deno', label: 'Deno Deploy' },
+  ]
+  const selected = providers.find((p) => p.id === provider)?.label ?? providers[0].label
 
   return (
-    <div className="relative group mb-6">
-      {filename && (
-        <div className="flex items-center justify-between px-4 py-2 bg-slate-900 border border-slate-800 border-b-0 rounded-t-lg">
-          <span className="text-sm text-slate-300 font-mono">{filename}</span>
-        </div>
-      )}
-      <button onClick={handleCopy} className="absolute top-2 right-2 p-1.5 rounded-md bg-slate-800 hover:bg-slate-700 transition-colors z-10 opacity-0 group-hover:opacity-100" style={{ top: filename ? '3rem' : '0.5rem' }}>
-        {copied ? (
-          <svg className="w-3.5 h-3.5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
-        ) : (
-          <svg className="w-3.5 h-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-          </svg>
-        )}
-      </button>
-      <div className={`bg-[#0a0a0a] border border-slate-700 ${filename ? 'rounded-t-none' : 'rounded-lg'} overflow-x-auto scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-transparent hover:scrollbar-thumb-slate-500`}>
-        <pre className="p-4 min-w-max">
-          <code className="text-sm font-mono text-slate-200 whitespace-pre">{code}</code>
-        </pre>
-      </div>
-    </div>
+    <>
+      <P className="mb-4">
+        Pick <strong className={STRONG}>web</strong>, then{' '}
+        <strong className={STRONG}>{selected.split(' ')[0]}</strong>
+        {isDefault ? ' (the default)' : ''} when prompted:
+      </P>
+      <PromptOutput
+        lines={[
+          { kind: 'question', text: 'Select hosting provider:' },
+          ...providers.map((p) => ({
+            kind: 'option' as const,
+            text: p.label,
+            selected: p.label === selected,
+          })),
+          { kind: 'blank' },
+          { kind: 'hint', text: '↑↓ navigate • ⏎ select' },
+        ]}
+      />
+    </>
   )
 }
 
-// ────────────────────────────────────────────────────────────────────────────────
-// Table Component
-// ────────────────────────────────────────────────────────────────────────────────
-function Table({ headers, rows }: { headers: string[]; rows: React.ReactNode[][] }) {
-  return (
-    <div className="overflow-x-auto rounded-lg border border-slate-700 my-6">
-      <table className="w-full text-sm">
-        <thead className="bg-slate-900 border-b border-slate-800">
-          <tr>{headers.map((h, i) => <th key={i} className="text-left py-3 px-4 font-medium text-white">{h}</th>)}</tr>
-        </thead>
-        <tbody className="divide-y divide-slate-800">
-          {rows.map((row, i) => <tr key={i}>{row.map((cell, j) => <td key={j} className="py-3 px-4 text-slate-300 text-xs">{cell}</td>)}</tr>)}
-        </tbody>
-      </table>
-    </div>
-  )
-}
+/* ---------- content (reads the TS/JS choice from DocPage) ---------- */
 
-// ────────────────────────────────────────────────────────────────────────────────
-// Note Component
-// ────────────────────────────────────────────────────────────────────────────────
-function Note({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-4 my-6">
-      <div className="text-sm text-slate-300 [&>strong]:text-white [&>code]:text-cyan-400 [&>code]:bg-slate-800 [&>code]:px-1 [&>code]:py-0.5 [&>code]:rounded">
-        {children}
-      </div>
-    </div>
-  )
-}
+function Content() {
+  const lang = useDocLang()
+  const t = lang === 'js' ? 'js' : 'ts'
 
-// ────────────────────────────────────────────────────────────────────────────────
-// Hosting Providers Page
-// ────────────────────────────────────────────────────────────────────────────────
-export default function HostingPage() {
   return (
-    <div className="min-h-screen bg-black font-sans antialiased overflow-x-hidden">
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute inset-0 bg-black" />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-300 h-200 bg-linear-to-b from-cyan-500/5 via-sky-500/3 to-transparent rounded-full blur-3xl" />
+    <>
+      <div className="mb-12">
+        <P className="mb-4">
+          <C>bini-deploy</C> scans your project, generates the right hosting configuration for your
+          target provider, and pushes it straight to GitHub - no YAML spelunking, no
+          platform-specific docs to read first.
+        </P>
+        <P className="mb-0">
+          It is bundled into every Bini.js scaffold and exposed as <C>npm run deploy</C>. This page
+          covers the <strong className={STRONG}>web hosting providers</strong> it supports. For
+          desktop and mobile targets, see{' '}
+          <DocLink to="/docs/deploying">Deployment Overview</DocLink>.
+        </P>
       </div>
 
-      <Header />
+      <Section id="installation" title="Installation">
+        <P className="mb-4">
+          Already included in every Bini.js scaffold. To add it to an existing project:
+        </P>
+        <MultiTerminal tabs={INSTALL_TABS} />
+      </Section>
 
-      <div className="relative pt-16 lg:pt-20">
-        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 overflow-x-hidden">
+      <Section id="supported-providers" title="Supported Providers">
+        <Table
+          headers={['Provider', 'Runtime', 'Config generated']}
+          rows={[
+            [
+              <ProviderName key="node" icon={siNodedotjs} name="Node.js" />,
+              'Node',
+              'None',
+            ],
+            [
+              <ProviderName key="netlify" icon={siNetlify} name="Netlify" />,
+              'Edge Functions (Deno)',
+              <C key="c1">netlify.toml</C>,
+            ],
+            [
+              <ProviderName key="vercel" icon={siVercel} name="Vercel" />,
+              'Node.js Runtime',
+              <C key="c2">vercel.json</C>,
+            ],
+            [
+              <ProviderName key="cf" icon={siCloudflare} name="Cloudflare Workers" />,
+              'Workers',
+              <C key="c3">wrangler.toml</C>,
+            ],
+            [
+              <ProviderName key="deno" icon={siDeno} name="Deno Deploy" />,
+              'Deno',
+              <C key="c4">{`server/index.${t}`}</C>,
+            ],
+          ]}
+        />
+        <Callout>
+          <strong>Node is the default</strong> because Bini.js ships with <C>bini-server</C>, a
+          zero-dependency production server. Choosing it skips config generation entirely - there
+          is nothing to adapt, so bini-deploy just commits and pushes.
+        </Callout>
 
-          <DocLayout>
-            <div className="flex gap-10 xl:gap-14">
-              {/* Main content column */}
-              <div className="max-w-4xl min-w-0 flex-1">
+        <H3 className="mb-3 mt-6">How it works</H3>
+        <ol className={OL}>
+          <li>
+            <strong className={STRONG}>Scan</strong> - scans <C>src/app/api/</C> for route files
+          </li>
+          <li>
+            <strong className={STRONG}>Generate</strong> - creates the platform-specific entry file
+            and config
+          </li>
+          <li>
+            <strong className={STRONG}>Clean</strong> - removes leftover entry files, config, and
+            directories from any previously selected platform, including when switching to Node or
+            a native platform
+          </li>
+          <li>
+            <strong className={STRONG}>Push</strong> - commits and pushes everything to your GitHub
+            repository
+          </li>
+          <li>
+            <strong className={STRONG}>Deploy</strong> - your hosting provider deploys
+            automatically from GitHub
+          </li>
+        </ol>
 
-                {/* Title + Copy page button */}
-                <m.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex items-start justify-between gap-4 mb-4"
-                >
-                  <div>
-                    <h1 className="text-4xl font-bold text-white mb-2">{PAGE_TITLE}</h1>
-                    <p className="text-slate-400 text-sm">Zero-config web deployment with <code className="text-cyan-400 bg-slate-800 px-1 py-0.5 rounded">bini-deploy</code> — generates hosting config and pushes straight to GitHub.</p>
-                  </div>
-                  <div className="shrink-0 pt-2 hidden sm:block">
-                    <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
-                  </div>
-                </m.div>
-                {/* Copy button on small screens */}
-                <div className="sm:hidden mb-8">
-                  <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
-                </div>
+        <H3 className="mb-3 mt-6">Usage</H3>
+        <P className="mb-4">
+          Every Bini.js scaffold already has this wired into <C>package.json</C>, so deploying is
+          just:
+        </P>
+        <MultiTerminal tabs={DEPLOY_TABS} />
+        <P className="mb-4">
+          This runs <C>bini-deploy</C> interactively - it prompts you to pick a platform (
+          <C>web</C>, <C>windows</C>, <C>macos</C>, <C>linux</C>, <C>android</C>, <C>ios</C>) and,
+          if you choose web, a hosting provider (<C>node</C>, <C>netlify</C>, <C>vercel</C>,{' '}
+          <C>cloudflare</C>, <C>deno</C>).
+        </P>
+        <P className="mb-4">For scripts and CI, skip the prompts with flags:</P>
+        <CodeBlock
+          filename="Terminal"
+          lang="shell"
+          code="$ npx bini-deploy --platform web --hosting vercel --repo https://github.com/you/your-app --yes"
+        />
+        <Table
+          headers={['Flag', 'Description']}
+          rows={[
+            [
+              <C key="f1">--platform</C>,
+              <>
+                <C>web</C>, <C>windows</C>, <C>macos</C>, <C>ios</C>, <C>linux</C>, <C>android</C>
+              </>,
+            ],
+            [
+              <C key="f2">--hosting</C>,
+              <>
+                web only - <C>node</C> (default), <C>netlify</C>, <C>vercel</C>, <C>cloudflare</C>,{' '}
+                <C>deno</C>
+              </>,
+            ],
+            [<C key="f3">--repo</C>, 'GitHub repository URL to push to'],
+            [
+              <C key="f4">--generate-entry</C>,
+              <>
+                generate only the production entry file - <C>netlify</C>, <C>vercel</C>,{' '}
+                <C>cloudflare</C>, <C>deno</C>
+              </>,
+            ],
+            [<C key="f5">--yes, -y</C>, 'skip interactive prompts and use the flags provided'],
+          ]}
+        />
+      </Section>
 
-                {/* Overview */}
-                <m.section id="overview" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="scroll-mt-24">
-                  <p className="text-slate-300 mb-4">
-                    <code className="text-cyan-400">bini-deploy</code> scans your project, generates the right hosting configuration for your target provider, and pushes it straight to GitHub — no YAML spelunking, no platform-specific docs to read first.
-                  </p>
-                  <p className="text-slate-300 mb-6">
-                    It's bundled into every Bini.js scaffold and exposed as <code className="text-cyan-400">npm run deploy</code>. This page covers the <strong className="text-white">web hosting providers</strong> it supports. For desktop and mobile targets, see <Link to="/docs/deploying" className="text-cyan-400 hover:underline">Deployment Overview</Link>.
-                  </p>
-                </m.section>
+      <Section
+        id="node"
+        title="Node.js"
+        icon={<Brand icon={siNodedotjs} size={20} />}
+      >
+        <P className="mb-4">
+          The default hosting choice. <C>bini-server</C> reads your API handlers directly from{' '}
+          <C>src/app/api/</C> at request time - no build step, no generated entry file.
+        </P>
+        <MultiTerminal tabs={DEPLOY_TABS} />
+        <PickHosting provider="node" isDefault />
+        <P className="mb-0">
+          Works out of the box on Railway, Render, Fly.io, or a bare VPS with <C>pm2</C>. See{' '}
+          <DocLink to="/docs/production-server">Production Server</DocLink> for the full runtime
+          reference.
+        </P>
+      </Section>
 
-                {/* Installation */}
-                <m.section id="installation" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Installation</h2>
-                  <p className="text-slate-300 mb-4">
-                    Already included in every Bini.js scaffold. To add it to an existing project:
-                  </p>
-                  <CodeBlock code={`npm install --save-dev bini-deploy`} />
-                </m.section>
-
-                {/* Supported Providers */}
-                <m.section id="supported-providers" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Supported Providers</h2>
-                  <Table
-                    headers={['Provider', 'Runtime', 'Config generated']}
-                    rows={[
-                      [<span className="flex items-center gap-2"><SimpleIcon icon={siNodedotjs} className="text-green-400" size={16} /> Node.js (default)</span>, 'Node (bini-server)', 'None — bini-server handles it, bini-deploy just pushes to GitHub'],
-                      [<span className="flex items-center gap-2"><SimpleIcon icon={siNetlify} className="text-cyan-400" size={16} /> Netlify</span>, 'Edge Functions (Deno)', <code className="text-cyan-400">netlify.toml</code>],
-                      [<span className="flex items-center gap-2"><SimpleIcon icon={siVercel} className="text-white" size={16} /> Vercel</span>, 'Node.js Runtime', <code className="text-cyan-400">vercel.json</code>],
-                      [<span className="flex items-center gap-2"><SimpleIcon icon={siCloudflare} className="text-orange-400" size={16} /> Cloudflare Workers</span>, 'Workers', <code className="text-cyan-400">wrangler.toml</code>],
-                      [<span className="flex items-center gap-2"><SimpleIcon icon={siDeno} className="text-white" size={16} /> Deno Deploy</span>, 'Deno', <code className="text-cyan-400">server/index.ts</code>],
-                    ]}
-                  />
-                  <Note>
-                    <strong>Node is the default</strong> because Bini.js ships with <code>bini-server</code>, a zero-dependency production server. Choosing it skips config generation entirely — there's nothing to adapt, so bini-deploy just commits and pushes.
-                  </Note>
-
-                  <h3 className="text-lg font-semibold text-white mt-6 mb-3">How it works</h3>
-                  <ol className="space-y-2 text-slate-300 mb-4 list-decimal list-inside">
-                    <li><strong className="text-white">Scan</strong> — scans <code className="text-cyan-400">src/app/api/</code> for route files</li>
-                    <li><strong className="text-white">Generate</strong> — creates the platform-specific entry file and config</li>
-                    <li><strong className="text-white">Clean</strong> — removes leftover entry files, config, and directories from any previously selected platform, including when switching to Node or a native platform</li>
-                    <li><strong className="text-white">Push</strong> — commits and pushes everything to your GitHub repository</li>
-                    <li><strong className="text-white">Deploy</strong> — your hosting provider deploys automatically from GitHub</li>
-                  </ol>
-
-                  <h3 className="text-lg font-semibold text-white mt-6 mb-3">Usage</h3>
-                  <p className="text-slate-300 mb-4">
-                    Every Bini.js scaffold already has this wired into <code className="text-cyan-400">package.json</code>, so deploying is just:
-                  </p>
-                  <CodeBlock code={`npm run deploy`} />
-                  <p className="text-slate-300 mb-4">
-                    This runs <code className="text-cyan-400">bini-deploy</code> interactively — it prompts you to pick a platform (<code className="text-cyan-400">web</code>, <code className="text-cyan-400">windows</code>, <code className="text-cyan-400">macos</code>, <code className="text-cyan-400">linux</code>, <code className="text-cyan-400">android</code>, <code className="text-cyan-400">ios</code>) and, if you choose web, a hosting provider (<code className="text-cyan-400">node</code>, <code className="text-cyan-400">netlify</code>, <code className="text-cyan-400">vercel</code>, <code className="text-cyan-400">cloudflare</code>, <code className="text-cyan-400">deno</code>).
-                  </p>
-                  <p className="text-slate-300 mb-4">
-                    For scripts and CI, skip the prompts with flags:
-                  </p>
-                  <CodeBlock code={`npx bini-deploy --platform web --hosting vercel --repo https://github.com/you/your-app --yes`} />
-                  <Table
-                    headers={['Flag', 'Description']}
-                    rows={[
-                      [<code className="text-cyan-400">--platform</code>, <span><code className="text-cyan-400">web</code>, <code className="text-cyan-400">windows</code>, <code className="text-cyan-400">macos</code>, <code className="text-cyan-400">ios</code>, <code className="text-cyan-400">linux</code>, <code className="text-cyan-400">android</code></span>],
-                      [<code className="text-cyan-400">--hosting</code>, <span>web only — <code className="text-cyan-400">node</code> (default), <code className="text-cyan-400">netlify</code>, <code className="text-cyan-400">vercel</code>, <code className="text-cyan-400">cloudflare</code>, <code className="text-cyan-400">deno</code></span>],
-                      [<code className="text-cyan-400">--repo</code>, 'GitHub repository URL to push to'],
-                      [<code className="text-cyan-400">--generate-entry</code>, <span>generate only the production entry file — <code className="text-cyan-400">netlify</code>, <code className="text-cyan-400">vercel</code>, <code className="text-cyan-400">cloudflare</code>, <code className="text-cyan-400">deno</code></span>],
-                      [<code className="text-cyan-400">--yes, -y</code>, 'skip interactive prompts and use the flags provided'],
-                    ]}
-                  />
-                </m.section>
-
-                {/* Node.js */}
-                <m.section id="node" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2 flex items-center gap-2">
-                    <SimpleIcon icon={siNodedotjs} className="text-green-400" size={20} />
-                    Node.js
-                  </h2>
-                  <p className="text-slate-300 mb-4">
-                    The default hosting choice. <code className="text-cyan-400">bini-server</code> reads your API handlers directly from <code className="text-cyan-400">src/app/api/</code> at request time — no build step, no generated entry file.
-                  </p>
-                  <CodeBlock code={`npm run deploy`} />
-                  <p className="text-slate-300 mt-2 mb-4">
-                    Pick <strong className="text-white">web</strong>, then <strong className="text-white">node</strong> (the default) when prompted.
-                  </p>
-                  <p className="text-slate-300 mt-4">
-                    Works out of the box on Railway, Render, Fly.io, or a bare VPS with <code className="text-cyan-400">pm2</code>. See <Link to="/docs/production-server" className="text-cyan-400 hover:underline">Production Server</Link> for the full runtime reference.
-                  </p>
-                </m.section>
-
-                {/* Netlify */}
-                <m.section id="netlify" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2 flex items-center gap-2">
-                    <SimpleIcon icon={siNetlify} className="text-cyan-400" size={20} />
-                    Netlify
-                  </h2>
-                  <p className="text-slate-300 mb-4">API routes run as Netlify Edge Functions.</p>
-                  <CodeBlock code={`npm run deploy`} />
-                  <p className="text-slate-300 mt-2 mb-4">
-                    Pick <strong className="text-white">web</strong>, then <strong className="text-white">netlify</strong> when prompted.
-                  </p>
-                  <p className="text-slate-300 mt-4 mb-2">Generates:</p>
-                  <ul className="space-y-2 text-slate-300 mb-4 list-disc list-inside">
-                    <li><code className="text-cyan-400">netlify.toml</code></li>
-                    <li><code className="text-cyan-400">netlify/edge-functions/api.ts</code></li>
-                  </ul>
-                  <CodeBlock
-                    filename="netlify.toml"
-                    code={`[build]
+      <Section id="netlify" title="Netlify" icon={<Brand icon={siNetlify} size={20} />}>
+        <P className="mb-4">API routes run as Netlify Edge Functions.</P>
+        <MultiTerminal tabs={DEPLOY_TABS} />
+        <PickHosting provider="netlify" />
+        <P className="mb-2">Generates:</P>
+        <UL className="mb-6 space-y-2">
+          <li>
+            <C>netlify.toml</C>
+          </li>
+          <li>
+            <C>{`netlify/edge-functions/api.${t}`}</C>
+          </li>
+        </UL>
+        <CodeBlock
+          filename="netlify.toml"
+          lang="text"
+          code={`[build]
   command = "vite build"
   publish = "dist"
 
@@ -290,114 +294,124 @@ export default function HostingPage() {
   from = "/*"
   to = "/index.html"
   status = 200`}
-                  />
-                  <Note>
-                    Edge Functions run on <strong className="text-white">Deno, not Node</strong> — packages depending on Node built-ins (<code>fs</code>, <code>nodemailer</code>) won't work there.
-                  </Note>
-                </m.section>
+        />
+        <Callout>
+          Edge Functions run on <strong>Deno, not Node</strong> - packages depending on Node
+          built-ins (<C>fs</C>, <C>nodemailer</C>) will not work there.
+        </Callout>
+      </Section>
 
-                {/* Vercel */}
-                <m.section id="vercel" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2 flex items-center gap-2">
-                    <SimpleIcon icon={siVercel} className="text-white" size={20} />
-                    Vercel
-                  </h2>
-                  <p className="text-slate-300 mb-4">API routes run on Vercel's Node.js Runtime.</p>
-                  <CodeBlock code={`npm run deploy`} />
-                  <p className="text-slate-300 mt-2 mb-4">
-                    Pick <strong className="text-white">web</strong>, then <strong className="text-white">vercel</strong> when prompted.
-                  </p>
-                  <p className="text-slate-300 mt-4 mb-2">Generates:</p>
-                  <ul className="space-y-2 text-slate-300 mb-4 list-disc list-inside">
-                    <li><code className="text-cyan-400">vercel.json</code></li>
-                    <li><code className="text-cyan-400">api/index.ts</code></li>
-                  </ul>
-                  <Note>
-                    Vercel reads <code>api/index.ts</code> before running your build — bini-deploy commits it for you, so it's already there when CI runs. It imports <code>hono</code> as an npm package, so bini-deploy checks it's installed and tells you the exact install command if it's missing.
-                  </Note>
-                </m.section>
+      <Section id="vercel" title="Vercel" icon={<Brand icon={siVercel} size={20} />}>
+        <P className="mb-4">API routes run on Vercel&apos;s Node.js Runtime.</P>
+        <MultiTerminal tabs={DEPLOY_TABS} />
+        <PickHosting provider="vercel" />
+        <P className="mb-2">Generates:</P>
+        <UL className="mb-6 space-y-2">
+          <li>
+            <C>vercel.json</C>
+          </li>
+          <li>
+            <C>{`api/index.${t}`}</C>
+          </li>
+        </UL>
+        <Callout>
+          Vercel reads <C>{`api/index.${t}`}</C> before running your build - bini-deploy commits it
+          for you, so it is already there when CI runs. It imports <C>hono</C> as an npm package,
+          so bini-deploy checks it is installed and tells you the exact install command if it is
+          missing.
+        </Callout>
+      </Section>
 
-                {/* Cloudflare Workers */}
-                <m.section id="cloudflare" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2 flex items-center gap-2">
-                    <SimpleIcon icon={siCloudflare} className="text-orange-400" size={20} />
-                    Cloudflare Workers
-                  </h2>
-                  <p className="text-slate-300 mb-4">API routes run as a Cloudflare Worker.</p>
-                  <CodeBlock code={`npm run deploy`} />
-                  <p className="text-slate-300 mt-2 mb-4">
-                    Pick <strong className="text-white">web</strong>, then <strong className="text-white">cloudflare</strong> when prompted.
-                  </p>
-                  <p className="text-slate-300 mt-4 mb-2">Generates:</p>
-                  <ul className="space-y-2 text-slate-300 mb-4 list-disc list-inside">
-                    <li><code className="text-cyan-400">wrangler.toml</code></li>
-                    <li><code className="text-cyan-400">worker.ts</code></li>
-                  </ul>
-                  <p className="text-slate-300 mt-4">
-                    Or deploy manually with Wrangler once the entry file exists:
-                  </p>
-                  <CodeBlock code={`npx wrangler deploy`} />
-                  <Note>
-                    Like Vercel, the worker entry imports <code>hono</code> as an npm package — bini-deploy verifies it's installed before generating the entry file.
-                  </Note>
-                </m.section>
+      <Section
+        id="cloudflare"
+        title="Cloudflare Workers"
+        icon={<Brand icon={siCloudflare} size={20} />}
+      >
+        <P className="mb-4">API routes run as a Cloudflare Worker.</P>
+        <MultiTerminal tabs={DEPLOY_TABS} />
+        <PickHosting provider="cloudflare" />
+        <P className="mb-2">Generates:</P>
+        <UL className="mb-6 space-y-2">
+          <li>
+            <C>wrangler.toml</C>
+          </li>
+          <li>
+            <C>{`worker.${t}`}</C>
+          </li>
+        </UL>
+        <P className="mb-4">Or deploy manually with Wrangler once the entry file exists:</P>
+        <MultiTerminal tabs={WRANGLER_TABS} />
+        <Callout>
+          Like Vercel, the worker entry imports <C>hono</C> as an npm package - bini-deploy
+          verifies it is installed before generating the entry file.
+        </Callout>
+      </Section>
 
-                {/* Deno Deploy */}
-                <m.section id="deno-deploy" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2 flex items-center gap-2">
-                    <SimpleIcon icon={siDeno} className="text-white" size={20} />
-                    Deno Deploy
-                  </h2>
-                  <p className="text-slate-300 mb-4">API routes run on Deno.</p>
-                  <CodeBlock code={`npm run deploy`} />
-                  <p className="text-slate-300 mt-2 mb-4">
-                    Pick <strong className="text-white">web</strong>, then <strong className="text-white">deno</strong> when prompted.
-                  </p>
-                  <p className="text-slate-300 mt-4 mb-2">Generates:</p>
-                  <ul className="space-y-2 text-slate-300 mb-4 list-disc list-inside">
-                    <li><code className="text-cyan-400">server/index.ts</code></li>
-                  </ul>
-                  <p className="text-slate-300 mt-4 mb-2">In the Deno Deploy dashboard, set:</p>
-                  <ul className="space-y-2 text-slate-300 mb-4 list-disc list-inside">
-                    <li><strong className="text-white">Entrypoint:</strong> <code className="text-cyan-400">server/index.ts</code></li>
-                    <li><strong className="text-white">Runtime:</strong> Dynamic App</li>
-                  </ul>
-                  <Note>
-                    Deno Deploy also reads its entry file before building — same reasoning as Vercel above. Deno and Netlify both import <code>hono</code> directly from a URL, so no local install check is needed for these two.
-                  </Note>
-                </m.section>
+      <Section id="deno-deploy" title="Deno Deploy" icon={<Brand icon={siDeno} size={20} />}>
+        <P className="mb-4">API routes run on Deno.</P>
+        <MultiTerminal tabs={DEPLOY_TABS} />
+        <PickHosting provider="deno" />
+        <P className="mb-2">Generates:</P>
+        <UL className="mb-6 space-y-2">
+          <li>
+            <C>{`server/index.${t}`}</C>
+          </li>
+        </UL>
+        <P className="mb-2">In the Deno Deploy dashboard, set:</P>
+        <UL className="mb-6 space-y-2">
+          <li>
+            <strong className={STRONG}>Entrypoint:</strong> <C>{`server/index.${t}`}</C>
+          </li>
+          <li>
+            <strong className={STRONG}>Runtime:</strong> Dynamic App
+          </li>
+        </UL>
+        <Callout>
+          Deno Deploy also reads its entry file before building - same reasoning as Vercel above.
+          Deno and Netlify both import <C>hono</C> directly from a URL, so no local install check
+          is needed for these two.
+        </Callout>
+      </Section>
 
-                {/* API Routes & Hono */}
-                <m.section id="api-routes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">API Routes & Hono</h2>
-                  <p className="text-slate-300 mb-4">
-                    Every provider mounts the same file-based routes from <code className="text-cyan-400">src/app/api/</code>, dynamic segments and catch-alls included:
-                  </p>
-                  <CodeBlock
-                    code={`src/app/api/
-├── index.ts          → /api
-├── users/
-│   ├── index.ts       → /api/users
-│   └── [id].ts        → /api/users/:id
-└── posts/
-    └── [...slug].ts    → /api/posts/*`}
-                  />
-                  <p className="text-slate-300 mb-4">
-                    Each route exports a default handler that accepts a <code className="text-cyan-400">Request</code> and returns a <code className="text-cyan-400">Response</code> (or a JSON-serializable value):
-                  </p>
-                  <CodeBlock
-                    filename="src/app/api/users/[id].ts"
-                    code={`export default async function handler(req: Request) {
+      <Section id="api-routes" title="API Routes & Hono">
+        <P className="mb-4">
+          Every provider mounts the same file-based routes from <C>src/app/api/</C>, dynamic
+          segments and catch-alls included:
+        </P>
+        <RouteVisual
+          fileWidth={260}
+          rows={[
+            { n: 'api' },
+            { n: `index.${t}`, d: 1, fn: true, url: '/api' },
+            { n: 'users', d: 1 },
+            { n: `index.${t}`, d: 2, fn: true, url: '/api/users' },
+            { n: `[id].${t}`, d: 2, fn: true, dot: true, url: '/api/users/:id' },
+            { n: 'posts', d: 1 },
+            { n: `[...slug].${t}`, d: 2, fn: true, url: '/api/posts/*' },
+          ]}
+        />
+        <P className="mb-4">
+          Each route exports a default handler that accepts a <C>Request</C> and returns a{' '}
+          <C>Response</C> (or a JSON-serializable value):
+        </P>
+        <CodeBlock
+          filename={`src/app/api/users/[id].${t}`}
+          tsCode={`export default async function handler(req: Request) {
   const id = new URL(req.url).pathname.split('/').pop();
   return { id, name: 'Ada Lovelace' };
 }`}
-                  />
-                  <p className="text-slate-300 mb-4">
-                    Imports from <code className="text-cyan-400">hono</code> are detected automatically and mounted as a full Hono app instead:
-                  </p>
-                  <CodeBlock
-                    filename="src/app/api/hello/route.ts"
-                    code={`import { Hono } from 'hono';
+          jsCode={`export default async function handler(req) {
+  const id = new URL(req.url).pathname.split('/').pop();
+  return { id, name: 'Ada Lovelace' };
+}`}
+        />
+        <P className="mb-4">
+          Imports from <C>hono</C> are detected automatically and mounted as a full Hono app
+          instead:
+        </P>
+        <CodeBlock
+          filename={`src/app/api/hello/route.${t}`}
+          tsCode={`import { Hono } from 'hono';
 
 const app = new Hono();
 
@@ -408,71 +422,95 @@ app.post('/', async (c) => {
 });
 
 export default app;`}
-                  />
-                  <Note>
-                    <strong>ESM projects:</strong> since Bini.js projects ship with <code>"type": "module"</code>, Node's native ESM loader requires relative imports to include their file extension. bini-deploy's generated imports already include <code>.js</code>, but if your route files import local helpers (e.g. <code>./utils</code>), include the extension there too (<code>./utils.js</code>) or the deployed function will crash with <code>ERR_MODULE_NOT_FOUND</code> even though the build succeeds.
-                  </Note>
-                </m.section>
+          jsCode={`import { Hono } from 'hono';
 
-                {/* Automatic CORS */}
-                <m.section id="cors" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Automatic CORS</h2>
-                  <p className="text-slate-300 mb-2">
-                    API routes get permissive CORS headers out of the box on every non-Node hosting adapter — Netlify, Vercel, Cloudflare, and Deno — so your frontend can call them without extra setup.
-                  </p>
-                </m.section>
+const app = new Hono();
 
-                {/* Git Push Behavior */}
-                <m.section id="git-behavior" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Git Push Behavior</h2>
-                  <ul className="space-y-2 text-slate-300 mb-4 list-disc list-inside">
-                    <li><strong className="text-white">Existing remote</strong> — used without modification</li>
-                    <li><strong className="text-white">New projects</strong> — the provided URL is added as <code className="text-cyan-400">origin</code></li>
-                    <li><strong className="text-white">No remote updates</strong> — once a remote is set, it's never changed</li>
-                    <li><strong className="text-white">Always main</strong> — always pushes to <code className="text-cyan-400">main</code>, automatically renaming <code className="text-cyan-400">master</code> if needed</li>
-                    <li><strong className="text-white">Remote-ahead recovery</strong> — if the remote has commits you don't have locally (e.g. GitHub auto-created a README), bini-deploy fetches and merges automatically with <code className="text-cyan-400">--allow-unrelated-histories -X ours</code>, keeping your local version of any file that exists on both sides. A warning prints before the merge runs; a real conflict stops the process and prints manual recovery steps</li>
-                  </ul>
-                  <Note>
-                    This means you can run <code>bini-deploy</code> multiple times without accidentally pushing to the wrong repository.
-                  </Note>
-                </m.section>
+app.get('/', (c) => c.json({ message: 'Hello from Hono!' }));
+app.post('/', async (c) => {
+  const body = await c.req.json();
+  return c.json({ received: body });
+});
 
-                {/* Requirements */}
-                <m.section id="requirements" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Requirements</h2>
-                  <Table
-                    headers={['Requirement', 'Version']}
-                    rows={[
-                      ['Node.js', '>= 18'],
-                      ['Vite', '>= 6'],
-                      ['git', 'available on your PATH'],
-                      ['GitHub repository', 'created ahead of time, to push to'],
-                    ]}
-                  />
-                </m.section>
+export default app;`}
+        />
+        <Callout>
+          <strong>ESM projects:</strong> since Bini.js projects ship with{' '}
+          <C>&quot;type&quot;: &quot;module&quot;</C>, Node&apos;s native ESM loader requires
+          relative imports to include their file extension. bini-deploy&apos;s generated imports
+          already include <C>.js</C>, but if your route files import local helpers (e.g.{' '}
+          <C>./utils</C>), include the extension there too (<C>./utils.js</C>) or the deployed
+          function will crash with <C>ERR_MODULE_NOT_FOUND</C> even though the build succeeds.
+        </Callout>
+      </Section>
 
-                {/* Previous Navigation (this is the last page in Deployment) */}
-                <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }} className="flex items-center justify-start pt-8 mt-8 border-t border-slate-800">
-                  <Link to="/docs/static-export" className="group flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
-                    <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                    <div>
-                      <div className="text-xs text-slate-500">Previous</div>
-                      <div className="text-sm font-medium">Static Export</div>
-                    </div>
-                  </Link>
-                </m.div>
+      <Section id="cors" title="Automatic CORS">
+        <P className="mb-0">
+          API routes get permissive CORS headers out of the box on every non-Node hosting adapter -
+          Netlify, Vercel, Cloudflare, and Deno - so your frontend can call them without extra
+          setup.
+        </P>
+      </Section>
 
-              </div>
+      <Section id="git-behavior" title="Git Push Behavior">
+        <UL className="mb-6 space-y-2">
+          <li>
+            <strong className={STRONG}>Existing remote</strong> - used without modification
+          </li>
+          <li>
+            <strong className={STRONG}>New projects</strong> - the provided URL is added as{' '}
+            <C>origin</C>
+          </li>
+          <li>
+            <strong className={STRONG}>No remote updates</strong> - once a remote is set, it is
+            never changed
+          </li>
+          <li>
+            <strong className={STRONG}>Always main</strong> - always pushes to <C>main</C>,
+            automatically renaming <C>master</C> if needed
+          </li>
+          <li>
+            <strong className={STRONG}>Remote-ahead recovery</strong> - if the remote has commits
+            you do not have locally (e.g. GitHub auto-created a README), bini-deploy fetches and
+            merges automatically with <C>--allow-unrelated-histories -X ours</C>, keeping your
+            local version of any file that exists on both sides. A warning prints before the merge
+            runs; a real conflict stops the process and prints manual recovery steps
+          </li>
+        </UL>
+        <Callout>
+          This means you can run <C>bini-deploy</C> multiple times without accidentally pushing to
+          the wrong repository.
+        </Callout>
+      </Section>
 
-              {/* Right-hand "On this page" sidebar */}
-              <aside className="hidden xl:block w-56 shrink-0">
-                <TableOfContents items={TOC_ITEMS} editUrl={EDIT_URL} />
-              </aside>
-            </div>
-          </DocLayout>
+      <Section id="requirements" title="Requirements">
+        <Table
+          headers={['Requirement', 'Version']}
+          rows={[
+            ['Node.js', '>= 18'],
+            ['Vite', '>= 6'],
+            ['git', 'available on your PATH'],
+            ['GitHub repository', 'created ahead of time, to push to'],
+          ]}
+        />
+      </Section>
+    </>
+  )
+}
 
-        </div>
-      </div>
-    </div>
+/* ---------- page ---------- */
+
+export default function HostingPage() {
+  return (
+    <DocPage
+      title="Hosting Providers"
+      description="Zero-config web deployment with bini-deploy - generates hosting config and pushes straight to GitHub."
+      url="https://bini.js.org/docs/hosting"
+      editUrl="https://github.com/Binidu01/bini-official/edit/main/src/app/docs/hosting.tsx"
+      toc={TOC_ITEMS}
+      prev={{ to: '/docs/static-export', title: 'Static Export' }}
+    >
+      <Content />
+    </DocPage>
   )
 }

@@ -23,14 +23,14 @@ import {
 import type { SimpleIcon as SimpleIconType } from 'simple-icons'
 
 // Simple Icon component
-function SimpleIcon({ 
-  icon, 
-  className = "", 
-  size = 16 
-}: { 
+function SimpleIcon({
+  icon,
+  className = '',
+  size = 16,
+}: {
   icon: SimpleIconType
   className?: string
-  size?: number 
+  size?: number
 }) {
   return (
     <svg
@@ -94,7 +94,7 @@ function useTypingAnimation(words: string[]) {
 
   useEffect(() => {
     const currentWord = words[currentIndex]
-    
+
     const type = () => {
       if (!isDeleting && !isPaused) {
         if (displayText.length < currentWord.length) {
@@ -129,21 +129,35 @@ function FileRoutingVisual() {
   const [currentRoute, setCurrentRoute] = useState('/')
 
   const files = [
-    { name: 'app', type: 'folder', children: [
-      { name: 'page.tsx', type: 'file', route: '/' },
-      { name: 'about.tsx', type: 'file', route: '/about' },
-      { name: 'contact', type: 'folder', children: [
-        { name: 'page.tsx', type: 'file', route: '/contact' },
-      ] },
-      { name: 'blog', type: 'folder', children: [
-        { name: '[slug]', type: 'folder', children: [
-          { name: 'page.tsx', type: 'file', route: '/blog/:slug' },
-        ] },
-      ] },
-      { name: 'api', type: 'folder', children: [
-        { name: 'hello.ts', type: 'file', route: '/api/hello' },
-      ] },
-    ] },
+    {
+      name: 'app',
+      type: 'folder',
+      children: [
+        { name: 'page.tsx', type: 'file', route: '/' },
+        { name: 'about.tsx', type: 'file', route: '/about' },
+        {
+          name: 'contact',
+          type: 'folder',
+          children: [{ name: 'page.tsx', type: 'file', route: '/contact' }],
+        },
+        {
+          name: 'blog',
+          type: 'folder',
+          children: [
+            {
+              name: '[slug]',
+              type: 'folder',
+              children: [{ name: 'page.tsx', type: 'file', route: '/blog/:slug' }],
+            },
+          ],
+        },
+        {
+          name: 'api',
+          type: 'folder',
+          children: [{ name: 'hello.ts', type: 'file', route: '/api/hello' }],
+        },
+      ],
+    },
   ]
 
   useEffect(() => {
@@ -178,9 +192,11 @@ function FileRoutingVisual() {
           ) : (
             <File className="w-4 h-4 text-slate-400 shrink-0" />
           )}
-          <span className={`text-xs font-mono truncate ${
-            item.type === 'folder' ? 'text-sky-400' : 'text-slate-300'
-          }`}>
+          <span
+            className={`text-xs font-mono truncate ${
+              item.type === 'folder' ? 'text-sky-400' : 'text-slate-300'
+            }`}
+          >
             {item.name}
           </span>
           {item.route && selectedFile === item.route && (
@@ -201,9 +217,7 @@ function FileRoutingVisual() {
 
   return (
     <div className="w-full h-full p-5 flex flex-col">
-      <div className="flex-1 font-mono -mt-2">
-        {renderTree(files)}
-      </div>
+      <div className="flex-1 font-mono -mt-2">{renderTree(files)}</div>
     </div>
   )
 }
@@ -296,9 +310,15 @@ function CSSSupportVisual() {
               }`}
             >
               {style.icon ? (
-                <SimpleIcon icon={style.icon} className={`w-3.5 h-3.5 ${activeStyle === style.id ? style.color : 'text-slate-400'}`} size={14} />
+                <SimpleIcon
+                  icon={style.icon}
+                  className={`w-3.5 h-3.5 ${activeStyle === style.id ? style.color : 'text-slate-400'}`}
+                  size={14}
+                />
               ) : (
-                <Code2 className={`w-3.5 h-3.5 ${activeStyle === style.id ? style.color : 'text-slate-400'}`} />
+                <Code2
+                  className={`w-3.5 h-3.5 ${activeStyle === style.id ? style.color : 'text-slate-400'}`}
+                />
               )}
               {style.label}
             </motion.button>
@@ -325,7 +345,9 @@ function CSSSupportVisual() {
                     <span className="text-slate-300 text-[10px]"> </span>
                     <span className="text-cyan-400 text-[10px]">className</span>
                     <span className="text-slate-300 text-[10px]">=</span>
-                    <span className="text-emerald-400 text-[10px]">"bg-linear-to-r from-cyan-500 to-blue-500 p-4 rounded-lg"</span>
+                    <span className="text-emerald-400 text-[10px]">
+                      "bg-linear-to-r from-cyan-500 to-blue-500 p-4 rounded-lg"
+                    </span>
                     <span className="text-slate-300 text-[10px]">{'>'}</span>
                     <span className="text-slate-300 text-[10px]">{'</'}</span>
                     <span className="text-amber-400 text-[10px]">div</span>
@@ -387,9 +409,21 @@ function NestedLayoutsVisual() {
   const [activeLayer, setActiveLayer] = useState<number>(0)
 
   const layers = [
-    { name: 'Root Layout', component: 'app/layout.tsx', color: 'border-purple-500/50 bg-purple-500/10' },
-    { name: 'Blog Layout', component: 'app/blog/layout.tsx', color: 'border-cyan-500/50 bg-cyan-500/10' },
-    { name: 'Page', component: 'app/blog/page.tsx', color: 'border-emerald-500/50 bg-emerald-500/10' },
+    {
+      name: 'Root Layout',
+      component: 'app/layout.tsx',
+      color: 'border-purple-500/50 bg-purple-500/10',
+    },
+    {
+      name: 'Blog Layout',
+      component: 'app/blog/layout.tsx',
+      color: 'border-cyan-500/50 bg-cyan-500/10',
+    },
+    {
+      name: 'Page',
+      component: 'app/blog/page.tsx',
+      color: 'border-emerald-500/50 bg-emerald-500/10',
+    },
   ]
 
   useEffect(() => {
@@ -413,7 +447,9 @@ function NestedLayoutsVisual() {
             }`}
           >
             <div className="flex items-center gap-3">
-              <Layout className={`w-4.5 h-4.5 ${activeLayer === i ? 'text-cyan-400' : 'text-slate-500'}`} />
+              <Layout
+                className={`w-4.5 h-4.5 ${activeLayer === i ? 'text-cyan-400' : 'text-slate-500'}`}
+              />
               <div className="flex-1">
                 <div className="text-sm font-medium text-slate-200">{layer.name}</div>
                 <div className="text-[10px] text-slate-500 font-mono">{layer.component}</div>
@@ -437,13 +473,17 @@ function NestedLayoutsVisual() {
 function MetadataVisual() {
   const metaFields = [
     { name: 'title', values: ['My App', 'Bini.js App', 'SPA Framework'], color: 'cyan' },
-    { name: 'description', values: ['Build faster', 'Modern SPA', 'Zero config'], color: 'emerald' },
+    {
+      name: 'description',
+      values: ['Build faster', 'Modern SPA', 'Zero config'],
+      color: 'emerald',
+    },
     { name: 'og:image', values: ['og.png', 'blog-og.png', 'about-og.png'], color: 'amber' },
     { name: 'twitter:card', values: ['summary_large_image', 'summary', 'app'], color: 'sky' },
   ]
 
   const [activeFieldIndex, setActiveFieldIndex] = useState(0)
-  
+
   const titleTyping = useTypingAnimation(metaFields[0].values)
   const descTyping = useTypingAnimation(metaFields[1].values)
   const ogTyping = useTypingAnimation(metaFields[2].values)
@@ -469,11 +509,16 @@ function MetadataVisual() {
 
   const getColorClass = (color: string) => {
     switch (color) {
-      case 'cyan': return 'text-cyan-400'
-      case 'emerald': return 'text-emerald-400'
-      case 'amber': return 'text-amber-400'
-      case 'sky': return 'text-sky-400'
-      default: return 'text-slate-400'
+      case 'cyan':
+        return 'text-cyan-400'
+      case 'emerald':
+        return 'text-emerald-400'
+      case 'amber':
+        return 'text-amber-400'
+      case 'sky':
+        return 'text-sky-400'
+      default:
+        return 'text-slate-400'
     }
   }
 
@@ -481,19 +526,21 @@ function MetadataVisual() {
     <div className="w-full h-full p-5 flex flex-col">
       <div className="flex-1 bg-black rounded-lg border border-slate-800 p-4 font-mono">
         <div className="text-xs text-purple-400 mb-3">export const metadata = {'{'}</div>
-        
+
         {metaFields.map((field, i) => (
-          <div 
+          <div
             key={field.name}
             className={`pl-5 py-0.5 rounded transition-all ${isFieldActive(i) ? 'bg-cyan-500/10 border-l-2 border-cyan-500' : ''}`}
           >
             <span className="text-slate-400 text-xs">{field.name}: </span>
             <span className={`text-xs ${getColorClass(field.color)}`}>"{getDisplayText(i)}"</span>
             <span className="text-slate-600">,</span>
-            {isFieldActive(i) && <span className="ml-1.5 text-cyan-400 text-xs animate-pulse">|</span>}
+            {isFieldActive(i) && (
+              <span className="ml-1.5 text-cyan-400 text-xs animate-pulse">|</span>
+            )}
           </div>
         ))}
-        
+
         <div className="text-xs text-purple-400 mt-2">{'}'}</div>
       </div>
     </div>
@@ -503,23 +550,49 @@ function MetadataVisual() {
 // ─── Deploy Visual ───────────────────────────────────────────────────────────
 function DeployVisual() {
   const platforms = [
-    { name: 'Netlify', icon: siNetlify, color: 'text-teal-400', bg: 'bg-teal-500/10', border: 'border-teal-500/30' },
-    { name: 'Vercel', icon: siVercel, color: 'text-slate-300', bg: 'bg-slate-500/10', border: 'border-slate-500/30' },
-    { name: 'Cloudflare', icon: siCloudflare, color: 'text-orange-400', bg: 'bg-orange-500/10', border: 'border-orange-500/30' },
-    { name: 'Node', icon: siNodedotjs, color: 'text-green-400', bg: 'bg-green-500/10', border: 'border-green-500/30' },
-    { name: 'Deno', icon: siDeno, color: 'text-slate-300', bg: 'bg-slate-500/10', border: 'border-slate-500/30' },
+    {
+      name: 'Netlify',
+      icon: siNetlify,
+      color: 'text-teal-400',
+      bg: 'bg-teal-500/10',
+      border: 'border-teal-500/30',
+    },
+    {
+      name: 'Vercel',
+      icon: siVercel,
+      color: 'text-slate-300',
+      bg: 'bg-slate-500/10',
+      border: 'border-slate-500/30',
+    },
+    {
+      name: 'Cloudflare',
+      icon: siCloudflare,
+      color: 'text-orange-400',
+      bg: 'bg-orange-500/10',
+      border: 'border-orange-500/30',
+    },
+    {
+      name: 'Node',
+      icon: siNodedotjs,
+      color: 'text-green-400',
+      bg: 'bg-green-500/10',
+      border: 'border-green-500/30',
+    },
+    {
+      name: 'Deno',
+      icon: siDeno,
+      color: 'text-slate-300',
+      bg: 'bg-slate-500/10',
+      border: 'border-slate-500/30',
+    },
   ]
 
-  const platformNames = platforms.map(p => p.name)
+  const platformNames = platforms.map((p) => p.name)
   const { displayText, currentIndex } = useTypingAnimation(platformNames)
 
   return (
     <div className="w-full h-full p-5 flex flex-col items-center justify-center">
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="mb-5"
-      >
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mb-5">
         <div className="px-5 py-2.5 rounded-lg bg-black border border-slate-700">
           <span className="text-xs font-mono">
             <span className="text-purple-400">platform</span>
@@ -529,7 +602,7 @@ function DeployVisual() {
           </span>
         </div>
       </motion.div>
-      
+
       <div className="flex flex-wrap justify-center gap-2.5 max-w-sm">
         {platforms.map((platform, i) => {
           const isSelected = i === currentIndex
@@ -537,24 +610,26 @@ function DeployVisual() {
             <motion.div
               key={platform.name}
               initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ 
-                opacity: 1, 
+              animate={{
+                opacity: 1,
                 scale: isSelected ? 1.05 : 1,
               }}
               transition={{ delay: i * 0.06 }}
               whileHover={{ scale: 1.05 }}
               className={`flex items-center gap-2 px-3.5 py-2 rounded-md border transition-all ${
-                isSelected 
-                  ? `${platform.bg} ${platform.border} ring-1 ring-cyan-500/50` 
+                isSelected
+                  ? `${platform.bg} ${platform.border} ring-1 ring-cyan-500/50`
                   : 'bg-black border-slate-800'
               }`}
             >
-              <SimpleIcon 
-                icon={platform.icon} 
-                className={`w-4 h-4 ${isSelected ? platform.color : 'text-slate-500'}`} 
+              <SimpleIcon
+                icon={platform.icon}
+                className={`w-4 h-4 ${isSelected ? platform.color : 'text-slate-500'}`}
                 size={16}
               />
-              <span className={`text-xs font-medium ${isSelected ? platform.color : 'text-slate-500'}`}>
+              <span
+                className={`text-xs font-medium ${isSelected ? platform.color : 'text-slate-500'}`}
+              >
                 {platform.name}
               </span>
             </motion.div>
@@ -580,16 +655,14 @@ export function FeaturesSection() {
           transition={{ duration: 0.5 }}
           className="text-center mb-16"
         >
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-            Everything you need
-          </h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Everything you need</h2>
         </motion.div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((feature, i) => {
             const isSimpleIcon = 'isSimpleIcon' in feature && feature.isSimpleIcon
-            const IconComponent = !isSimpleIcon ? feature.icon as React.ElementType : null
-            
+            const IconComponent = !isSimpleIcon ? (feature.icon as React.ElementType) : null
+
             return (
               <motion.div
                 key={i}
@@ -607,22 +680,18 @@ export function FeaturesSection() {
                   <div className="flex items-center gap-3 mb-3">
                     <div className="w-10 h-10 rounded-lg bg-slate-900 flex items-center justify-center group-hover:bg-cyan-950/30 transition-colors shrink-0">
                       {isSimpleIcon ? (
-                        <SimpleIcon 
-                          icon={feature.icon as SimpleIconType} 
-                          className="w-5 h-5 text-slate-400 group-hover:text-cyan-400 transition-colors" 
-                          size={20} 
+                        <SimpleIcon
+                          icon={feature.icon as SimpleIconType}
+                          className="w-5 h-5 text-slate-400 group-hover:text-cyan-400 transition-colors"
+                          size={20}
                         />
                       ) : IconComponent ? (
                         <IconComponent className="w-5 h-5 text-slate-400 group-hover:text-cyan-400 transition-colors" />
                       ) : null}
                     </div>
-                    <h3 className="text-base font-semibold text-white">
-                      {feature.title}
-                    </h3>
+                    <h3 className="text-base font-semibold text-white">{feature.title}</h3>
                   </div>
-                  <p className="text-sm text-slate-400 leading-relaxed">
-                    {feature.desc}
-                  </p>
+                  <p className="text-sm text-slate-400 leading-relaxed">{feature.desc}</p>
                 </div>
               </motion.div>
             )

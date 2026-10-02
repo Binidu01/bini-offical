@@ -1,37 +1,23 @@
-import { m, AnimatePresence } from 'framer-motion'
-import { Check, Zap, Rocket, Box, FileCode, FileJson, FileText, Globe } from 'lucide-react'
+// src/components/BiniAnimation.tsx
+import { AnimatePresence, m } from 'framer-motion'
+import { Check, Zap, Box, FileCode, FileJson, FileText, Globe } from 'lucide-react'
 import React, { useState, useEffect, useRef } from 'react'
-import {
-  siApple,
-  siLinux,
-  siAndroid
-} from 'simple-icons'
+import { siApple, siLinux, siAndroid } from 'simple-icons'
 
-// ─── Windows Icon (custom SVG) ─────────────────────────────────────────────
+/* ─── Icons ───────────────────────────────────────────────────────── */
+
 const WindowsIcon = ({ className = '', size = 20 }: { className?: string; size?: number }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    shapeRendering="geometricPrecision"
-    textRendering="geometricPrecision"
-    imageRendering="optimizeQuality"
-    fillRule="evenodd"
-    clipRule="evenodd"
-    viewBox="0 0 512 512.02"
-    width={size}
-    height={size}
-    className={className}
-  >
-    <path fill="currentColor" fillRule="nonzero" d="M0 512.02h242.686V269.335H0V512.02zm0-269.334h242.686V0H0v242.686zm269.314 0H512V0H269.314v242.686zm0 269.334H512V269.335H269.314V512.02z"/>
+  <svg viewBox="0 0 512 512.02" width={size} height={size} className={className} fill="currentColor">
+    <path d="M0 512.02h242.686V269.335H0V512.02zm0-269.334h242.686V0H0v242.686zm269.314 0H512V0H269.314v242.686zm0 269.334H512V269.335H269.314V512.02z" />
   </svg>
 )
 
-// ─── Simple Icon component ────────────────────────────────────────────────────
 function SimpleIcon({
   icon,
   className = '',
   size = 20,
 }: {
-  icon: any
+  icon: { svg: string }
   className?: string
   size?: number
 }) {
@@ -48,18 +34,10 @@ function SimpleIcon({
   )
 }
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-type Phase =
-  | 'idle'
-  | 'phase1'
-  | 'phase2'
-  | 'phase3a'
-  | 'phase3b'
-  | 'phase3c'
-  | 'phase4'
-  | 'phase5'
+/* ─── Types + constants ───────────────────────────────────────────── */
 
-// ─── Constants ────────────────────────────────────────────────────────────────
+type Phase = 'idle' | 'phase1' | 'phase2' | 'phase3a' | 'phase3b' | 'phase3c' | 'phase4' | 'phase5'
+
 const FILES = [
   { id: 'f0', label: 'page.tsx', color: 'cyan' },
   { id: 'f1', label: 'layout.tsx', color: 'purple' },
@@ -87,61 +65,64 @@ const FILE_POSITIONS_MOBILE = [
   { x: -100, y: -10 },
 ]
 
-// ─── Easing curves ────────────────────────────────────────────────────────────
 const easeOut = [0.22, 1, 0.36, 1] as const
 const easeFast = [0.25, 0.1, 0.25, 1.0] as const
 const easeSmooth = [0.4, 0.0, 0.2, 1.0] as const
 
-// ─── Color tokens ────────────────────────────────────────────────────────────
-const COLOR: Record<string, { bg: string; border: string; text: string; pill: string; line: string }> = {
+/* ─── Color tokens (theme-aware) ──────────────────────────────────── */
+
+const COLOR: Record<
+  string,
+  { bg: string; border: string; text: string; pill: string; line: string }
+> = {
   cyan: {
     bg: 'bg-cyan-500/10',
     border: 'border-cyan-500/50',
-    text: 'text-cyan-400',
+    text: 'text-cyan-600 dark:text-cyan-400',
     pill: 'bg-cyan-500',
-    line: 'stroke-cyan-400',
+    line: 'stroke-cyan-500 dark:stroke-cyan-400',
   },
   purple: {
     bg: 'bg-violet-500/10',
     border: 'border-violet-500/50',
-    text: 'text-violet-400',
+    text: 'text-violet-600 dark:text-violet-400',
     pill: 'bg-violet-500',
-    line: 'stroke-violet-400',
+    line: 'stroke-violet-500 dark:stroke-violet-400',
   },
   emerald: {
     bg: 'bg-emerald-500/10',
     border: 'border-emerald-500/50',
-    text: 'text-emerald-400',
+    text: 'text-emerald-600 dark:text-emerald-400',
     pill: 'bg-emerald-500',
-    line: 'stroke-emerald-400',
+    line: 'stroke-emerald-500 dark:stroke-emerald-400',
   },
   amber: {
     bg: 'bg-amber-500/10',
     border: 'border-amber-500/50',
-    text: 'text-amber-400',
+    text: 'text-amber-600 dark:text-amber-400',
     pill: 'bg-amber-500',
-    line: 'stroke-amber-400',
+    line: 'stroke-amber-500 dark:stroke-amber-400',
   },
   rose: {
     bg: 'bg-rose-500/10',
     border: 'border-rose-500/50',
-    text: 'text-rose-400',
+    text: 'text-rose-600 dark:text-rose-400',
     pill: 'bg-rose-500',
-    line: 'stroke-rose-400',
+    line: 'stroke-rose-500 dark:stroke-rose-400',
   },
   blue: {
     bg: 'bg-blue-500/10',
     border: 'border-blue-500/50',
-    text: 'text-blue-400',
+    text: 'text-blue-600 dark:text-blue-400',
     pill: 'bg-blue-500',
-    line: 'stroke-blue-400',
+    line: 'stroke-blue-500 dark:stroke-blue-400',
   },
   yellow: {
     bg: 'bg-yellow-500/10',
     border: 'border-yellow-500/50',
-    text: 'text-yellow-400',
+    text: 'text-yellow-600 dark:text-yellow-400',
     pill: 'bg-yellow-500',
-    line: 'stroke-yellow-400',
+    line: 'stroke-yellow-500 dark:stroke-yellow-400',
   },
 }
 
@@ -157,7 +138,6 @@ const MERGE_DOTS_MOBILE = [
   { x: 60, y: 40, color: 'emerald' },
 ]
 
-// ─── Deployment platforms ────────────────────────────────────────────────────
 const DEPLOY_PLATFORMS = [
   { name: 'Windows', icon: 'windows', color: 'cyan' },
   { name: 'macOS', icon: siApple, color: 'purple' },
@@ -167,31 +147,13 @@ const DEPLOY_PLATFORMS = [
   { name: 'Web', icon: 'web', color: 'rose' },
 ]
 
-// ─── Vite build output ────────────────────────────────────────────────────────
-const VITE_OUTPUT = [
-  { file: 'dist/index.html', size: '1.43 kB', gzip: '0.57 kB' },
-  { file: 'dist/css/layout-CcW4yoKV.css', size: '12.18 kB', gzip: '3.22 kB' },
-  { file: 'dist/js/layout-BsZsyrnj.js', size: '0.16 kB', gzip: '0.15 kB' },
-  { file: 'dist/js/page-DC85EFeG.js', size: '2.63 kB', gzip: '1.17 kB' },
-  { file: 'dist/js/jsx-runtime-DShvDiRO.js', size: '8.39 kB', gzip: '3.20 kB' },
-  { file: 'dist/js/index-CkZRHBeM.js', size: '228.95 kB', gzip: '72.97 kB' },
-]
+/* ─── Hooks ───────────────────────────────────────────────────────── */
 
-const VITE_OUTPUT_MOBILE = [
-  { file: 'dist/index.html', size: '1.43 kB', gzip: '0.57 kB' },
-  { file: 'dist/layout.css', size: '12.18 kB', gzip: '3.22 kB' },
-  { file: 'dist/page.js', size: '2.63 kB', gzip: '1.17 kB' },
-  { file: 'dist/index.js', size: '228.95 kB', gzip: '72.97 kB' },
-]
-
-// ─── Hook for responsive detection ───────────────────────────────────────────
 function useIsMobile() {
   const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 640)
-    }
+    const checkMobile = () => setIsMobile(window.innerWidth < 640)
     checkMobile()
     window.addEventListener('resize', checkMobile)
     return () => window.removeEventListener('resize', checkMobile)
@@ -200,7 +162,6 @@ function useIsMobile() {
   return isMobile
 }
 
-// ─── Reduced-motion hook ─────────────────────────────────────────────────────
 function usePrefersReducedMotion() {
   const [prefersReduced, setPrefersReduced] = useState(false)
 
@@ -215,7 +176,22 @@ function usePrefersReducedMotion() {
   return prefersReduced
 }
 
-// ─── Sub-components ───────────────────────────────────────────────────────────
+/* ─── Phase label pill ────────────────────────────────────────────── */
+
+function PhasePill({ label }: { label: string }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full border border-cyan-500/25 bg-cyan-500/10 backdrop-blur-md text-[8px] sm:text-[10px] font-semibold tracking-[0.14em] uppercase text-cyan-600 dark:text-cyan-400 font-sans whitespace-nowrap">
+      <m.span
+        className="size-1 sm:size-1.5 rounded-full bg-cyan-500 dark:bg-cyan-400"
+        animate={{ opacity: [0.4, 1, 0.4] }}
+        transition={{ duration: 1.5, repeat: Infinity }}
+      />
+      {label}
+    </span>
+  )
+}
+
+/* ─── Sub-components ──────────────────────────────────────────────── */
 
 function FileChip({
   label,
@@ -246,7 +222,7 @@ function FileChip({
           ? { duration: 0.65, delay, ease: easeFast }
           : { duration: 0.55, delay, ease: easeOut }
       }
-      className={`absolute flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl font-mono text-[9px] sm:text-xs font-medium whitespace-nowrap backdrop-blur-sm border ${c.bg} ${c.border} ${c.text}`}
+      className={`absolute flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl font-sans text-[9px] sm:text-xs font-medium whitespace-nowrap backdrop-blur-sm border ${c.bg} ${c.border} ${c.text}`}
     >
       <span className={`size-1 sm:size-1.5 rounded-full ${c.pill} opacity-80`} />
       {label}
@@ -265,9 +241,15 @@ function CoreNode({ pulse }: { pulse: boolean }) {
       transition={{ duration: pulse ? 0.3 : 0.5, ease: easeOut }}
       className={`absolute flex flex-col items-center justify-center ${isMobile ? 'size-20' : 'size-27'}`}
     >
-      <div className="relative flex flex-col items-center justify-center w-full h-full rounded-xl sm:rounded-2xl bg-[#0c1017] border-2 border-cyan-500/60 backdrop-blur-lg overflow-hidden">
+      <div className="relative flex flex-col items-center justify-center w-full h-full rounded-xl sm:rounded-2xl bg-white border-2 border-cyan-500/60 backdrop-blur-lg overflow-hidden dark:bg-[#0c1017]">
         <div className="relative z-10 flex items-center justify-center">
-          <img src="/logo.svg" alt="Bini.js" width={48} height={48} className={`${isMobile ? 'w-8 h-8' : 'w-12 h-12'} object-contain`} />
+          <img
+            src="/logo.svg"
+            alt="Bini.js"
+            width={48}
+            height={48}
+            className={`${isMobile ? 'w-8 h-8' : 'w-12 h-12'} object-contain`}
+          />
         </div>
       </div>
     </m.div>
@@ -289,7 +271,7 @@ function AnimatedLine({
   delay?: number
   color?: string
 }) {
-  const lineColor = COLOR[color]?.line || 'stroke-emerald-400'
+  const lineColor = COLOR[color]?.line || 'stroke-emerald-500 dark:stroke-emerald-400'
 
   return (
     <>
@@ -298,7 +280,7 @@ function AnimatedLine({
         y1={y1}
         x2={x2}
         y2={y2}
-        className="stroke-slate-700 stroke-2"
+        className="stroke-neutral-300 stroke-2 dark:stroke-slate-700"
         strokeDasharray="6 4"
         initial={{ pathLength: 0, opacity: 0 }}
         animate={{ pathLength: 1, opacity: 0.3 }}
@@ -316,12 +298,9 @@ function AnimatedLine({
       />
       <m.circle
         r="4"
-        className={`fill-${color}-400`}
+        className={`fill-${color}-500 dark:fill-${color}-400`}
         initial={{ opacity: 0 }}
-        animate={{
-          opacity: [0, 1, 1, 0],
-          offsetDistance: ['0%', '100%'],
-        }}
+        animate={{ opacity: [0, 1, 1, 0], offsetDistance: ['0%', '100%'] }}
         transition={{
           duration: 1.5,
           delay: delay + 0.8,
@@ -362,7 +341,7 @@ function RouteNode({
       initial={{ scale: 0.9, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       transition={{ delay, duration: 0.4, ease: easeOut }}
-      className={`absolute -translate-x-1/2 ${isMobile ? 'px-2.5 py-1 text-[8px]' : 'px-4 py-1.5 text-xs'} rounded-xl backdrop-blur-sm border font-semibold ${colorClass} ${borderClass} ${textClass}`}
+      className={`absolute -translate-x-1/2 ${isMobile ? 'px-2.5 py-1 text-[8px]' : 'px-4 py-1.5 text-xs'} rounded-xl backdrop-blur-sm border font-sans font-semibold ${colorClass} ${borderClass} ${textClass}`}
       style={{ top, left }}
     >
       {label}
@@ -385,7 +364,7 @@ function ApiPhase() {
         initial={{ y: -12, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.1, duration: 0.45, ease: easeOut }}
-        className="px-5 sm:px-8 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl bg-emerald-500/10 border-2 border-emerald-500/60 text-[11px] sm:text-[13px] font-bold text-emerald-400 backdrop-blur-sm font-mono"
+        className="px-5 sm:px-8 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl bg-emerald-500/10 border-2 border-emerald-500/60 text-[11px] sm:text-[13px] font-bold text-emerald-600 dark:text-emerald-400 backdrop-blur-sm font-sans"
       >
         Hono API Gateway
       </m.div>
@@ -402,12 +381,8 @@ function ApiPhase() {
               key={method}
               initial={{ scale: 0.85, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              transition={{
-                delay: 0.35 + i * 0.1,
-                duration: 0.35,
-                ease: easeOut,
-              }}
-              className={`px-2.5 sm:px-3.5 py-0.5 sm:py-1 rounded-md sm:rounded-lg text-[8px] sm:text-[10px] font-bold tracking-widest backdrop-blur-sm border ${col.bg} ${col.border} ${col.text} font-mono`}
+              transition={{ delay: 0.35 + i * 0.1, duration: 0.35, ease: easeOut }}
+              className={`px-2.5 sm:px-3.5 py-0.5 sm:py-1 rounded-md sm:rounded-lg text-[8px] sm:text-[10px] font-bold tracking-widest backdrop-blur-sm border ${col.bg} ${col.border} ${col.text} font-sans`}
             >
               {method}
             </m.span>
@@ -429,18 +404,18 @@ function ApiPhase() {
               transition={{ delay: 0.6 + i * 0.12, duration: 0.35, ease: easeSmooth }}
               className={`flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl border backdrop-blur-sm ${col.bg} ${col.border}`}
             >
-              <span className={`text-[9px] sm:text-[10px] font-bold min-w-9 sm:min-w-10.5 ${col.text} font-mono`}>
+              <span
+                className={`text-[9px] sm:text-[10px] font-bold min-w-9 sm:min-w-10.5 ${col.text} font-sans`}
+              >
                 {method}
               </span>
-              <span className="text-[9px] sm:text-[11px] text-slate-400 font-mono truncate">{isMobile ? path.replace('/api/', '') : path}</span>
+              <span className="text-[9px] sm:text-[11px] text-neutral-600 dark:text-neutral-400 font-sans truncate">
+                {isMobile ? path.replace('/api/', '') : path}
+              </span>
               <m.span
                 className={`ml-auto size-1 sm:size-1.5 rounded-full ${col.pill}`}
                 animate={{ opacity: [0.3, 1, 0.3] }}
-                transition={{
-                  duration: 1.8,
-                  repeat: Infinity,
-                  delay: i * 0.3,
-                }}
+                transition={{ duration: 1.8, repeat: Infinity, delay: i * 0.3 }}
               />
             </m.div>
           )
@@ -450,9 +425,31 @@ function ApiPhase() {
   )
 }
 
-function ViteBuildPhase({ complete }: { complete: boolean }) {
+function ViteBuildPhase({ complete, showLabel }: { complete: boolean; showLabel: boolean }) {
   const isMobile = useIsMobile()
-  const output = isMobile ? VITE_OUTPUT_MOBILE : VITE_OUTPUT
+
+  const viteFiles = [
+    { file: 'dist/index.html', size: '0.35 kB', gzip: '0.25 kB' },
+    { file: 'dist/css/layout-CsD4AsI6.css', size: '0.09 kB', gzip: '0.09 kB' },
+    { file: 'dist/css/index-axLa4IPg.css', size: '17.16 kB', gzip: '4.12 kB' },
+    { file: 'dist/js/login-BaO--sYG.js', size: '0.12 kB', gzip: '0.13 kB' },
+    { file: 'dist/js/page-Bj8uMWmJ.js', size: '0.87 kB', gzip: '0.40 kB' },
+    { file: 'dist/js/layout-DXNSgwk1.js', size: '0.91 kB', gzip: '0.41 kB' },
+    { file: 'dist/js/page-CV_CS8ok.js', size: '1.03 kB', gzip: '0.46 kB' },
+    { file: 'dist/js/about-D_WdE-3m.js', size: '2.75 kB', gzip: '0.99 kB' },
+    { file: 'dist/js/page-CWILBaN4.js', size: '4.30 kB', gzip: '1.75 kB' },
+    { file: 'dist/js/index-RxgYnHEt.js', size: '270.32 kB', gzip: '84.83 kB' },
+  ]
+
+  const ssgRoutes = [
+    { route: '/', out: 'dist/index.html' },
+    { route: '/about', out: 'dist/about/index.html' },
+    { route: '/login', out: 'dist/login/index.html' },
+    { route: '/blog', out: 'dist/blog/index.html' },
+    { route: '/blog/hello-world', out: 'dist/blog/hello-world/index.html' },
+    { route: '/blog/getting-started', out: 'dist/blog/getting-started/index.html' },
+    { route: '/blog/why-bini', out: 'dist/blog/why-bini/index.html' },
+  ]
 
   return (
     <m.div
@@ -460,40 +457,60 @@ function ViteBuildPhase({ complete }: { complete: boolean }) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -14 }}
       transition={{ duration: 0.45, ease: easeSmooth }}
-      className={`absolute flex flex-col gap-3 sm:gap-4 ${isMobile ? 'w-72' : 'w-130'}`}
+      className={`absolute flex flex-col items-center gap-2 sm:gap-3 ${isMobile ? 'w-72' : 'w-150'}`}
     >
-      <div className="relative w-full rounded-lg sm:rounded-xl overflow-hidden border border-slate-700/50 bg-[#0d1117] backdrop-blur-sm p-3 sm:p-5 font-mono">
-        <div className="flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
-          <Zap className="size-3 sm:size-4 text-emerald-400" />
-          <span className="text-[9px] sm:text-[12px] font-semibold">
-            <span className="text-emerald-400">vite</span>
-            <span className="text-slate-400"> v8.2.2 </span>
-            <span className="text-slate-500">{isMobile ? 'building...' : 'building client environment for production...'}</span>
+      <div className="relative w-full rounded-lg sm:rounded-xl overflow-hidden border border-neutral-200 bg-white backdrop-blur-sm p-3 sm:p-4 font-mono dark:border-slate-700/50 dark:bg-[#0d1117]">
+        {/* Header: vite version + status */}
+        <div className="flex items-center gap-1.5 sm:gap-2 mb-2">
+          <Zap className="size-3 sm:size-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+          <span className="text-[9px] sm:text-[11px] font-semibold">
+            <span className="text-emerald-600 dark:text-emerald-400">vite</span>
+            <span className="text-neutral-600 dark:text-slate-400"> v8.3.0 </span>
+            <span className="text-neutral-500 dark:text-slate-500">
+              {isMobile ? 'building...' : 'building client environment for production...'}
+            </span>
           </span>
         </div>
 
-        <div className="mb-2 sm:mb-3">
-          <div className="flex items-center gap-1.5 sm:gap-2">
-            <Check className="size-3 sm:size-3.5 text-emerald-400" />
-            <span className="text-[9px] sm:text-[11px] text-emerald-400">26 modules transformed.</span>
+        {/* Modules transformed */}
+        <div className="mb-1.5">
+          <div className="flex items-center gap-1.5">
+            <Check className="size-3 sm:size-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+            <span className="text-[9px] sm:text-[11px] text-emerald-600 dark:text-emerald-400">
+              36 modules transformed.
+            </span>
           </div>
-          <div className="text-[8px] sm:text-[10px] text-slate-500 pl-4 sm:pl-5 mt-0.5">computing gzip size...</div>
+          <div className="text-[8px] sm:text-[10px] text-neutral-500 pl-4 sm:pl-5 mt-0.5 dark:text-slate-500">
+            computing gzip size...
+          </div>
         </div>
 
+        {/* File list */}
         <div className="space-y-0.5">
-          {output.map((item, i) => {
+          {viteFiles.map((item, i) => {
             const getIcon = (file: string) => {
-              if (file.endsWith('.html')) return <FileCode className="size-2.5 sm:size-3 shrink-0 text-yellow-400" />
-              if (file.endsWith('.css')) return <FileText className="size-2.5 sm:size-3 shrink-0 text-yellow-400" />
-              if (file.endsWith('.js')) return <FileJson className="size-2.5 sm:size-3 shrink-0 text-yellow-400" />
-              return <Box className="size-2.5 sm:size-3 shrink-0 text-yellow-400" />
+              if (file.endsWith('.html'))
+                return (
+                  <FileCode className="size-2.5 sm:size-3 shrink-0 text-yellow-600 dark:text-yellow-400" />
+                )
+              if (file.endsWith('.css'))
+                return (
+                  <FileText className="size-2.5 sm:size-3 shrink-0 text-yellow-600 dark:text-yellow-400" />
+                )
+              if (file.endsWith('.js'))
+                return (
+                  <FileJson className="size-2.5 sm:size-3 shrink-0 text-yellow-600 dark:text-yellow-400" />
+                )
+              return (
+                <Box className="size-2.5 sm:size-3 shrink-0 text-yellow-600 dark:text-yellow-400" />
+              )
             }
 
             const getFileColor = (file: string) => {
-              if (file.endsWith('.html')) return 'text-amber-400'
-              if (file.endsWith('.css')) return 'text-cyan-400'
-              if (file.endsWith('.js')) return 'text-purple-400'
-              return 'text-slate-400'
+              if (file.endsWith('.html')) return 'text-amber-600 dark:text-amber-400'
+              if (file.endsWith('.css')) return 'text-cyan-600 dark:text-cyan-400'
+              if (file.endsWith('.js')) return 'text-violet-600 dark:text-violet-400'
+              return 'text-neutral-600 dark:text-neutral-400'
             }
 
             return (
@@ -501,20 +518,20 @@ function ViteBuildPhase({ complete }: { complete: boolean }) {
                 key={item.file}
                 initial={{ opacity: 0, x: -8 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.08, duration: 0.3, ease: easeSmooth }}
+                transition={{ delay: i * 0.05, duration: 0.3, ease: easeSmooth }}
                 className="flex items-center gap-1.5 text-[8px] sm:text-[10px]"
               >
                 {getIcon(item.file)}
-                <span className={`${getFileColor(item.file)} truncate`}>
-                  {item.file}
-                </span>
-                <span className="ml-auto text-slate-500 tabular-nums shrink-0">
+                <span className={`${getFileColor(item.file)} truncate`}>{item.file}</span>
+                <span className="ml-auto text-neutral-500 tabular-nums shrink-0 dark:text-slate-500">
                   {item.size}
                   {complete && (
-                    <span className="text-slate-600">
+                    <span className="text-neutral-400 dark:text-slate-600">
                       {' '}
                       │ <span className="hidden sm:inline">gzip: </span>
-                      <span className="text-emerald-400/70">{item.gzip}</span>
+                      <span className="text-emerald-600 dark:text-emerald-400/70">
+                        {item.gzip}
+                      </span>
                     </span>
                   )}
                 </span>
@@ -523,21 +540,100 @@ function ViteBuildPhase({ complete }: { complete: boolean }) {
           })}
         </div>
 
+        {/* Built in */}
         {complete && (
           <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.8, duration: 0.3 }}
-            className="mt-2 sm:mt-3 flex items-center gap-1.5 sm:gap-2"
+            transition={{ delay: 0.5, duration: 0.3 }}
+            className="mt-2 flex items-center gap-1.5"
           >
-            <Check className="size-3 sm:size-3.5 text-emerald-400" />
-            <span className="text-[9px] sm:text-[11px]">
-              <span className="text-emerald-400">✓ built in </span>
-              <span className="text-emerald-400 font-bold">330ms</span>
+            <Check className="size-3 sm:size-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+            <span className="text-[9px] sm:text-[11px] text-emerald-600 dark:text-emerald-400">
+              built in <span className="font-bold">436ms</span>
             </span>
           </m.div>
         )}
+
+        {/* SSG phase */}
+        {complete && (
+          <m.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.9, duration: 0.3 }}
+            className="mt-3 sm:mt-4 pt-2 sm:pt-3 border-t border-neutral-200 dark:border-slate-800"
+          >
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <span className="text-[9px] sm:text-[11px] font-bold text-cyan-600 dark:text-cyan-400">
+                STEP
+              </span>
+              <span className="text-[9px] sm:text-[11px] text-neutral-700 dark:text-neutral-300">
+                Pre-rendering routes
+              </span>
+            </div>
+
+            <div className="space-y-0.5">
+              {ssgRoutes.map((item, i) => (
+                <m.div
+                  key={item.route}
+                  initial={{ opacity: 0, x: -8 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 1.05 + i * 0.06, duration: 0.25, ease: easeSmooth }}
+                  className="flex items-center gap-1.5 text-[8px] sm:text-[10px]"
+                >
+                  <span className="text-emerald-600 dark:text-emerald-400 shrink-0">ok</span>
+                  <span className="text-neutral-700 dark:text-neutral-300 tabular-nums">
+                    {item.route.padEnd(isMobile ? 12 : 20)}
+                  </span>
+                  <span className="text-neutral-500 dark:text-slate-500 shrink-0">→</span>
+                  <span className="text-neutral-500 dark:text-slate-500 truncate">{item.out}</span>
+                </m.div>
+              ))}
+            </div>
+
+            <div className="mt-2 flex items-center gap-1.5">
+              <span className="text-[9px] sm:text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+                SUCCESS
+              </span>
+              <span className="text-[9px] sm:text-[11px] text-neutral-700 dark:text-neutral-300">
+                Pre-rendered{' '}
+                <span className="font-bold text-neutral-900 dark:text-white">7</span> routes
+              </span>
+            </div>
+
+            <div className="mt-0.5 text-[8px] sm:text-[10px] text-cyan-600 dark:text-cyan-400">
+              Completed in 1.61s
+            </div>
+
+            <div className="mt-2 flex items-center gap-1.5">
+              <span className="text-[9px] sm:text-[11px] font-bold text-blue-600 dark:text-blue-400">
+                INFO
+              </span>
+              <span className="text-[9px] sm:text-[11px] text-neutral-700 dark:text-neutral-300">
+                Output directory:{' '}
+              </span>
+              <span className="text-[8px] sm:text-[10px] text-cyan-600 dark:text-cyan-400 truncate">
+                {isMobile ? 'C:\\...\\new\\dist' : 'C:\\Users\\rbini\\OneDrive\\Desktop\\new\\dist'}
+              </span>
+            </div>
+          </m.div>
+        )}
       </div>
+
+      {/* Phase label pill - below the terminal box */}
+      <AnimatePresence>
+        {showLabel && (
+          <m.div
+            key="build-label"
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.35, ease: easeSmooth }}
+          >
+            <PhasePill label="Lightning build with Vite 8" />
+          </m.div>
+        )}
+      </AnimatePresence>
     </m.div>
   )
 }
@@ -575,9 +671,7 @@ function PlatformCard({
       className={`relative overflow-hidden rounded-lg sm:rounded-xl border backdrop-blur-sm ${col.bg} ${col.border} p-3 sm:p-4 cursor-pointer group flex items-center justify-center`}
     >
       <div className="flex items-center gap-3 sm:gap-3.5">
-        <div className={`${col.text}`}>
-          {renderIcon()}
-        </div>
+        <div className={col.text}>{renderIcon()}</div>
         <span className={`text-[11px] sm:text-sm font-bold ${col.text} font-sans`}>
           {platform.name}
         </span>
@@ -605,7 +699,7 @@ function DeployPhase() {
         transition={{ delay: 0.15, duration: 0.4, ease: easeOut }}
         className="text-center mb-4 sm:mb-6"
       >
-        <span className="inline-flex items-center gap-1.5 sm:gap-2 px-4 sm:px-6 py-1.5 sm:py-2 rounded-full bg-linear-to-r from-purple-500/20 to-blue-500/20 border border-purple-500/40 text-[10px] sm:text-xs font-bold text-purple-300 font-mono">
+        <span className="inline-flex items-center gap-1.5 sm:gap-2 px-4 sm:px-6 py-1.5 sm:py-2 rounded-full bg-linear-to-r from-purple-500/20 to-blue-500/20 border border-purple-500/40 text-[10px] sm:text-xs font-bold text-purple-700 dark:text-purple-300 font-sans">
           {isMobile ? 'Deploy Everywhere' : 'One Codebase · Deploy Everywhere'}
         </span>
       </m.div>
@@ -629,11 +723,11 @@ function DeployPhase() {
           transition={{ delay: 0.55, duration: 0.3 }}
           className="flex items-center gap-3 sm:gap-4 my-1 sm:my-2"
         >
-          <div className="h-px flex-1 bg-slate-800" />
-          <span className="text-[7px] sm:text-[9px] text-slate-500 font-mono tracking-wider uppercase">
+          <div className="h-px flex-1 bg-neutral-200 dark:bg-slate-800" />
+          <span className="text-[7px] sm:text-[9px] text-neutral-500 font-sans tracking-wider uppercase dark:text-slate-500">
             Native & Web
           </span>
-          <div className="h-px flex-1 bg-slate-800" />
+          <div className="h-px flex-1 bg-neutral-200 dark:bg-slate-800" />
         </m.div>
 
         <div className="grid grid-cols-3 gap-3 sm:gap-4">
@@ -652,15 +746,22 @@ function DeployPhase() {
   )
 }
 
-// ─── Static fallback for reduced motion ──────────────────────────────────────
+/* ─── Reduced-motion fallback ─────────────────────────────────────── */
+
 function StaticFallback() {
   return (
     <div className="relative w-full flex items-center justify-center min-h-110 sm:min-h-150 select-none">
       <div className="flex flex-col items-center gap-4">
-        <div className="flex flex-col items-center justify-center size-27 rounded-2xl bg-[#0c1017] border-2 border-cyan-500/60">
-          <img src="/logo.svg" alt="Bini.js" width={48} height={48} className="w-12 h-12 object-contain" />
+        <div className="flex flex-col items-center justify-center size-27 rounded-2xl bg-white border-2 border-cyan-500/60 dark:bg-[#0c1017]">
+          <img
+            src="/logo.svg"
+            alt="Bini.js"
+            width={48}
+            height={48}
+            className="w-12 h-12 object-contain"
+          />
         </div>
-        <span className="text-xs font-mono tracking-[0.14em] uppercase text-cyan-400/70">
+        <span className="text-xs font-sans tracking-[0.14em] uppercase text-cyan-600 dark:text-cyan-400/70">
           Bini.js
         </span>
       </div>
@@ -668,7 +769,8 @@ function StaticFallback() {
   )
 }
 
-// ─── Main component ───────────────────────────────────────────────────────────
+/* ─── Main component ──────────────────────────────────────────────── */
+
 export function BiniAnimation() {
   const [phase, setPhase] = useState<Phase>('idle')
   const [phaseLabel, setPhaseLabel] = useState('')
@@ -756,12 +858,14 @@ export function BiniAnimation() {
           later(() => setApiVisible(true), 450)
 
           later(() => {
-            setPhaseLabel('Lightning build with Vite 8')
+            // Label for the build phase is now rendered inside ViteBuildPhase,
+            // so we intentionally do NOT set a global phase label here.
+            setPhaseLabel('')
             setPhase('phase3c')
             setApiVisible(false)
             later(() => {
               setBuildVisible(true)
-              later(() => setBuildComplete(true), 2000)
+              later(() => setBuildComplete(true), 3000)
             }, 450)
 
             later(() => {
@@ -772,7 +876,7 @@ export function BiniAnimation() {
               later(() => setMergeDotsVisible(true), 350)
 
               later(() => {
-                setPhaseLabel('Deploy everywhere — web & native')
+                setPhaseLabel('Deploy everywhere - web & native')
                 setPhase('phase5')
                 setMergeDotsVisible(false)
                 later(() => {
@@ -784,7 +888,6 @@ export function BiniAnimation() {
                         setIsRestarting(true)
                         setDeployVisible(false)
                         later(() => {
-                          // ← THE FIX: release the guard so play() can restart
                           isPlayingRef.current = false
                           play()
                         }, 300)
@@ -793,14 +896,13 @@ export function BiniAnimation() {
                   }, 3500)
                 }, 400)
               }, 2500)
-            }, 2500)
+            }, 7500)
           }, 2500)
         }, 2500)
       }, 2500)
     }, 2500)
   }
 
-  // ── Pause when off-screen, play immediately when visible ───────────────────
   useEffect(() => {
     if (prefersReducedMotion) return
 
@@ -810,9 +912,9 @@ export function BiniAnimation() {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          play()               // ← starts immediately, no delay
+          play()
         } else {
-          resetAll()           // ← pause when off-screen
+          resetAll()
         }
       },
       { threshold: 0.1 }
@@ -848,6 +950,8 @@ export function BiniAnimation() {
         }
       `}</style>
 
+      {/* Global phase label — skipped for phase3c (build) so the label can
+          render inline under the Vite box instead. */}
       <AnimatePresence mode="wait">
         {phaseLabel && (
           <m.div
@@ -858,14 +962,7 @@ export function BiniAnimation() {
             transition={{ duration: 0.4, ease: easeSmooth }}
             className={`absolute ${isMobile ? 'bottom-4' : 'bottom-7'} left-0 right-0 flex justify-center z-20 pointer-events-none`}
           >
-            <span className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full border border-cyan-500/25 bg-cyan-500/10 backdrop-blur-md text-[8px] sm:text-[10px] font-semibold tracking-[0.14em] uppercase text-cyan-400 font-mono">
-              <m.span
-                className="size-1 sm:size-1.5 rounded-full bg-cyan-400"
-                animate={{ opacity: [0.4, 1, 0.4] }}
-                transition={{ duration: 1.5, repeat: Infinity }}
-              />
-              {phaseLabel}
-            </span>
+            <PhasePill label={phaseLabel} />
           </m.div>
         )}
       </AnimatePresence>
@@ -900,67 +997,98 @@ export function BiniAnimation() {
                 initial={{ y: -12, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.1, duration: 0.45, ease: easeOut }}
-                className={`absolute left-1/2 -translate-x-1/2 ${isMobile ? 'top-2' : 'top-4'} px-4 sm:px-6 py-1.5 sm:py-2 rounded-xl sm:rounded-2xl bg-cyan-500/10 border-2 border-cyan-500/70 text-xs sm:text-sm font-bold text-cyan-400 backdrop-blur-sm font-mono`}
+                className={`absolute left-1/2 -translate-x-1/2 ${isMobile ? 'top-2' : 'top-4'} px-4 sm:px-6 py-1.5 sm:py-2 rounded-xl sm:rounded-2xl bg-cyan-500/10 border-2 border-cyan-500/70 text-xs sm:text-sm font-bold text-cyan-600 dark:text-cyan-400 backdrop-blur-sm font-sans`}
               >
                 /
               </m.div>
 
               <svg className="absolute inset-0 w-full h-full z-10">
-                <AnimatedLine x1="50%" y1={isMobile ? 40 : 52} x2="18%" y2={isMobile ? 100 : 140} delay={0.45} color="cyan" />
-                <AnimatedLine x1="50%" y1={isMobile ? 40 : 52} x2="50%" y2={isMobile ? 100 : 140} delay={0.55} color="purple" />
-                <AnimatedLine x1="50%" y1={isMobile ? 40 : 52} x2="82%" y2={isMobile ? 100 : 140} delay={0.65} color="emerald" />
-                <AnimatedLine x1="50%" y1={isMobile ? 120 : 172} x2="40%" y2={isMobile ? 170 : 240} delay={0.85} color="amber" />
+                <AnimatedLine
+                  x1="50%"
+                  y1={isMobile ? 40 : 52}
+                  x2="18%"
+                  y2={isMobile ? 100 : 140}
+                  delay={0.45}
+                  color="cyan"
+                />
+                <AnimatedLine
+                  x1="50%"
+                  y1={isMobile ? 40 : 52}
+                  x2="50%"
+                  y2={isMobile ? 100 : 140}
+                  delay={0.55}
+                  color="purple"
+                />
+                <AnimatedLine
+                  x1="50%"
+                  y1={isMobile ? 40 : 52}
+                  x2="82%"
+                  y2={isMobile ? 100 : 140}
+                  delay={0.65}
+                  color="emerald"
+                />
+                <AnimatedLine
+                  x1="50%"
+                  y1={isMobile ? 120 : 172}
+                  x2="40%"
+                  y2={isMobile ? 170 : 240}
+                  delay={0.85}
+                  color="amber"
+                />
               </svg>
 
               <RouteNode
                 label="/about"
-                top={isMobile ? "100px" : "140px"}
+                top={isMobile ? '100px' : '140px'}
                 left="18%"
                 colorClass="bg-cyan-500/10"
                 borderClass="border-cyan-500/50"
-                textClass="text-cyan-400"
+                textClass="text-cyan-600 dark:text-cyan-400"
                 delay={0.55}
               />
 
               <RouteNode
                 label="/blog"
-                top={isMobile ? "100px" : "140px"}
+                top={isMobile ? '100px' : '140px'}
                 left="50%"
                 colorClass="bg-violet-500/10"
                 borderClass="border-violet-500/50"
-                textClass="text-violet-400"
+                textClass="text-violet-600 dark:text-violet-400"
                 delay={0.65}
               />
 
               <RouteNode
                 label="/contact"
-                top={isMobile ? "100px" : "140px"}
+                top={isMobile ? '100px' : '140px'}
                 left="82%"
                 colorClass="bg-emerald-500/10"
                 borderClass="border-emerald-500/60"
-                textClass="text-emerald-400"
+                textClass="text-emerald-600 dark:text-emerald-400"
                 delay={0.75}
               />
 
               <RouteNode
                 label="/blog/[slug]"
-                top={isMobile ? "170px" : "240px"}
+                top={isMobile ? '170px' : '240px'}
                 left="40%"
                 colorClass="bg-amber-500/10"
                 borderClass="border-amber-500/60"
-                textClass="text-amber-400"
+                textClass="text-amber-600 dark:text-amber-400"
                 delay={0.9}
               />
             </m.div>
           )}
         </AnimatePresence>
 
-        <AnimatePresence>
-          {apiVisible && <ApiPhase />}
-        </AnimatePresence>
+        <AnimatePresence>{apiVisible && <ApiPhase />}</AnimatePresence>
 
         <AnimatePresence>
-          {buildVisible && <ViteBuildPhase complete={buildComplete} />}
+          {buildVisible && (
+            <ViteBuildPhase
+              complete={buildComplete}
+              showLabel={phase === 'phase3c'}
+            />
+          )}
         </AnimatePresence>
 
         <AnimatePresence>
@@ -973,20 +1101,14 @@ export function BiniAnimation() {
                   initial={{ x: d.x, y: d.y, opacity: 1, scale: 1 }}
                   animate={{ x: 0, y: 0, opacity: 0, scale: 0.3 }}
                   exit={{ opacity: 0 }}
-                  transition={{
-                    duration: 0.8,
-                    delay: i * 0.08,
-                    ease: 'easeInOut',
-                  }}
+                  transition={{ duration: 0.8, delay: i * 0.08, ease: 'easeInOut' }}
                   className={`absolute ${isMobile ? 'size-4' : 'size-5'} rounded-full ${col.pill}`}
                 />
               )
             })}
         </AnimatePresence>
 
-        <AnimatePresence>
-          {deployVisible && <DeployPhase />}
-        </AnimatePresence>
+        <AnimatePresence>{deployVisible && <DeployPhase />}</AnimatePresence>
       </div>
     </div>
   )

@@ -1,5 +1,5 @@
-import React from 'react'
 import { LazyMotion, domAnimation } from 'framer-motion'
+import React from 'react'
 
 import './globals.css'
 
@@ -8,7 +8,7 @@ import './globals.css'
 export const metadata = {
   title: 'React for Cross-Platform',
   description: 'One codebase. Six platforms. Zero boilerplate. Write React, ship everywhere.',
-keywords: [
+  keywords: [
     'Bini.js',
     'Bini',
     'bini',
@@ -106,9 +106,5 @@ keywords: [
 
 // Root layout — wraps every page.
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <LazyMotion features={domAnimation}>
-      {children}
-    </LazyMotion>
-  )
+  return <LazyMotion features={domAnimation}>{children}</LazyMotion>
 }

@@ -1,19 +1,35 @@
-import { m, AnimatePresence } from 'framer-motion'
+// src/components/FoundationAnimation.tsx
+import { m } from 'framer-motion'
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { siReact, siVite, siTauri } from 'simple-icons'
 import type { SimpleIcon as SimpleIconType } from 'simple-icons'
 
-// ─── Hono Logo (not in simple-icons, hand-built) ───────────────
+/* ─── Hono logo (hand-built, not in simple-icons) ─────────────────── */
+
 function HonoLogo({ size = 24 }: { size?: number }) {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" width={size} height={size}>
-      <path fill="#ff5b11" d="M12.4365 0.2520325c0.062375-0.0080215 0.11745 0.0077075 0.16515 0.0471875 1.755075 2.142025 3.40665 4.359855 4.954725 6.65348 1.14615 1.725625 2.121325 3.550175 2.92565 5.4738 1.2845 3.426025 0.616 6.40675-2.005475 8.9421-2.293725 1.938575-4.936225 2.693575-7.927575 2.265025-3.57555-0.729025-6.00575-2.7974-7.290525-6.205225-0.33465-1.109425-0.44475-2.241925-0.3303-3.397525 0.19055-1.9891 0.662425-3.9081 1.415625-5.7569 0.31385-0.75435 0.722825-1.4464 1.2269-2.076275 0.411225 0.4898 0.80445 0.993175 1.179675 1.510025 0.17375 0.181625 0.354625 0.35465 0.542675 0.51905C8.728325 5.378325 10.44285 2.7201 12.4365 0.2520325Z" opacity=".993" strokeWidth="0.25"/>
-      <path fill="#ff9758" d="M12.10625 4.07425c1.73145 2.008325 3.296525 4.1475 4.695175 6.41755 0.438525 0.75115 0.800275 1.537625 1.085325 2.3594 0.593825 2.336175-0.043225 4.26305-1.9111 5.7805-1.80655 1.2712-3.788425 1.6487-5.945675 1.132525-2.326325-0.721875-3.671175-2.286975-4.034575-4.6952-0.088175-0.7593-0.009525-1.4986 0.23595-2.217825 0.35005-0.888875 0.774725-1.73825 1.274075-2.54815 0.471875-0.6921 0.94375-1.38415 1.415625-2.07625 1.071925-1.378375 2.13365-2.762525 3.1852-4.15255Z" strokeWidth="0.25"/>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      width={size}
+      height={size}
+    >
+      <path
+        fill="#ff5b11"
+        d="M12.4365 0.2520325c0.062375-0.0080215 0.11745 0.0077075 0.16515 0.0471875 1.755075 2.142025 3.40665 4.359855 4.954725 6.65348 1.14615 1.725625 2.121325 3.550175 2.92565 5.4738 1.2845 3.426025 0.616 6.40675-2.005475 8.9421-2.293725 1.938575-4.936225 2.693575-7.927575 2.265025-3.57555-0.729025-6.00575-2.7974-7.290525-6.205225-0.33465-1.109425-0.44475-2.241925-0.3303-3.397525 0.19055-1.9891 0.662425-3.9081 1.415625-5.7569 0.31385-0.75435 0.722825-1.4464 1.2269-2.076275 0.411225 0.4898 0.80445 0.993175 1.179675 1.510025 0.17375 0.181625 0.354625 0.35465 0.542675 0.51905C8.728325 5.378325 10.44285 2.7201 12.4365 0.2520325Z"
+        opacity=".993"
+      />
+      <path
+        fill="#ff9758"
+        d="M12.10625 4.07425c1.73145 2.008325 3.296525 4.1475 4.695175 6.41755 0.438525 0.75115 0.800275 1.537625 1.085325 2.3594 0.593825 2.336175-0.043225 4.26305-1.9111 5.7805-1.80655 1.2712-3.788425 1.6487-5.945675 1.132525-2.326325-0.721875-3.671175-2.286975-4.034575-4.6952-0.088175-0.7593-0.009525-1.4986 0.23595-2.217825 0.35005-0.888875 0.774725-1.73825 1.274075-2.54815 0.471875-0.6921 0.94375-1.38415 1.415625-2.07625 1.071925-1.378375 2.13365-2.762525 3.1852-4.15255Z"
+      />
     </svg>
   )
 }
 
-// ─── Tool definitions ─────────────────────────────────────────
+/* ─── Tool definitions ────────────────────────────────────────────── */
+
 type Side = 'top' | 'right' | 'bottom' | 'left'
 
 const TOOLS: {
@@ -63,18 +79,25 @@ const TOOLS: {
   },
 ]
 
-// ─── Types ────────────────────────────────────────────────────
-interface Point { x: number; y: number }
+/* ─── Types ───────────────────────────────────────────────────────── */
+
+interface Point {
+  x: number
+  y: number
+}
 
 interface WireGeo {
-  sx: number; sy: number
-  ex: number; ey: number
+  sx: number
+  sy: number
+  ex: number
+  ey: number
   d: string
   totalLength: number
 }
 
 interface Geo {
-  w: number; h: number
+  w: number
+  h: number
   chipTop: Point
   chipRight: Point
   chipBottom: Point
@@ -86,23 +109,38 @@ function segLen(ax: number, ay: number, bx: number, by: number) {
   return Math.hypot(bx - ax, by - ay)
 }
 
-// ─── Chip diagonal sweep ────────────────────────────────────────
+/* ─── Chip diagonal sweep ─────────────────────────────────────────── */
+
 function ChipSweepLight() {
   return (
     <div
       className="absolute inset-0 pointer-events-none overflow-hidden rounded-2xl"
       style={{ zIndex: 10 }}
     >
+      {/* Dark mode: soft white shimmer */}
       <m.div
+        className="absolute hidden dark:block"
         style={{
-          position: 'absolute',
           width: '220%',
           height: '220%',
           top: '-60%',
           left: '-160%',
           background:
             'linear-gradient(125deg, transparent 40%, rgba(255,255,255,0.0) 44%, rgba(255,255,255,0.04) 48%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.04) 52%, rgba(255,255,255,0.0) 56%, transparent 60%)',
-          transform: 'rotate(0deg)',
+        }}
+        animate={{ left: ['-160%', '120%'] }}
+        transition={{ duration: 3.0, repeat: Infinity, repeatDelay: 2.5, ease: 'easeInOut' }}
+      />
+      {/* Light mode: accent-tinted shimmer, visible on light backgrounds */}
+      <m.div
+        className="absolute block dark:hidden"
+        style={{
+          width: '220%',
+          height: '220%',
+          top: '-60%',
+          left: '-160%',
+          background:
+            'linear-gradient(125deg, transparent 40%, rgba(6,182,212,0.0) 44%, rgba(6,182,212,0.10) 48%, rgba(6,182,212,0.18) 50%, rgba(6,182,212,0.10) 52%, rgba(6,182,212,0.0) 56%, transparent 60%)',
         }}
         animate={{ left: ['-160%', '120%'] }}
         transition={{ duration: 3.0, repeat: Infinity, repeatDelay: 2.5, ease: 'easeInOut' }}
@@ -111,7 +149,8 @@ function ChipSweepLight() {
   )
 }
 
-// ─── Continuous light ray ─────────────────────────────────────
+/* ─── Continuous light ray ────────────────────────────────────────── */
+
 function LightRay({
   wire,
   color,
@@ -155,14 +194,13 @@ function LightRay({
   )
 }
 
-// ─── Hook for mobile detection ──────────────────────────────────
+/* ─── Hooks ───────────────────────────────────────────────────────── */
+
 function useIsMobile() {
   const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 640)
-    }
+    const checkMobile = () => setIsMobile(window.innerWidth < 640)
     checkMobile()
     window.addEventListener('resize', checkMobile)
     return () => window.removeEventListener('resize', checkMobile)
@@ -171,7 +209,6 @@ function useIsMobile() {
   return isMobile
 }
 
-// ─── Reduced-motion hook ────────────────────────────────────────
 function usePrefersReducedMotion() {
   const [prefersReduced, setPrefersReduced] = useState(false)
 
@@ -186,7 +223,66 @@ function usePrefersReducedMotion() {
   return prefersReduced
 }
 
-// ─── Main component ───────────────────────────────────────────
+/* ─── Chip (shared by desktop + mobile) ───────────────────────────── */
+
+const Chip = React.forwardRef<
+  HTMLDivElement,
+  { size: 'sm' | 'lg'; prefersReducedMotion: boolean }
+>(({ size, prefersReducedMotion }, ref) => {
+  const isLarge = size === 'lg'
+
+  return (
+    <m.div
+      ref={ref}
+      className={
+        isLarge
+          ? 'relative w-32 h-32 rounded-2xl flex items-center justify-center overflow-hidden bg-linear-to-br from-white to-neutral-50 dark:from-[#1e293b] dark:to-[#0f172a]'
+          : 'relative w-14 h-14 rounded-lg flex items-center justify-center overflow-hidden bg-linear-to-br from-white to-neutral-50 dark:from-[#1e293b] dark:to-[#0f172a]'
+      }
+      style={{
+        border: '1px solid rgba(148,163,184,0.15)',
+        boxShadow: isLarge
+          ? '0 20px 40px rgba(0,0,0,0.12)'
+          : '0 8px 16px rgba(0,0,0,0.12)',
+      }}
+    >
+      {!prefersReducedMotion && <ChipSweepLight />}
+
+      <svg className="absolute inset-0 w-full h-full opacity-[0.15]" viewBox="0 0 128 128">
+        <line x1="64" y1="0" x2="64" y2="28" stroke="#a855f7" strokeWidth="1.5" />
+        <circle cx="64" cy="28" r="2" fill="#a855f7" />
+        <line x1="128" y1="64" x2="100" y2="64" stroke="#f97316" strokeWidth="1.5" />
+        <circle cx="100" cy="64" r="2" fill="#f97316" />
+        <line x1="64" y1="128" x2="64" y2="100" stroke="#ffc131" strokeWidth="1.5" />
+        <circle cx="64" cy="100" r="2" fill="#ffc131" />
+        <line x1="0" y1="64" x2="28" y2="64" stroke="#00e5ff" strokeWidth="1.5" />
+        <circle cx="28" cy="64" r="2" fill="#00e5ff" />
+        <rect
+          x="44"
+          y="44"
+          width="40"
+          height="40"
+          rx="4"
+          fill="none"
+          stroke="rgba(148,163,184,0.4)"
+          strokeWidth="0.75"
+        />
+      </svg>
+
+      <img
+        src="/logo.svg"
+        alt="Bini.js"
+        width={isLarge ? 56 : 24}
+        height={isLarge ? 56 : 24}
+        className={`relative object-contain z-10 ${isLarge ? 'w-14 h-14' : 'w-6 h-6'}`}
+      />
+    </m.div>
+  )
+})
+Chip.displayName = 'Chip'
+
+/* ─── Main component ──────────────────────────────────────────────── */
+
 export function FoundationAnimation() {
   const containerRef = useRef<HTMLDivElement>(null)
   const chipRef = useRef<HTMLDivElement>(null)
@@ -235,28 +331,39 @@ export function FoundationAnimation() {
     const ro = new ResizeObserver(measure)
     if (containerRef.current) ro.observe(containerRef.current)
     const t = setTimeout(measure, 200)
-    return () => { ro.disconnect(); clearTimeout(t) }
+    return () => {
+      ro.disconnect()
+      clearTimeout(t)
+    }
   }, [])
 
-  const getWire = useCallback((tool: (typeof TOOLS)[number]): WireGeo | null => {
-    if (!geo) return null
-    const card = geo.cardPoints[tool.name]
-    if (!card) return null
+  const getWire = useCallback(
+    (tool: (typeof TOOLS)[number]): WireGeo | null => {
+      if (!geo) return null
+      const card = geo.cardPoints[tool.name]
+      if (!card) return null
 
-    const chipPoint =
-      tool.side === 'top' ? geo.chipTop :
-      tool.side === 'right' ? geo.chipRight :
-      tool.side === 'bottom' ? geo.chipBottom :
-      geo.chipLeft
+      const chipPoint =
+        tool.side === 'top'
+          ? geo.chipTop
+          : tool.side === 'right'
+            ? geo.chipRight
+            : tool.side === 'bottom'
+              ? geo.chipBottom
+              : geo.chipLeft
 
-    const sx = card.x, sy = card.y
-    const ex = chipPoint.x, ey = chipPoint.y
-    const d = `M ${sx} ${sy} L ${ex} ${ey}`
+      const sx = card.x,
+        sy = card.y
+      const ex = chipPoint.x,
+        ey = chipPoint.y
+      const d = `M ${sx} ${sy} L ${ex} ${ey}`
 
-    return { sx, sy, ex, ey, d, totalLength: segLen(sx, sy, ex, ey) }
-  }, [geo])
+      return { sx, sy, ex, ey, d, totalLength: segLen(sx, sy, ex, ey) }
+    },
+    [geo]
+  )
 
-  // Mobile: spread out to use available space
+  // ── Mobile ──────────────────────────────────────────────────────
   if (isMobile) {
     return (
       <div
@@ -276,9 +383,25 @@ export function FoundationAnimation() {
                 <linearGradient
                   key={i}
                   id={`wg${i}`}
-                  x1={tool.side === 'top' ? '0' : tool.side === 'bottom' ? '0' : tool.side === 'left' ? '0' : '1'}
+                  x1={
+                    tool.side === 'top'
+                      ? '0'
+                      : tool.side === 'bottom'
+                        ? '0'
+                        : tool.side === 'left'
+                          ? '0'
+                          : '1'
+                  }
                   y1={tool.side === 'top' ? '1' : tool.side === 'bottom' ? '0' : '0'}
-                  x2={tool.side === 'top' ? '0' : tool.side === 'bottom' ? '0' : tool.side === 'left' ? '1' : '0'}
+                  x2={
+                    tool.side === 'top'
+                      ? '0'
+                      : tool.side === 'bottom'
+                        ? '0'
+                        : tool.side === 'left'
+                          ? '1'
+                          : '0'
+                  }
                   y2={tool.side === 'top' ? '0' : tool.side === 'bottom' ? '1' : '0'}
                 >
                   <stop offset="0%" stopColor={tool.color} stopOpacity="0.08" />
@@ -313,20 +436,21 @@ export function FoundationAnimation() {
               )
             })}
 
-            {!prefersReducedMotion && TOOLS.map((tool, i) => {
-              const w = getWire(tool)
-              if (!w) return null
-              return (
-                <LightRay
-                  key={i}
-                  wire={w}
-                  color={tool.color}
-                  duration={1.6 + i * 0.25}
-                  delay={i * 0.5}
-                  glowIntensity={2}
-                />
-              )
-            })}
+            {!prefersReducedMotion &&
+              TOOLS.map((tool, i) => {
+                const w = getWire(tool)
+                if (!w) return null
+                return (
+                  <LightRay
+                    key={i}
+                    wire={w}
+                    color={tool.color}
+                    duration={1.6 + i * 0.25}
+                    delay={i * 0.5}
+                    glowIntensity={2}
+                  />
+                )
+              })}
           </svg>
         )}
 
@@ -345,7 +469,6 @@ export function FoundationAnimation() {
             minHeight: '300px',
           }}
         >
-          {/* Top card - mini */}
           <div style={{ gridColumn: 2, gridRow: 1 }}>
             <MiniToolCard
               tool={TOOLS[0]}
@@ -354,7 +477,6 @@ export function FoundationAnimation() {
             />
           </div>
 
-          {/* Left card - mini */}
           <div style={{ gridColumn: 1, gridRow: 2 }}>
             <MiniToolCard
               tool={TOOLS[3]}
@@ -363,7 +485,6 @@ export function FoundationAnimation() {
             />
           </div>
 
-          {/* Chip - smaller on mobile */}
           <m.div
             initial={{ opacity: 0, scale: 0.88 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -375,10 +496,16 @@ export function FoundationAnimation() {
               {[...Array(3)].map((_, i) => (
                 <m.div
                   key={i}
-                  className="w-px h-2 rounded-full"
-                  style={{ background: i === 1 ? '#a855f7' : 'rgb(71 85 105)' }}
-                  animate={prefersReducedMotion ? {} : { opacity: i === 1 ? [0.4, 0.8, 0.4] : [0.15, 0.4, 0.15] }}
-                  transition={prefersReducedMotion ? {} : { duration: 2.5, repeat: Infinity, delay: i * 0.13 }}
+                  className="w-px h-2 rounded-full bg-neutral-300 dark:bg-slate-600"
+                  style={i === 1 ? { background: '#a855f7' } : undefined}
+                  animate={
+                    prefersReducedMotion
+                      ? {}
+                      : { opacity: i === 1 ? [0.4, 0.8, 0.4] : [0.15, 0.4, 0.15] }
+                  }
+                  transition={
+                    prefersReducedMotion ? {} : { duration: 2.5, repeat: Infinity, delay: i * 0.13 }
+                  }
                 />
               ))}
             </div>
@@ -388,55 +515,40 @@ export function FoundationAnimation() {
                 {[...Array(3)].map((_, i) => (
                   <m.div
                     key={i}
-                    className="h-px w-2 rounded-full"
-                    style={{ background: i === 1 ? '#00e5ff' : 'rgb(71 85 105)' }}
-                    animate={prefersReducedMotion ? {} : { opacity: i === 1 ? [0.4, 0.8, 0.4] : [0.15, 0.4, 0.15] }}
-                    transition={prefersReducedMotion ? {} : { duration: 2.2, repeat: Infinity, delay: i * 0.18 }}
+                    className="h-px w-2 rounded-full bg-neutral-300 dark:bg-slate-600"
+                    style={i === 1 ? { background: '#00e5ff' } : undefined}
+                    animate={
+                      prefersReducedMotion
+                        ? {}
+                        : { opacity: i === 1 ? [0.4, 0.8, 0.4] : [0.15, 0.4, 0.15] }
+                    }
+                    transition={
+                      prefersReducedMotion
+                        ? {}
+                        : { duration: 2.2, repeat: Infinity, delay: i * 0.18 }
+                    }
                   />
                 ))}
               </div>
 
-              <m.div
-                ref={chipRef}
-                className="relative w-14 h-14 rounded-lg flex items-center justify-center overflow-hidden"
-                style={{
-                  background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
-                  border: '1px solid rgba(148,163,184,0.08)',
-                  boxShadow: '0 8px 16px rgba(0,0,0,0.35)',
-                }}
-              >
-                {!prefersReducedMotion && <ChipSweepLight />}
-
-                <svg className="absolute inset-0 w-full h-full opacity-[0.1]" viewBox="0 0 128 128">
-                  <line x1="64" y1="0" x2="64" y2="28" stroke="#a855f7" strokeWidth="1.5" />
-                  <circle cx="64" cy="28" r="2" fill="#a855f7" />
-                  <line x1="128" y1="64" x2="100" y2="64" stroke="#f97316" strokeWidth="1.5" />
-                  <circle cx="100" cy="64" r="2" fill="#f97316" />
-                  <line x1="64" y1="128" x2="64" y2="100" stroke="#ffc131" strokeWidth="1.5" />
-                  <circle cx="64" cy="100" r="2" fill="#ffc131" />
-                  <line x1="0" y1="64" x2="28" y2="64" stroke="#00e5ff" strokeWidth="1.5" />
-                  <circle cx="28" cy="64" r="2" fill="#00e5ff" />
-                  <rect x="44" y="44" width="40" height="40" rx="4"
-                    fill="none" stroke="rgba(148,163,184,0.15)" strokeWidth="0.75" />
-                </svg>
-
-                <img
-                  src="/logo.svg"
-                  alt="Bini.js"
-                  width={24}
-                  height={24}
-                  className="relative w-6 h-6 object-contain z-10"
-                />
-              </m.div>
+              <Chip ref={chipRef} size="sm" prefersReducedMotion={prefersReducedMotion} />
 
               <div className="flex flex-col gap-0.5 ml-1">
                 {[...Array(3)].map((_, i) => (
                   <m.div
                     key={i}
-                    className="h-px w-2 rounded-full"
-                    style={{ background: i === 1 ? '#f97316' : 'rgb(71 85 105)' }}
-                    animate={prefersReducedMotion ? {} : { opacity: i === 1 ? [0.4, 0.8, 0.4] : [0.15, 0.4, 0.15] }}
-                    transition={prefersReducedMotion ? {} : { duration: 2.2, repeat: Infinity, delay: i * 0.18 + 0.5 }}
+                    className="h-px w-2 rounded-full bg-neutral-300 dark:bg-slate-600"
+                    style={i === 1 ? { background: '#f97316' } : undefined}
+                    animate={
+                      prefersReducedMotion
+                        ? {}
+                        : { opacity: i === 1 ? [0.4, 0.8, 0.4] : [0.15, 0.4, 0.15] }
+                    }
+                    transition={
+                      prefersReducedMotion
+                        ? {}
+                        : { duration: 2.2, repeat: Infinity, delay: i * 0.18 + 0.5 }
+                    }
                   />
                 ))}
               </div>
@@ -446,16 +558,23 @@ export function FoundationAnimation() {
               {[...Array(3)].map((_, i) => (
                 <m.div
                   key={i}
-                  className="w-px h-2 rounded-full"
-                  style={{ background: i === 1 ? '#ffc131' : 'rgb(71 85 105)' }}
-                  animate={prefersReducedMotion ? {} : { opacity: i === 1 ? [0.4, 0.8, 0.4] : [0.15, 0.4, 0.15] }}
-                  transition={prefersReducedMotion ? {} : { duration: 2.5, repeat: Infinity, delay: i * 0.13 + 0.9 }}
+                  className="w-px h-2 rounded-full bg-neutral-300 dark:bg-slate-600"
+                  style={i === 1 ? { background: '#ffc131' } : undefined}
+                  animate={
+                    prefersReducedMotion
+                      ? {}
+                      : { opacity: i === 1 ? [0.4, 0.8, 0.4] : [0.15, 0.4, 0.15] }
+                  }
+                  transition={
+                    prefersReducedMotion
+                      ? {}
+                      : { duration: 2.5, repeat: Infinity, delay: i * 0.13 + 0.9 }
+                  }
                 />
               ))}
             </div>
           </m.div>
 
-          {/* Right card - mini */}
           <div style={{ gridColumn: 3, gridRow: 2 }}>
             <MiniToolCard
               tool={TOOLS[1]}
@@ -464,7 +583,6 @@ export function FoundationAnimation() {
             />
           </div>
 
-          {/* Bottom card - mini */}
           <div style={{ gridColumn: 2, gridRow: 3 }}>
             <MiniToolCard
               tool={TOOLS[2]}
@@ -477,7 +595,7 @@ export function FoundationAnimation() {
     )
   }
 
-  // Desktop: full version with spread out cards
+  // ── Desktop ─────────────────────────────────────────────────────
   return (
     <div
       ref={containerRef}
@@ -496,9 +614,25 @@ export function FoundationAnimation() {
               <linearGradient
                 key={i}
                 id={`wg${i}`}
-                x1={tool.side === 'top' ? '0' : tool.side === 'bottom' ? '0' : tool.side === 'left' ? '0' : '1'}
+                x1={
+                  tool.side === 'top'
+                    ? '0'
+                    : tool.side === 'bottom'
+                      ? '0'
+                      : tool.side === 'left'
+                        ? '0'
+                        : '1'
+                }
                 y1={tool.side === 'top' ? '1' : tool.side === 'bottom' ? '0' : '0'}
-                x2={tool.side === 'top' ? '0' : tool.side === 'bottom' ? '0' : tool.side === 'left' ? '1' : '0'}
+                x2={
+                  tool.side === 'top'
+                    ? '0'
+                    : tool.side === 'bottom'
+                      ? '0'
+                      : tool.side === 'left'
+                        ? '1'
+                        : '0'
+                }
                 y2={tool.side === 'top' ? '0' : tool.side === 'bottom' ? '1' : '0'}
               >
                 <stop offset="0%" stopColor={tool.color} stopOpacity="0.08" />
@@ -533,20 +667,21 @@ export function FoundationAnimation() {
             )
           })}
 
-          {!prefersReducedMotion && TOOLS.map((tool, i) => {
-            const w = getWire(tool)
-            if (!w) return null
-            return (
-              <LightRay
-                key={i}
-                wire={w}
-                color={tool.color}
-                duration={1.6 + i * 0.25}
-                delay={i * 0.5}
-                glowIntensity={4}
-              />
-            )
-          })}
+          {!prefersReducedMotion &&
+            TOOLS.map((tool, i) => {
+              const w = getWire(tool)
+              if (!w) return null
+              return (
+                <LightRay
+                  key={i}
+                  wire={w}
+                  color={tool.color}
+                  duration={1.6 + i * 0.25}
+                  delay={i * 0.5}
+                  glowIntensity={4}
+                />
+              )
+            })}
         </svg>
       )}
 
@@ -565,7 +700,6 @@ export function FoundationAnimation() {
           minHeight: '500px',
         }}
       >
-        {/* Top card */}
         <div style={{ gridColumn: 2, gridRow: 1 }}>
           <ToolCard
             tool={TOOLS[0]}
@@ -574,7 +708,6 @@ export function FoundationAnimation() {
           />
         </div>
 
-        {/* Left card */}
         <div style={{ gridColumn: 1, gridRow: 2 }}>
           <ToolCard
             tool={TOOLS[3]}
@@ -583,7 +716,6 @@ export function FoundationAnimation() {
           />
         </div>
 
-        {/* Chip */}
         <m.div
           initial={{ opacity: 0, scale: 0.88 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -595,10 +727,16 @@ export function FoundationAnimation() {
             {[...Array(5)].map((_, i) => (
               <m.div
                 key={i}
-                className="w-px h-4 rounded-full"
-                style={{ background: i === 2 ? '#a855f7' : 'rgb(71 85 105)' }}
-                animate={prefersReducedMotion ? {} : { opacity: i === 2 ? [0.4, 0.8, 0.4] : [0.15, 0.4, 0.15] }}
-                transition={prefersReducedMotion ? {} : { duration: 2.5, repeat: Infinity, delay: i * 0.13 }}
+                className="w-px h-4 rounded-full bg-neutral-300 dark:bg-slate-600"
+                style={i === 2 ? { background: '#a855f7' } : undefined}
+                animate={
+                  prefersReducedMotion
+                    ? {}
+                    : { opacity: i === 2 ? [0.4, 0.8, 0.4] : [0.15, 0.4, 0.15] }
+                }
+                transition={
+                  prefersReducedMotion ? {} : { duration: 2.5, repeat: Infinity, delay: i * 0.13 }
+                }
               />
             ))}
           </div>
@@ -608,55 +746,38 @@ export function FoundationAnimation() {
               {[...Array(5)].map((_, i) => (
                 <m.div
                   key={i}
-                  className="h-px w-4 rounded-full"
-                  style={{ background: i === 2 ? '#00e5ff' : 'rgb(71 85 105)' }}
-                  animate={prefersReducedMotion ? {} : { opacity: i === 2 ? [0.4, 0.8, 0.4] : [0.15, 0.4, 0.15] }}
-                  transition={prefersReducedMotion ? {} : { duration: 2.2, repeat: Infinity, delay: i * 0.18 }}
+                  className="h-px w-4 rounded-full bg-neutral-300 dark:bg-slate-600"
+                  style={i === 2 ? { background: '#00e5ff' } : undefined}
+                  animate={
+                    prefersReducedMotion
+                      ? {}
+                      : { opacity: i === 2 ? [0.4, 0.8, 0.4] : [0.15, 0.4, 0.15] }
+                  }
+                  transition={
+                    prefersReducedMotion ? {} : { duration: 2.2, repeat: Infinity, delay: i * 0.18 }
+                  }
                 />
               ))}
             </div>
 
-            <m.div
-              ref={chipRef}
-              className="relative w-32 h-32 rounded-2xl flex items-center justify-center overflow-hidden"
-              style={{
-                background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
-                border: '1px solid rgba(148,163,184,0.08)',
-                boxShadow: '0 20px 40px rgba(0,0,0,0.35)',
-              }}
-            >
-              {!prefersReducedMotion && <ChipSweepLight />}
-
-              <svg className="absolute inset-0 w-full h-full opacity-[0.1]" viewBox="0 0 128 128">
-                <line x1="64" y1="0" x2="64" y2="28" stroke="#a855f7" strokeWidth="1.5" />
-                <circle cx="64" cy="28" r="2" fill="#a855f7" />
-                <line x1="128" y1="64" x2="100" y2="64" stroke="#f97316" strokeWidth="1.5" />
-                <circle cx="100" cy="64" r="2" fill="#f97316" />
-                <line x1="64" y1="128" x2="64" y2="100" stroke="#ffc131" strokeWidth="1.5" />
-                <circle cx="64" cy="100" r="2" fill="#ffc131" />
-                <line x1="0" y1="64" x2="28" y2="64" stroke="#00e5ff" strokeWidth="1.5" />
-                <circle cx="28" cy="64" r="2" fill="#00e5ff" />
-                <rect x="44" y="44" width="40" height="40" rx="4"
-                  fill="none" stroke="rgba(148,163,184,0.15)" strokeWidth="0.75" />
-              </svg>
-
-              <img
-                src="/logo.svg"
-                alt="Bini.js"
-                width={56}
-                height={56}
-                className="relative w-14 h-14 object-contain z-10"
-              />
-            </m.div>
+            <Chip ref={chipRef} size="lg" prefersReducedMotion={prefersReducedMotion} />
 
             <div className="flex flex-col gap-2 ml-2">
               {[...Array(5)].map((_, i) => (
                 <m.div
                   key={i}
-                  className="h-px w-4 rounded-full"
-                  style={{ background: i === 2 ? '#f97316' : 'rgb(71 85 105)' }}
-                  animate={prefersReducedMotion ? {} : { opacity: i === 2 ? [0.4, 0.8, 0.4] : [0.15, 0.4, 0.15] }}
-                  transition={prefersReducedMotion ? {} : { duration: 2.2, repeat: Infinity, delay: i * 0.18 + 0.5 }}
+                  className="h-px w-4 rounded-full bg-neutral-300 dark:bg-slate-600"
+                  style={i === 2 ? { background: '#f97316' } : undefined}
+                  animate={
+                    prefersReducedMotion
+                      ? {}
+                      : { opacity: i === 2 ? [0.4, 0.8, 0.4] : [0.15, 0.4, 0.15] }
+                  }
+                  transition={
+                    prefersReducedMotion
+                      ? {}
+                      : { duration: 2.2, repeat: Infinity, delay: i * 0.18 + 0.5 }
+                  }
                 />
               ))}
             </div>
@@ -666,16 +787,23 @@ export function FoundationAnimation() {
             {[...Array(5)].map((_, i) => (
               <m.div
                 key={i}
-                className="w-px h-4 rounded-full"
-                style={{ background: i === 2 ? '#ffc131' : 'rgb(71 85 105)' }}
-                animate={prefersReducedMotion ? {} : { opacity: i === 2 ? [0.4, 0.8, 0.4] : [0.15, 0.4, 0.15] }}
-                transition={prefersReducedMotion ? {} : { duration: 2.5, repeat: Infinity, delay: i * 0.13 + 0.9 }}
+                className="w-px h-4 rounded-full bg-neutral-300 dark:bg-slate-600"
+                style={i === 2 ? { background: '#ffc131' } : undefined}
+                animate={
+                  prefersReducedMotion
+                    ? {}
+                    : { opacity: i === 2 ? [0.4, 0.8, 0.4] : [0.15, 0.4, 0.15] }
+                }
+                transition={
+                  prefersReducedMotion
+                    ? {}
+                    : { duration: 2.5, repeat: Infinity, delay: i * 0.13 + 0.9 }
+                }
               />
             ))}
           </div>
         </m.div>
 
-        {/* Right card */}
         <div style={{ gridColumn: 3, gridRow: 2 }}>
           <ToolCard
             tool={TOOLS[1]}
@@ -684,7 +812,6 @@ export function FoundationAnimation() {
           />
         </div>
 
-        {/* Bottom card */}
         <div style={{ gridColumn: 2, gridRow: 3 }}>
           <ToolCard
             tool={TOOLS[2]}
@@ -697,7 +824,8 @@ export function FoundationAnimation() {
   )
 }
 
-// ─── Full Tool card (desktop) ──────────────────────────────────
+/* ─── Full tool card (desktop) ────────────────────────────────────── */
+
 function ToolCard({
   tool,
   cardRef,
@@ -708,16 +836,22 @@ function ToolCard({
   delay: number
 }) {
   const initialOffset =
-    tool.side === 'top' ? { y: -18 } :
-    tool.side === 'bottom' ? { y: 18 } :
-    tool.side === 'left' ? { x: -18 } :
-    { x: 18 }
+    tool.side === 'top'
+      ? { y: -18 }
+      : tool.side === 'bottom'
+        ? { y: 18 }
+        : tool.side === 'left'
+          ? { x: -18 }
+          : { x: 18 }
 
   const hoverOffset =
-    tool.side === 'top' ? { y: 3 } :
-    tool.side === 'bottom' ? { y: -3 } :
-    tool.side === 'left' ? { x: -3 } :
-    { x: 3 }
+    tool.side === 'top'
+      ? { y: 3 }
+      : tool.side === 'bottom'
+        ? { y: -3 }
+        : tool.side === 'left'
+          ? { x: -3 }
+          : { x: 3 }
 
   return (
     <m.div
@@ -726,11 +860,10 @@ function ToolCard({
       animate={{ opacity: 1, x: 0, y: 0 }}
       transition={{ delay, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
       whileHover={{ ...hoverOffset, transition: { duration: 0.18 } }}
-      className="w-48 sm:w-52 rounded-2xl p-5 flex flex-col gap-3 cursor-default"
+      className="w-48 sm:w-52 rounded-2xl p-5 flex flex-col gap-3 cursor-default bg-linear-to-br from-white to-neutral-50 dark:from-[#151f2e] dark:to-[#0d1422]"
       style={{
-        background: 'linear-gradient(160deg, #151f2e 0%, #0d1422 100%)',
-        border: `1px solid ${tool.color}1a`,
-        boxShadow: `0 0 0 1px ${tool.color}08, 0 8px 28px rgba(0,0,0,0.28)`,
+        border: `1px solid ${tool.color}33`,
+        boxShadow: `0 0 0 1px ${tool.color}14, 0 8px 28px rgba(0,0,0,0.08)`,
       }}
     >
       <div className="flex items-center gap-3">
@@ -741,30 +874,43 @@ function ToolCard({
           {tool.name === 'Hono 4' ? (
             <HonoLogo size={20} />
           ) : tool.icon ? (
-            <svg role="img" viewBox="0 0 24 24" width={20} height={20} fill={tool.color} dangerouslySetInnerHTML={{ __html: tool.icon.svg }} />
+            <svg
+              role="img"
+              viewBox="0 0 24 24"
+              width={20}
+              height={20}
+              fill={tool.color}
+              dangerouslySetInnerHTML={{ __html: tool.icon.svg }}
+            />
           ) : null}
         </div>
         <div>
-          <h3 className="text-[13px] font-semibold leading-tight" style={{ color: 'rgba(255,255,255,0.92)' }}>
+          <h3 className="text-[13px] font-semibold leading-tight text-neutral-900 dark:text-white/90">
             {tool.name}
           </h3>
-          <span className="text-[10px] font-medium tracking-wide uppercase" style={{ color: tool.color, opacity: 0.7 }}>
+          <span
+            className="text-[10px] font-medium tracking-wide uppercase"
+            style={{ color: tool.color, opacity: 0.85 }}
+          >
             {tool.label}
           </span>
         </div>
       </div>
 
-      <div style={{ height: 1, background: 'rgba(148,163,184,0.06)' }} />
+      <div className="h-px bg-neutral-200 dark:bg-slate-700/60" />
 
-      <p className="text-[11.5px] leading-relaxed" style={{ color: 'rgba(148,163,184,0.65)' }}>
+      <p className="text-[11.5px] leading-relaxed text-neutral-600 dark:text-slate-400">
         {tool.description}
       </p>
 
       <div className="flex flex-col gap-1.5">
         {tool.features.map((f, fi) => (
           <div key={fi} className="flex items-center gap-2">
-            <div className="w-1 h-1 rounded-full shrink-0" style={{ background: tool.color, opacity: 0.6 }} />
-            <span className="text-[11px]" style={{ color: 'rgba(148,163,184,0.5)' }}>{f}</span>
+            <div
+              className="w-1 h-1 rounded-full shrink-0"
+              style={{ background: tool.color, opacity: 0.7 }}
+            />
+            <span className="text-[11px] text-neutral-500 dark:text-slate-500">{f}</span>
           </div>
         ))}
       </div>
@@ -772,7 +918,8 @@ function ToolCard({
   )
 }
 
-// ─── Mini Tool card (mobile - header only) ──────────────────────
+/* ─── Mini tool card (mobile) ─────────────────────────────────────── */
+
 function MiniToolCard({
   tool,
   cardRef,
@@ -783,10 +930,13 @@ function MiniToolCard({
   delay: number
 }) {
   const initialOffset =
-    tool.side === 'top' ? { y: -8 } :
-    tool.side === 'bottom' ? { y: 8 } :
-    tool.side === 'left' ? { x: -8 } :
-    { x: 8 }
+    tool.side === 'top'
+      ? { y: -8 }
+      : tool.side === 'bottom'
+        ? { y: 8 }
+        : tool.side === 'left'
+          ? { x: -8 }
+          : { x: 8 }
 
   return (
     <m.div
@@ -794,11 +944,10 @@ function MiniToolCard({
       initial={{ opacity: 0, ...initialOffset }}
       animate={{ opacity: 1, x: 0, y: 0 }}
       transition={{ delay, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-      className="rounded-lg p-1.5 flex items-center gap-1.5 cursor-default"
+      className="rounded-lg p-1.5 flex items-center gap-1.5 cursor-default bg-linear-to-br from-white to-neutral-50 dark:from-[#151f2e] dark:to-[#0d1422]"
       style={{
-        background: 'linear-gradient(160deg, #151f2e 0%, #0d1422 100%)',
-        border: `1px solid ${tool.color}1a`,
-        boxShadow: `0 0 0 1px ${tool.color}08, 0 4px 12px rgba(0,0,0,0.28)`,
+        border: `1px solid ${tool.color}33`,
+        boxShadow: `0 0 0 1px ${tool.color}14, 0 4px 12px rgba(0,0,0,0.08)`,
       }}
     >
       <div
@@ -808,14 +957,24 @@ function MiniToolCard({
         {tool.name === 'Hono 4' ? (
           <HonoLogo size={12} />
         ) : tool.icon ? (
-          <svg role="img" viewBox="0 0 24 24" width={12} height={12} fill={tool.color} dangerouslySetInnerHTML={{ __html: tool.icon.svg }} />
+          <svg
+            role="img"
+            viewBox="0 0 24 24"
+            width={12}
+            height={12}
+            fill={tool.color}
+            dangerouslySetInnerHTML={{ __html: tool.icon.svg }}
+          />
         ) : null}
       </div>
       <div className="flex flex-col min-w-0">
-        <h3 className="text-[9px] font-semibold leading-tight" style={{ color: 'rgba(255,255,255,0.92)' }}>
+        <h3 className="text-[9px] font-semibold leading-tight text-neutral-900 dark:text-white/90">
           {tool.name}
         </h3>
-        <span className="text-[7px] font-medium tracking-wide uppercase" style={{ color: tool.color, opacity: 0.7 }}>
+        <span
+          className="text-[7px] font-medium tracking-wide uppercase"
+          style={{ color: tool.color, opacity: 0.85 }}
+        >
           {tool.label}
         </span>
       </div>

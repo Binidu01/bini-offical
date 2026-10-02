@@ -15,9 +15,9 @@
   },
   "dependencies": {
     "bini-overlay": "latest",
-    "bini-router": "latest",
+    "bini-router": "2.1.1",
     "bini-server": "latest",
-    "bini-ssg": "latest",
+    "bini-ssg": "2.0.1",
     "framer-motion": "^13.1.1",
     "hono": "latest",
     "lucide-react": "^1.34.0",

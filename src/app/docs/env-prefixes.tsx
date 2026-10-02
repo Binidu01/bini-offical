@@ -1,19 +1,20 @@
-// src/pages/docs/env-prefixes/page.tsx
-import React from 'react'
-import { m } from 'framer-motion'
+// src/app/docs/env-prefixes.tsx
 import {
-  ArrowLeft,
-  ArrowRight,
-} from 'lucide-react'
-import { Link } from 'react-router-dom'
-import { Header } from '../../components/Layout'
-import { DocLayout } from '../../components/DocSidebar'
-import { CopyPageButton } from '../../components/CopyPageButton'
-import { TableOfContents, type TocItem } from '../../components/TableOfContents'
+  C,
+  Callout,
+  CodeBlock,
+  DocPage,
+  H3,
+  OutputBlock,
+  P,
+  Section,
+  Table,
+  UL,
+  useDocLang,
+} from '../../components/DocBlocks'
+import { FolderVisual, RouteVisual } from '../../components/DocVisuals'
+import type { TocItem } from '../../components/TableOfContents'
 
-// ────────────────────────────────────────────────────────────────────────────────
-// "On this page" entries
-// ────────────────────────────────────────────────────────────────────────────────
 const TOC_ITEMS: TocItem[] = [
   { id: 'what-are-prefixes', label: 'What are Prefixes?' },
   { id: 'bini-prefix', label: 'BINI_ Prefix' },
@@ -22,282 +23,280 @@ const TOC_ITEMS: TocItem[] = [
   { id: 'client-access', label: 'Client-Side Access' },
   { id: 'server-access', label: 'Server-Side Access' },
   { id: 'getenv-vs-requireenv', label: 'getEnv vs requireEnv' },
+  { id: 'security-best-practices', label: 'Security Best Practices' },
 ]
 
-const PAGE_TITLE = 'Prefixes & Client Exposure'
-const PAGE_URL = 'https://bini.js.org/docs/env-prefixes'
-const EDIT_URL = 'https://github.com/Binidu01/bini-offical/edit/main/src/app/docs/env-prefixes.tsx'
+/* ---------- terminal (colored output inside the shared OutputBlock) ---------- */
 
-// ────────────────────────────────────────────────────────────────────────────────
-// Code Block Component
-// ────────────────────────────────────────────────────────────────────────────────
-function CodeBlock({ code, filename }: { code: string; filename?: string }) {
-  const [copied, setCopied] = React.useState(false)
-  const handleCopy = () => { 
-    const cleanCode = code.replace(/\$ /g, '')
-    navigator.clipboard.writeText(cleanCode)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000) 
-  }
+const ERROR_TEXT = `[bini-env] error  Missing required environment variable: "SMTP_HOST"
+  -> Set it in your platform's env config or hosting dashboard.`
 
+function ErrorTerminal() {
   return (
-    <div className="relative group mb-6">
-      {filename && (
-        <div className="flex items-center justify-between px-4 py-2 bg-slate-900 border border-slate-800 border-b-0 rounded-t-lg">
-          <span className="text-sm text-slate-300 font-mono">{filename}</span>
-        </div>
-      )}
-      <button onClick={handleCopy} className="absolute top-2 right-2 p-1.5 rounded-md bg-slate-800 hover:bg-slate-700 transition-colors z-10 opacity-0 group-hover:opacity-100" style={{ top: filename ? '3rem' : '0.5rem' }}>
-        {copied ? (
-          <svg className="w-3.5 h-3.5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
-        ) : (
-          <svg className="w-3.5 h-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-          </svg>
-        )}
-      </button>
-      <div className={`bg-[#0a0a0a] border border-slate-700 ${filename ? 'rounded-t-none' : 'rounded-lg'} overflow-x-auto scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-transparent hover:scrollbar-thumb-slate-500`}>
-        <pre className="p-4 min-w-max">
-          <code className="text-sm font-mono text-slate-200 whitespace-pre">{code}</code>
-        </pre>
-      </div>
-    </div>
+    <OutputBlock code={ERROR_TEXT}>
+      <span className="text-cyan-700 dark:text-cyan-400">[bini-env]</span>{' '}
+      <span className="font-semibold text-red-600 dark:text-red-400">error</span>
+      {'  Missing required environment variable: '}
+      <span className="text-yellow-700 dark:text-yellow-400">&quot;SMTP_HOST&quot;</span>
+      {'\n  '}
+      <span className="text-green-600 dark:text-green-400">-&gt;</span>{' '}
+      <span className="text-neutral-500 dark:text-neutral-400">
+        Set it in your platform&apos;s env config or hosting dashboard.
+      </span>
+    </OutputBlock>
   )
 }
 
-// ────────────────────────────────────────────────────────────────────────────────
-// Table Component
-// ────────────────────────────────────────────────────────────────────────────────
-function Table({ headers, rows }: { headers: string[]; rows: React.ReactNode[][] }) {
+/* ---------- content ---------- */
+
+function Content() {
+  const lang = useDocLang()
+  const t = lang === 'js' ? 'js' : 'ts'
+  const x = lang === 'js' ? 'jsx' : 'tsx'
+
   return (
-    <div className="overflow-x-auto rounded-lg border border-slate-700 my-6">
-      <table className="w-full text-sm">
-        <thead className="bg-slate-900 border-b border-slate-800">
-          <tr>{headers.map((h, i) => <th key={i} className="text-left py-3 px-4 font-medium text-white">{h}</th>)}</tr>
-        </thead>
-        <tbody className="divide-y divide-slate-800">
-          {rows.map((row, i) => <tr key={i}>{row.map((cell, j) => <td key={j} className="py-3 px-4 text-slate-300 text-xs">{cell}</td>)}</tr>)}
-        </tbody>
-      </table>
-    </div>
-  )
-}
+    <>
+      <Section id="what-are-prefixes" title="What are Prefixes?">
+        <P className="mb-4">
+          Environment variable prefixes determine which variables are exposed to the browser and
+          which are kept server-side. The prefix tells Vite and Bini.js how to handle each
+          variable.
+        </P>
+        <FolderVisual
+          width={260}
+          rows={[
+            { n: '.env', dot: true },
+            { n: '.env.local' },
+            { n: '.env.development' },
+            { n: '.env.production' },
+          ]}
+        />
+        <Table
+          headers={['Prefix', 'Exposed to browser', 'Read with', 'Use for']}
+          rows={[
+            ['BINI_', 'Yes', 'import.meta.env', 'Public client config'],
+            ['VITE_', 'Yes', 'import.meta.env', 'Public client config'],
+            ['No prefix', 'No', 'getEnv / requireEnv', 'Secrets - server only'],
+          ]}
+        />
+        <Callout>
+          Both <C>BINI_</C> and <C>VITE_</C> prefixes are exposed to the browser by default.
+          Variables without a prefix are never exposed to the client.
+        </Callout>
+        <Callout>
+          <strong>Fixed prefixes:</strong> The prefix list in <C>bini-env</C> v2 is fixed to{' '}
+          <C>['BINI_', 'VITE_']</C>. There is no option to add custom prefixes.
+        </Callout>
+      </Section>
 
-// ────────────────────────────────────────────────────────────────────────────────
-// Note Component
-// ────────────────────────────────────────────────────────────────────────────────
-function Note({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="p-4 rounded-lg bg-slate-900/50 border border-slate-800 my-6">
-      <div className="text-sm text-slate-300 [&>strong]:text-white [&>code]:text-cyan-400 [&>code]:bg-slate-800 [&>code]:px-1 [&>code]:py-0.5 [&>code]:rounded">{children}</div>
-    </div>
-  )
-}
-
-// ────────────────────────────────────────────────────────────────────────────────
-// Prefixes & Client Exposure Page
-// ────────────────────────────────────────────────────────────────────────────────
-export default function EnvPrefixesPage() {
-  return (
-    <div className="min-h-screen bg-black font-sans antialiased overflow-x-hidden">
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute inset-0 bg-black" />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-300 h-200 bg-linear-to-b from-cyan-500/5 via-sky-500/3 to-transparent rounded-full blur-3xl" />
-      </div>
-
-      <Header />
-
-      <div className="relative pt-16 lg:pt-20">
-        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 overflow-x-hidden">
-          
-          <DocLayout>
-            <div className="flex gap-10 xl:gap-14">
-              {/* Main content column */}
-              <div className="max-w-4xl min-w-0 flex-1">
-
-                {/* Title + Copy page button */}
-                <m.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex items-start justify-between gap-4 mb-4"
-                >
-                  <div>
-                    <h1 className="text-4xl font-bold text-white mb-2">{PAGE_TITLE}</h1>
-                    <p className="text-slate-400 text-sm">Learn how environment variable prefixes work and which variables are exposed to the client.</p>
-                  </div>
-                  <div className="shrink-0 pt-2 hidden sm:block">
-                    <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
-                  </div>
-                </m.div>
-                <div className="sm:hidden mb-8">
-                  <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
-                </div>
-
-                {/* What are Prefixes? */}
-                <m.section id="what-are-prefixes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">What are Prefixes?</h2>
-                  <p className="text-slate-300 mb-4">
-                    Environment variable prefixes determine which variables are exposed to the browser and which are kept server-side. The prefix tells Vite and Bini.js how to handle each variable.
-                  </p>
-                  <Note>
-                    Both <code>BINI_</code> and <code>VITE_</code> prefixes are exposed to the browser by default. Variables without a prefix are never exposed to the client.
-                  </Note>
-                  <Note>
-                    <strong>Fixed prefixes:</strong> The prefix list in <code>bini-env</code> v2 is fixed to <code>['BINI_', 'VITE_']</code>. There is no option to add custom prefixes.
-                  </Note>
-                </m.section>
-
-                {/* BINI_ Prefix */}
-                <m.section id="bini-prefix" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">BINI_ Prefix</h2>
-                  <p className="text-slate-300 mb-4">
-                    <code className="text-cyan-400">BINI_</code> is the default prefix for client-side environment variables in Bini.js. These variables are exposed to the browser via <code className="text-cyan-400">import.meta.env</code>.
-                  </p>
-                  <CodeBlock 
-                    code={`# .env
+      <Section id="bini-prefix" title="BINI_ Prefix">
+        <P className="mb-4">
+          <C>BINI_</C> is the default prefix for client-side environment variables in Bini.js.
+          These variables are exposed to the browser via <C>import.meta.env</C>.
+        </P>
+        <RouteVisual
+          fileWidth={260}
+          rows={[
+            { n: '.env', dot: true },
+            { n: 'src' },
+            { n: 'app', d: 1 },
+            { n: `page.${x}`, d: 2, dot: true, url: '/' },
+          ]}
+        />
+        <CodeBlock
+          filename=".env"
+          lang="text"
+          code={`# .env
 BINI_PUBLIC_API_URL=https://api.example.com
 BINI_APP_NAME=My App
 BINI_ANALYTICS_ID=UA-XXXX`}
-                    filename=".env"
-                  />
-                  <CodeBlock 
-                    code={`// src/app/page.tsx
-export default function HomePage() {
+        />
+        <CodeBlock
+          filename={`src/app/page.${x}`}
+          code={`export default function HomePage() {
   const apiUrl = import.meta.env.BINI_PUBLIC_API_URL
   const appName = import.meta.env.BINI_APP_NAME
   const analyticsId = import.meta.env.BINI_ANALYTICS_ID
-  
+
   return (
     <div>
       <h1>{appName}</h1>
       <p>API: {apiUrl}</p>
+      <p>Analytics: {analyticsId}</p>
     </div>
   )
 }`}
-                    filename="src/app/page.tsx"
-                  />
-                  <Note>
-                    <strong>Important:</strong> <code>BINI_*</code> variables are bundled into your client-side JavaScript. Never put secrets in <code>BINI_*</code> variables.
-                  </Note>
-                </m.section>
+        />
+        <Callout>
+          <strong>Important:</strong> <C>BINI_*</C> variables are bundled into your client-side
+          JavaScript. Never put secrets in <C>BINI_*</C> variables.
+        </Callout>
+      </Section>
 
-                {/* VITE_ Prefix */}
-                <m.section id="vite-prefix" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">VITE_ Prefix</h2>
-                  <p className="text-slate-300 mb-4">
-                    <code className="text-cyan-400">VITE_</code> is Vite's standard prefix for client-side environment variables. Any variable starting with <code>VITE_</code> is exposed to the browser.
-                  </p>
-                  <CodeBlock 
-                    code={`# .env
+      <Section id="vite-prefix" title="VITE_ Prefix">
+        <P className="mb-4">
+          <C>VITE_</C> is Vite&apos;s standard prefix for client-side environment variables. Any
+          variable starting with <C>VITE_</C> is exposed to the browser.
+        </P>
+        <CodeBlock
+          filename=".env"
+          lang="text"
+          code={`# .env
 VITE_API_URL=https://api.example.com
 VITE_APP_TITLE=My App
 VITE_GA_ID=UA-XXXXX`}
-                    filename=".env"
-                  />
-                  <CodeBlock 
-                    code={`// src/app/page.tsx
-export default function HomePage() {
+        />
+        <CodeBlock
+          filename={`src/app/page.${x}`}
+          code={`export default function HomePage() {
   const apiUrl = import.meta.env.VITE_API_URL
   const title = import.meta.env.VITE_APP_TITLE
   const gaId = import.meta.env.VITE_GA_ID
-  
-  return <h1>{title}</h1>
-}`}
-                    filename="src/app/page.tsx"
-                  />
-                  <Note>
-                    <strong>Note:</strong> <code>VITE_*</code> and <code>BINI_*</code> work exactly the same way. Both are exposed to the browser. Choose whichever you prefer.
-                  </Note>
-                </m.section>
 
-                {/* No Prefix */}
-                <m.section id="no-prefix" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">No Prefix (Secrets)</h2>
-                  <p className="text-slate-300 mb-4">
-                    Variables without a prefix are <strong className="text-white">never</strong> exposed to the browser. They are only accessible server-side via <code className="text-cyan-400">getEnv(ctx, key)</code> in API routes.
-                  </p>
-                  <CodeBlock 
-                    code={`# .env
+  return (
+    <div>
+      <h1>{title}</h1>
+      <p>API: {apiUrl}</p>
+      <p>Analytics: {gaId}</p>
+    </div>
+  )
+}`}
+        />
+        <Callout>
+          <strong>Note:</strong> <C>VITE_*</C> and <C>BINI_*</C> work the same way. Both are
+          exposed to the browser. Choose whichever you prefer.
+        </Callout>
+      </Section>
+
+      <Section id="no-prefix" title="No Prefix (Secrets)">
+        <P className="mb-4">
+          Variables without a prefix are <strong>never</strong> exposed to the browser. They are
+          only accessible server-side via <C>getEnv(ctx, key)</C> in API routes.
+        </P>
+        <RouteVisual
+          fileWidth={260}
+          rows={[
+            { n: '.env', dot: true },
+            { n: 'src' },
+            { n: 'app', d: 1 },
+            { n: 'api', d: 2 },
+            { n: `config.${t}`, d: 3, fn: true, dot: true, url: '/api/config' },
+          ]}
+        />
+        <CodeBlock
+          filename=".env"
+          lang="text"
+          code={`# .env
 DATABASE_URL=postgres://localhost:5432/mydb
 STRIPE_SECRET_KEY=sk_live_...
 SMTP_PASS=super_secret
 JWT_SECRET=your_jwt_secret`}
-                    filename=".env"
-                  />
-                  <CodeBlock 
-                    code={`// src/app/api/config.ts
+        />
+        <CodeBlock
+          filename={`src/app/api/config.${t}`}
+          tsCode={`// src/app/api/config.ts
 import { Hono } from 'hono'
-import { getEnv, requireEnv } from 'bini-env'
+import { requireEnv } from 'bini-env'
 
 const app = new Hono()
 
 app.get('/config', (c) => {
   const ctx = c as any
-  
+
   // These are only accessible server-side
   const dbUrl = requireEnv(ctx, 'DATABASE_URL')
   const jwtSecret = requireEnv(ctx, 'JWT_SECRET')
   const smtpPass = requireEnv(ctx, 'SMTP_PASS')
-  
+
   // Never expose secrets in responses
-  return c.json({ 
+  return c.json({
     dbConnected: !!dbUrl,
-    jwtConfigured: !!jwtSecret 
+    jwtConfigured: !!jwtSecret,
+    smtpConfigured: !!smtpPass,
   })
 })
 
 export default app`}
-                    filename="src/app/api/config.ts"
-                  />
-                  <Note>
-                    <strong>Critical:</strong> Variables without a prefix are the only way to keep secrets secure. Never use <code>BINI_*</code> or <code>VITE_*</code> for sensitive data.
-                  </Note>
-                </m.section>
+          jsCode={`// src/app/api/config.js
+import { Hono } from 'hono'
+import { requireEnv } from 'bini-env'
 
-                {/* Client-Side Access */}
-                <m.section id="client-access" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Client-Side Access</h2>
-                  <p className="text-slate-300 mb-4">
-                    Client-side variables are accessed via <code className="text-cyan-400">import.meta.env</code> in any component:
-                  </p>
-                  <CodeBlock 
-                    code={`// src/app/page.tsx
-export default function Page() {
+const app = new Hono()
+
+app.get('/config', (c) => {
+  // These are only accessible server-side
+  const dbUrl = requireEnv(c, 'DATABASE_URL')
+  const jwtSecret = requireEnv(c, 'JWT_SECRET')
+  const smtpPass = requireEnv(c, 'SMTP_PASS')
+
+  // Never expose secrets in responses
+  return c.json({
+    dbConnected: !!dbUrl,
+    jwtConfigured: !!jwtSecret,
+    smtpConfigured: !!smtpPass,
+  })
+})
+
+export default app`}
+        />
+        <Callout>
+          <strong>Critical:</strong> Variables without a prefix are the only way to keep secrets
+          secure. Never use <C>BINI_*</C> or <C>VITE_*</C> for sensitive data.
+        </Callout>
+      </Section>
+
+      <Section id="client-access" title="Client-Side Access">
+        <P className="mb-4">
+          Client-side variables are accessed via <C>import.meta.env</C> in any component:
+        </P>
+        <CodeBlock
+          filename={`src/app/page.${x}`}
+          code={`export default function Page() {
   // Access client-side variables
   const apiUrl = import.meta.env.BINI_API_URL
   const appName = import.meta.env.VITE_APP_NAME
-  
+
   return (
     <div>
       <h1>{appName}</h1>
       <p>API: {apiUrl}</p>
     </div>
   )
-}
-
-// In MDX files
-export const metadata = {
+}`}
+        />
+        <P className="mt-4 mb-4">The same works in MDX files:</P>
+        <CodeBlock
+          filename="src/app/about/page.mdx"
+          code={`export const metadata = {
   title: import.meta.env.VITE_APP_NAME,
 }
 
-# Welcome to {import.meta.env.VITE_APP_NAME}
-`}
-                  />
-                  <Note>
-                    <code>import.meta.env</code> is available in all client-side code including pages, components, and MDX files.
-                  </Note>
-                </m.section>
+# Welcome to {import.meta.env.VITE_APP_NAME}`}
+        />
+        <Callout>
+          <C>import.meta.env</C> is available in all client-side code including pages, components,
+          and MDX files.
+        </Callout>
+      </Section>
 
-                {/* Server-Side Access */}
-                <m.section id="server-access" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Server-Side Access</h2>
-                  <p className="text-slate-300 mb-4">
-                    Server-side variables are accessed via <code className="text-cyan-400">getEnv(ctx, key)</code> and <code className="text-cyan-400">requireEnv(ctx, key)</code> in API routes:
-                  </p>
-                  <CodeBlock 
-                    code={`// src/app/api/email.ts
+      <Section id="server-access" title="Server-Side Access">
+        <P className="mb-4">
+          Server-side variables are accessed via <C>getEnv(ctx, key)</C> and{' '}
+          <C>requireEnv(ctx, key)</C> in API routes:
+        </P>
+        <RouteVisual
+          fileWidth={260}
+          rows={[
+            { n: '.env', dot: true },
+            { n: 'src' },
+            { n: 'app', d: 1 },
+            { n: 'api', d: 2 },
+            { n: `email.${t}`, d: 3, fn: true, dot: true, url: '/api/email/send' },
+          ]}
+        />
+        <CodeBlock
+          filename={`src/app/api/email.${t}`}
+          tsCode={`// src/app/api/email.ts
 import { Hono } from 'hono'
 import { getEnv, requireEnv } from 'bini-env'
 
@@ -305,19 +304,19 @@ const app = new Hono()
 
 app.post('/email/send', async (c) => {
   const ctx = c as any
-  
+
   // Server-side secrets (no prefix)
   const smtpHost = requireEnv(ctx, 'SMTP_HOST')
   const smtpPass = requireEnv(ctx, 'SMTP_PASS')
   const fromEmail = requireEnv(ctx, 'FROM_EMAIL')
-  
+
   // Optional config with defaults
   const smtpPort = parseInt(getEnv(ctx, 'SMTP_PORT') ?? '587')
-  
+
   // Client-side config (BINI_)
   const publicUrl = getEnv(ctx, 'BINI_API_URL')
-  
-  return c.json({ 
+
+  return c.json({
     success: true,
     publicUrl, // This is safe to return
     // smtpPass is NEVER returned to the client
@@ -325,124 +324,191 @@ app.post('/email/send', async (c) => {
 })
 
 export default app`}
-                    filename="src/app/api/email.ts"
-                  />
-                  <Table 
-                    headers={['Access Method', 'Where', 'Variables']}
-                    rows={[
-                      ['import.meta.env', 'Client components', 'BINI_, VITE_'],
-                      ['getEnv(ctx, key)', 'API routes', 'All variables (including no prefix)'],
-                      ['requireEnv(ctx, key)', 'API routes', 'All variables (throws if missing)'],
-                    ]}
-                  />
-                </m.section>
+          jsCode={`// src/app/api/email.js
+import { Hono } from 'hono'
+import { getEnv, requireEnv } from 'bini-env'
 
-                {/* getEnv vs requireEnv */}
-                <m.section id="getenv-vs-requireenv" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">getEnv vs requireEnv</h2>
-                  <p className="text-slate-300 mb-4">
-                    Both <code className="text-cyan-400">getEnv</code> and <code className="text-cyan-400">requireEnv</code> read environment variables from the Hono request context, but they behave differently:
-                  </p>
-                  <Table 
-                    headers={['Feature', 'getEnv(ctx, key)', 'requireEnv(ctx, key)']}
-                    rows={[
-                      ['Returns', 'string | undefined', 'string'],
-                      ['On missing', 'Returns undefined', 'Throws error immediately'],
-                      ['Use case', 'Optional configuration with defaults', 'Required configuration'],
-                      ['Default pattern', 'getEnv(ctx, \'KEY\') ?? \'default\'', 'requireEnv(ctx, \'KEY\')'],
-                      ['Error handling', 'Manual check for undefined', 'Try/catch or let it bubble'],
-                      ['When to use', 'Feature flags, optional settings', 'Database URLs, API keys, credentials'],
-                    ]}
-                  />
-                  <CodeBlock 
-                    code={`// getEnv — for optional values
-const debug = getEnv(ctx, 'DEBUG_MODE') === 'true'
-const region = getEnv(ctx, 'AWS_REGION') ?? 'us-east-1'
-const maxRetries = parseInt(getEnv(ctx, 'MAX_RETRIES') ?? '3')
+const app = new Hono()
 
-// requireEnv — for required values
-const dbUrl = requireEnv(ctx, 'DATABASE_URL')
-const apiKey = requireEnv(ctx, 'STRIPE_SECRET_KEY')
-const smtpPass = requireEnv(ctx, 'SMTP_PASS')`}
-                  />
-                  <Note>
-                    <strong>Best practice:</strong> Use <code>requireEnv</code> for critical configuration that your app cannot function without. Use <code>getEnv</code> with <code>??</code> defaults for optional configuration.
-                  </Note>
-                  <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-4 mt-4">
-                    <p className="text-slate-300 text-sm">
-                      <strong className="text-white">On terminal failure:</strong> <code>requireEnv</code> logs a descriptive error to the terminal:
-                    </p>
-                    <CodeBlock 
-                      code={`[bini-env] error  Missing required environment variable: "SMTP_HOST"
-  -> Set it in your platform's env config or hosting dashboard.`}
-                    />
-                  </div>
-                </m.section>
+app.post('/email/send', async (c) => {
+  // Server-side secrets (no prefix)
+  const smtpHost = requireEnv(c, 'SMTP_HOST')
+  const smtpPass = requireEnv(c, 'SMTP_PASS')
+  const fromEmail = requireEnv(c, 'FROM_EMAIL')
 
-                {/* Security Best Practices */}
-                <m.section id="security-best-practices" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Security Best Practices</h2>
-                  <ul className="space-y-3 text-slate-300 mb-6">
-                    <li className="flex items-start gap-2">
-                      <span className="text-cyan-400 mt-1">•</span>
-                      <span><strong className="text-white">Never prefix secrets</strong> — Use no prefix for database URLs, API keys, and tokens.</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-cyan-400 mt-1">•</span>
-                      <span><strong className="text-white">Use BINI_ or VITE_ for public config</strong> — Use these for non-sensitive configuration like API URLs.</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-cyan-400 mt-1">•</span>
-                      <span><strong className="text-white">Use requireEnv for critical values</strong> — Fail fast when required configuration is missing.</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-cyan-400 mt-1">•</span>
-                      <span><strong className="text-white">Use getEnv with defaults for optional values</strong> — Keep your app flexible with sensible defaults.</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-cyan-400 mt-1">•</span>
-                      <span><strong className="text-white">Never expose secrets in responses</strong> — Don't return secret values from API routes.</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-cyan-400 mt-1">•</span>
-                      <span><strong className="text-white">Use .env.example</strong> — Document required variables without committing actual values.</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-cyan-400 mt-1">•</span>
-                      <span><strong className="text-white">Keep .env in .gitignore</strong> — Never commit environment files with secrets.</span>
-                    </li>
-                  </ul>
-                </m.section>
+  // Optional config with defaults
+  const smtpPort = parseInt(getEnv(c, 'SMTP_PORT') ?? '587')
 
-                {/* Previous / Next Navigation */}
-                <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
-                  <Link to="/docs/environment-variables" className="group flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
-                    <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                    <div>
-                      <div className="text-xs text-slate-500">Previous</div>
-                      <div className="text-sm font-medium">Environment Variables</div>
-                    </div>
-                  </Link>
-                  <Link to="/docs/env-api" className="group flex items-center gap-2 text-right text-slate-400 hover:text-white transition-colors">
-                    <div>
-                      <div className="text-xs text-slate-500">Next</div>
-                      <div className="text-sm font-medium">Using in API Routes</div>
-                    </div>
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                </m.div>
+  // Client-side config (BINI_)
+  const publicUrl = getEnv(c, 'BINI_API_URL')
 
-              </div>
+  return c.json({
+    success: true,
+    publicUrl, // This is safe to return
+    // smtpPass is NEVER returned to the client
+  })
+})
 
-              {/* Right-hand "On this page" sidebar */}
-              <aside className="hidden xl:block w-56 shrink-0">
-                <TableOfContents items={TOC_ITEMS} editUrl={EDIT_URL} />
-              </aside>
-            </div>
-          </DocLayout>
-          
-        </div>
-      </div>
-    </div>
+export default app`}
+        />
+        <Table
+          headers={['Access Method', 'Where', 'Variables']}
+          rows={[
+            ['import.meta.env', 'Client components', 'BINI_, VITE_'],
+            ['getEnv(ctx, key)', 'API routes', 'All variables (including no prefix)'],
+            ['requireEnv(ctx, key)', 'API routes', 'All variables (throws if missing)'],
+          ]}
+        />
+      </Section>
+
+      <Section id="getenv-vs-requireenv" title="getEnv vs requireEnv">
+        <P className="mb-4">
+          Both <C>getEnv</C> and <C>requireEnv</C> read environment variables from the Hono request
+          context, but they behave differently:
+        </P>
+        <Table
+          headers={['Feature', 'getEnv(ctx, key)', 'requireEnv(ctx, key)']}
+          rows={[
+            ['Returns', 'string | undefined', 'string'],
+            ['On missing', 'Returns undefined', 'Throws error immediately'],
+            ['Use case', 'Optional configuration with defaults', 'Required configuration'],
+            ['Default pattern', "getEnv(ctx, 'KEY') ?? 'default'", "requireEnv(ctx, 'KEY')"],
+            ['Error handling', 'Manual check for undefined', 'Try/catch or let it bubble'],
+            [
+              'When to use',
+              'Feature flags, optional settings',
+              'Database URLs, API keys, credentials',
+            ],
+          ]}
+        />
+        <CodeBlock
+          filename={`src/app/api/compare.${t}`}
+          tsCode={`// src/app/api/compare.ts
+import { Hono } from 'hono'
+import { getEnv, requireEnv } from 'bini-env'
+
+const app = new Hono()
+
+app.get('/compare', (c) => {
+  const ctx = c as any
+
+  // getEnv - for optional values
+  const debug = getEnv(ctx, 'DEBUG_MODE') === 'true'
+  const region = getEnv(ctx, 'AWS_REGION') ?? 'us-east-1'
+  const maxRetries = parseInt(getEnv(ctx, 'MAX_RETRIES') ?? '3')
+
+  // requireEnv - for required values
+  const dbUrl = requireEnv(ctx, 'DATABASE_URL')
+  const apiKey = requireEnv(ctx, 'STRIPE_SECRET_KEY')
+  const smtpPass = requireEnv(ctx, 'SMTP_PASS')
+
+  return c.json({ debug, region, maxRetries, ready: !!(dbUrl && apiKey && smtpPass) })
+})
+
+export default app`}
+          jsCode={`// src/app/api/compare.js
+import { Hono } from 'hono'
+import { getEnv, requireEnv } from 'bini-env'
+
+const app = new Hono()
+
+app.get('/compare', (c) => {
+  // getEnv - for optional values
+  const debug = getEnv(c, 'DEBUG_MODE') === 'true'
+  const region = getEnv(c, 'AWS_REGION') ?? 'us-east-1'
+  const maxRetries = parseInt(getEnv(c, 'MAX_RETRIES') ?? '3')
+
+  // requireEnv - for required values
+  const dbUrl = requireEnv(c, 'DATABASE_URL')
+  const apiKey = requireEnv(c, 'STRIPE_SECRET_KEY')
+  const smtpPass = requireEnv(c, 'SMTP_PASS')
+
+  return c.json({ debug, region, maxRetries, ready: !!(dbUrl && apiKey && smtpPass) })
+})
+
+export default app`}
+        />
+        <Callout>
+          <strong>Best practice:</strong> Use <C>requireEnv</C> for critical configuration that
+          your app cannot function without. Use <C>getEnv</C> with <C>??</C> defaults for optional
+          configuration.
+        </Callout>
+        <P className="mt-4 mb-4">
+          On failure, <C>requireEnv</C> logs a descriptive error to the terminal:
+        </P>
+        <ErrorTerminal />
+      </Section>
+
+      <Section id="security-best-practices" title="Security Best Practices">
+        <UL>
+          <li>
+            <strong>Never prefix secrets</strong> - Use no prefix for database URLs, API keys, and
+            tokens.
+          </li>
+          <li>
+            <strong>Use BINI_ or VITE_ for public config</strong> - Use these for non-sensitive
+            configuration like API URLs.
+          </li>
+          <li>
+            <strong>Use requireEnv for critical values</strong> - Fail fast when required
+            configuration is missing.
+          </li>
+          <li>
+            <strong>Use getEnv with defaults for optional values</strong> - Keep your app flexible
+            with sensible defaults.
+          </li>
+          <li>
+            <strong>Never expose secrets in responses</strong> - Do not return secret values from
+            API routes.
+          </li>
+          <li>
+            <strong>Use .env.example</strong> - Document required variables without committing
+            actual values.
+          </li>
+          <li>
+            <strong>Keep .env in .gitignore</strong> - Never commit environment files with secrets.
+          </li>
+        </UL>
+        <H3>.env.example</H3>
+        <CodeBlock
+          filename=".env.example"
+          lang="text"
+          code={`# .env.example - commit this file, never your real .env
+
+# Public (exposed to the browser)
+BINI_PUBLIC_API_URL=
+VITE_APP_NAME=
+
+# Secrets (server only)
+DATABASE_URL=
+JWT_SECRET=`}
+        />
+        <H3 className="mt-8 mb-3">.gitignore</H3>
+        <CodeBlock
+          filename=".gitignore"
+          lang="text"
+          code={`# .gitignore
+.env
+.env.local
+.env.*.local`}
+        />
+      </Section>
+    </>
+  )
+}
+
+export default function EnvPrefixesPage() {
+  return (
+    <DocPage
+      title="Prefixes & Client Exposure"
+      description="Learn how environment variable prefixes work and which variables are exposed to the client."
+      url="https://bini.js.org/docs/env-prefixes"
+      editUrl="https://github.com/Binidu01/bini-official/edit/main/src/app/docs/env-prefixes.tsx"
+      toc={TOC_ITEMS}
+      prev={{ to: '/docs/environment-variables', title: 'Environment Variables' }}
+      next={{ to: '/docs/env-api', title: 'Using in API Routes' }}
+    >
+      <Content />
+    </DocPage>
   )
 }
