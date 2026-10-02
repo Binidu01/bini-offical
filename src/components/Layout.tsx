@@ -218,10 +218,6 @@ export const Header = () => {
   })()
 
   useEffect(() => {
-    applyTheme(getStoredTheme())
-  }, [])
-
-  useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault()
@@ -645,22 +641,17 @@ export const Footer = () => {
   const [theme, setTheme] = useState<Theme>(() => getStoredTheme())
 
   useEffect(() => {
-    applyTheme(theme)
-
+    // Only needed for system preference changes while preference is "system"
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
 
     const handleSystemThemeChange = () => {
-      if (getStoredTheme() === 'system') {
-        applyTheme('system')
-      }
+      if (getStoredTheme() === 'system') applyTheme('system')
     }
 
     mediaQuery.addEventListener('change', handleSystemThemeChange)
 
-    return () => {
-      mediaQuery.removeEventListener('change', handleSystemThemeChange)
-    }
-  }, [theme])
+    return () => mediaQuery.removeEventListener('change', handleSystemThemeChange)
+  }, [])
 
   const handleThemeChange = (nextTheme: Theme) => {
     setTheme(nextTheme)

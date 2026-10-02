@@ -38,24 +38,37 @@ const FEATURES: [string, string][] = [
 const DOC_SECTIONS: [string, string][] = [
   [
     'Getting Started:',
-    'Step-by-step tutorials to create a new application and learn core features',
+    'Installation, project structure, layouts and pages, and linking and navigating between routes',
   ],
   [
     'Defining Routes:',
-    'Folder-based and file-based routing, dynamic routes, catch-all routes, and MDX & Markdown pages',
+    'Folder-based and file-based routing, dynamic routes, parallel routes, catch-all routes, and MDX & Markdown pages',
   ],
-  ['Special Files:', 'Loading UI, error boundaries, and 404 pages'],
+  [
+    'Special Files:',
+    'Loading UI, error boundaries, templates, default fallbacks, and not-found (404) pages',
+  ],
   ['Metadata:', 'Metadata and SEO, Open Graph and Twitter cards, icons and favicons'],
-  ['API Routes:', 'Build backend endpoints with Hono or plain functions'],
-  ['Environment Variables:', 'Prefixes, client exposure, and using them in API routes'],
-  ['Styling:', 'Style your app with Tailwind CSS, CSS Modules, or plain CSS'],
+  [
+    'API Routes:',
+    'Build backend endpoints with plain function handlers or Hono, including dynamic API routes and CORS',
+  ],
+  [
+    'Environment Variables:',
+    'How they work, prefixes and client exposure, and using them in API routes',
+  ],
+  ['Styling:', 'Style your app with plain CSS, Tailwind CSS, or CSS Modules'],
   ['Platforms:', 'Build for web, Windows, macOS, Linux, Android, and iOS'],
-  ['Deployment:', 'Deploy to Node.js, Netlify, Vercel, Cloudflare, or Deno'],
+  [
+    'Deployment:',
+    'Deployment overview, the production server, static export, and hosting providers',
+  ],
 ]
 
 /* ---- local pieces -------------------------------------------------- */
 
-const CARD = 'rounded-lg border border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-950'
+const CARD =
+  'rounded-lg border border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-950'
 
 function Bold({ children }: { children: ReactNode }) {
   return <span className="font-medium text-neutral-900 dark:text-neutral-200">{children}</span>
@@ -192,7 +205,7 @@ export default function DocsPage() {
       </Section>
 
       <Section id="how-to-use-the-docs" title="How to use the docs">
-        <P className="mb-4">The docs are organized into several sections:</P>
+        <P className="mb-4">The docs are organized into nine sections:</P>
         <UL className="space-y-2">
           {DOC_SECTIONS.map(([label, text]) => (
             <li key={label}>

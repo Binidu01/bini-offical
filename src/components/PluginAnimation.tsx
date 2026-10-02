@@ -41,8 +41,8 @@ const DESIGN_WIDTH = 760
 const DESIGN_HEIGHT = 500
 const LAYERS = PLUGIN_COUNT
 
-const WIRE_GRADIENT_LR = 'linear-gradient(90deg, #00CFFF, #0077FF)'
-const WIRE_GRADIENT_RL = 'linear-gradient(90deg, #0077FF, #00CFFF)'
+const WIRE_GRADIENT_LR = 'linear-gradient(90deg, var(--wire-a), var(--wire-b))'
+const WIRE_GRADIENT_RL = 'linear-gradient(90deg, var(--wire-b), var(--wire-a))'
 
 /* ─── Main component ──────────────────────────────────────────────── */
 
@@ -127,13 +127,13 @@ const PluginAnimation = () => {
     return (
       <div
         ref={wrapperRef}
-        className="w-full flex items-center justify-center bg-transparent px-2 py-6 sm:p-8"
+        className="flex w-full items-center justify-center bg-transparent px-2 py-6 sm:p-8"
       >
         <div className="flex items-center gap-6">
-          <div className="relative w-20 h-20 flex items-center justify-center">
-            <img src="/logo.svg" alt="Bini.js" width={56} height={56} className="w-14 h-14" />
+          <div className="relative flex h-20 w-20 items-center justify-center">
+            <img src="/logo.svg" alt="Bini.js" width={56} height={56} className="h-14 w-14" />
           </div>
-          <div className="px-6 py-2 rounded-xl bg-white border border-blue-500/30 dark:bg-[#0a0a12]">
+          <div className="rounded-xl border-2 border-blue-500/40 bg-white px-6 py-2 shadow-sm dark:border-blue-500/30 dark:bg-[#0a0a12] dark:shadow-none">
             <span className="font-mono text-lg tracking-wider text-neutral-900 dark:text-white">
               {middleLabel}
             </span>
@@ -148,11 +148,11 @@ const PluginAnimation = () => {
   return (
     <div
       ref={wrapperRef}
-      className="w-full flex items-center justify-center bg-transparent px-2 py-6 sm:p-8"
+      className="flex w-full items-center justify-center bg-transparent px-2 py-6 sm:p-8"
     >
       <div style={{ width: DESIGN_WIDTH * scale, height: DESIGN_HEIGHT * scale }}>
         <div
-          className="flex items-center relative"
+          className="relative flex items-center"
           style={{
             width: DESIGN_WIDTH,
             height: containerHeight,
@@ -162,7 +162,7 @@ const PluginAnimation = () => {
         >
           {/* ── Left: 3D stacked block ─────────────────────────────── */}
           <div
-            className="relative shrink-0 z-10"
+            className="relative z-10 shrink-0"
             style={{ width: '200px', height: '260px', perspective: '800px' }}
           >
             <div
@@ -195,11 +195,11 @@ const PluginAnimation = () => {
                         transform: 'rotate(45deg)',
                         background: isTopLayer
                           ? 'var(--chip-top)'
-                          : 'linear-gradient(135deg, #00CFFF, #0077FF)',
+                          : 'linear-gradient(135deg, var(--wire-a), var(--wire-b))',
                         borderRadius: '18px',
                         border: isTopLayer
                           ? 'var(--chip-top-border)'
-                          : '1px solid rgba(0, 207, 255, 0.15)',
+                          : '1px solid rgba(0, 100, 200, 0.28)',
                         ...(isTopLayer
                           ? {}
                           : {
@@ -208,12 +208,12 @@ const PluginAnimation = () => {
                               gridTemplateRows: 'repeat(4, 1fr)',
                               gap: '1px',
                               padding: '2px',
-                              opacity: 0.3 + (layerIndex / LAYERS) * 0.7,
+                              opacity: 0.45 + (layerIndex / LAYERS) * 0.55,
                             }),
                         boxShadow:
                           layerIndex === 0
-                            ? '0 15px 40px rgba(0,0,0,0.3), 0 0 30px rgba(0, 207, 255, 0.15)'
-                            : '0 2px 8px rgba(0,0,0,0.08)',
+                            ? '0 15px 40px rgba(0,40,100,0.25), 0 0 30px rgba(0, 119, 255, 0.2)'
+                            : '0 2px 8px rgba(0,40,100,0.1)',
                       }}
                     >
                       {!isTopLayer &&
@@ -221,10 +221,11 @@ const PluginAnimation = () => {
                           <div
                             key={i}
                             style={{
-                              background: 'linear-gradient(135deg, #00CFFF, #0077FF)',
+                              background:
+                                'linear-gradient(135deg, var(--wire-a), var(--wire-b))',
                               borderRadius: '6px',
-                              border: '1px solid rgba(0, 207, 255, 0.08)',
-                              boxShadow: 'inset 0 0 4px rgba(0, 207, 255, 0.1)',
+                              border: '1px solid rgba(0, 100, 200, 0.15)',
+                              boxShadow: 'inset 0 0 4px rgba(0, 119, 255, 0.15)',
                             }}
                           />
                         ))}
@@ -243,7 +244,7 @@ const PluginAnimation = () => {
                     'radial-gradient(ellipse, var(--shadow-core) 0%, rgba(0,0,0,0) 70%)',
                   borderRadius: '50%',
                   filter: 'blur(18px)',
-                  opacity: 0.5,
+                  opacity: 0.55,
                 }}
               />
 
@@ -259,7 +260,7 @@ const PluginAnimation = () => {
                   alt="Bini.js"
                   width={56}
                   height={56}
-                  className="w-14 h-14"
+                  className="h-14 w-14"
                   style={{ transform: 'rotate(-45deg)' }}
                 />
               </div>
@@ -268,14 +269,14 @@ const PluginAnimation = () => {
 
           {/* ── Left wire ─────────────────────────────────────────── */}
           <div
-            className="relative flex-1 h-px flex items-center z-0"
+            className="relative z-0 flex h-px flex-1 items-center"
             style={{ marginLeft: '-28px' }}
           >
             <m.div
               className="h-0.5 w-full origin-left"
               style={{ background: WIRE_GRADIENT_LR }}
               animate={{
-                opacity: isPaused ? [0.6, 0.95, 0.6] : 0.6,
+                opacity: isPaused ? [0.7, 1, 0.7] : 0.75,
               }}
               transition={{
                 opacity: isPaused ? { duration: 1, repeat: Infinity } : { duration: 0.3 },
@@ -285,7 +286,7 @@ const PluginAnimation = () => {
 
           {/* ── Center pill ───────────────────────────────────────── */}
           <div
-            className="relative shrink-0 flex items-center justify-center z-10"
+            className="relative z-10 flex shrink-0 items-center justify-center"
             style={{ height: containerHeight }}
           >
             <m.div
@@ -294,9 +295,9 @@ const PluginAnimation = () => {
               animate={{ x: [0, -10, 0] }}
               transition={{ duration: 0.6, ease: 'easeInOut' }}
             >
-              <div className="relative px-8 py-2 rounded-xl bg-white border border-blue-500/30 dark:bg-[#0a0a12]">
+              <div className="relative rounded-xl border-2 border-blue-500/40 bg-white px-8 py-2 shadow-sm dark:border-blue-500/30 dark:bg-[#0a0a12] dark:shadow-none">
                 <m.span
-                  className="font-mono text-lg lg:text-xl tracking-wider text-neutral-900 dark:text-white"
+                  className="font-mono text-lg tracking-wider text-neutral-900 dark:text-white lg:text-xl"
                   key={middleLabel}
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -310,7 +311,7 @@ const PluginAnimation = () => {
 
           {/* ── Right wire ────────────────────────────────────────── */}
           <div
-            className="relative flex-1 h-px flex items-center z-0"
+            className="relative z-0 flex h-px flex-1 items-center"
             style={{ marginLeft: '-10px', marginRight: '-48px' }}
           >
             <AnimatePresence mode="wait">
@@ -318,10 +319,10 @@ const PluginAnimation = () => {
                 key={`right-${offset}`}
                 className="h-0.5 w-full origin-left"
                 style={{ background: WIRE_GRADIENT_RL }}
-                initial={{ scaleX: 0, opacity: 0.3 }}
+                initial={{ scaleX: 0, opacity: 0.4 }}
                 animate={{
                   scaleX: 1,
-                  opacity: isPaused ? [0.6, 0.95, 0.6] : 0.6,
+                  opacity: isPaused ? [0.7, 1, 0.7] : 0.75,
                 }}
                 exit={{ scaleX: 0, opacity: 0, transition: { duration: 0.2 } }}
                 transition={{
@@ -334,7 +335,7 @@ const PluginAnimation = () => {
 
           {/* ── Right: animated deck ──────────────────────────────── */}
           <div
-            className="relative shrink-0 z-10"
+            className="relative z-10 shrink-0"
             style={{ width: '200px', height: containerHeight, perspective: '800px' }}
           >
             <div
@@ -376,7 +377,11 @@ const PluginAnimation = () => {
                     animate={{
                       borderColor:
                         isMiddlePosition && isPaused
-                          ? ['rgba(0,207,255,0.3)', 'rgba(0,119,255,0.8)', 'rgba(0,207,255,0.3)']
+                          ? [
+                              'rgba(0, 100, 200, 0.45)',
+                              'rgba(0, 85, 200, 0.9)',
+                              'rgba(0, 100, 200, 0.45)',
+                            ]
                           : undefined,
                     }}
                     transition={{
@@ -395,7 +400,7 @@ const PluginAnimation = () => {
                           ? '3px solid transparent'
                           : '2px solid var(--card-border)',
                         backgroundImage: isMiddlePosition
-                          ? 'linear-gradient(var(--card-bg), var(--card-bg)), linear-gradient(135deg, #00CFFF, #0077FF)'
+                          ? 'linear-gradient(var(--card-bg), var(--card-bg)), linear-gradient(135deg, var(--wire-a), var(--wire-b))'
                           : 'none',
                         backgroundOrigin: 'border-box',
                         backgroundClip: 'padding-box, border-box',
@@ -409,6 +414,9 @@ const PluginAnimation = () => {
                         textTransform: 'uppercase',
                         letterSpacing: '1px',
                         textShadow: '0 0 10px var(--card-text-glow)',
+                        boxShadow: isMiddlePosition
+                          ? '0 4px 16px rgba(0, 80, 180, 0.18)'
+                          : '0 2px 8px rgba(15, 23, 42, 0.08)',
                       }}
                     >
                       <span style={{ transform: 'rotate(-90deg)', whiteSpace: 'nowrap' }}>
@@ -425,13 +433,15 @@ const PluginAnimation = () => {
 
       <style>{`
         :root {
-          --chip-top: #f5f7fa;
-          --chip-top-border: 2px solid rgba(0, 0, 0, 0.08);
-          --card-bg: #ffffff;
-          --card-border: rgba(0, 0, 0, 0.08);
+          --chip-top: #e8edf4;
+          --chip-top-border: 2px solid rgba(0, 80, 180, 0.22);
+          --card-bg: #f1f5f9;
+          --card-border: rgba(15, 23, 42, 0.18);
           --card-text: #0f172a;
-          --card-text-glow: rgba(0, 119, 255, 0.18);
-          --shadow-core: rgba(0, 0, 0, 0.12);
+          --card-text-glow: rgba(0, 100, 220, 0.35);
+          --shadow-core: rgba(0, 40, 100, 0.22);
+          --wire-a: #0099cc;
+          --wire-b: #0055cc;
         }
         .dark {
           --chip-top: #1a1a2e;
@@ -441,6 +451,8 @@ const PluginAnimation = () => {
           --card-text: #ffffff;
           --card-text-glow: rgba(0, 207, 255, 0.3);
           --shadow-core: rgba(0, 0, 0, 0.25);
+          --wire-a: #00CFFF;
+          --wire-b: #0077FF;
         }
       `}</style>
     </div>

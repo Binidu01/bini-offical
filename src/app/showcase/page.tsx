@@ -1,122 +1,64 @@
 // src/app/showcase/page.tsx
 import { AnimatePresence, m } from 'framer-motion'
 import { Link2 } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { Header, Footer } from '../../components/Layout'
 
-/* ─── Screenshot (with cache) ─────────────────────────────────────── */
+/* ─── Live preview (scaled iframe) ────────────────────────────────── */
 
-const CACHE_PREFIX = 'bini-showcase-shot:'
-const CACHE_TTL_MS = 1000 * 60 * 60 * 24 * 7 // 7 days
-
-type CachedShot = { url: string; ts: number }
-
-function readCache(key: string): string | null {
-  try {
-    const raw = localStorage.getItem(CACHE_PREFIX + key)
-    if (!raw) return null
-    const parsed: CachedShot = JSON.parse(raw)
-    if (Date.now() - parsed.ts > CACHE_TTL_MS) {
-      localStorage.removeItem(CACHE_PREFIX + key)
-      return null
-    }
-    return parsed.url
-  } catch {
-    return null
-  }
-}
-
-function writeCache(key: string, url: string) {
-  try {
-    localStorage.setItem(CACHE_PREFIX + key, JSON.stringify({ url, ts: Date.now() }))
-  } catch {
-    /* quota exceeded, ignore */
-  }
-}
-
-/**
- * Synchronous screenshot service — returns an image directly with no
- * JSON step and no rate limiting on the free tier. Much more reliable
- * than api.microlink.io's embed endpoint.
- */
-function screenshotUrl(site: string): string {
-  return `https://image.thum.io/get/width/1280/crop/800/noanimate/${site}`
-}
+const PREVIEW_WIDTH = 1280
+const PREVIEW_HEIGHT = 800
 
 function LiveScreenshot({ url, title }: { url: string; title: string }) {
-  const [src, setSrc] = useState<string | null>(null)
-  const [loaded, setLoaded] = useState(false)
-  const [failed, setFailed] = useState(false)
+  const boxRef = useRef<HTMLDivElement>(null)
+  const [scale, setScale] = useState(0.3)
 
   useEffect(() => {
-    let cancelled = false
-    setLoaded(false)
-    setFailed(false)
+    const el = boxRef.current
+    if (!el) return
 
-    const cached = readCache(url)
-    if (cached) {
-      setSrc(cached)
-      return
-    }
+    const update = () => setScale(el.clientWidth / PREVIEW_WIDTH)
+    update()
 
-    if (!cancelled) setSrc(screenshotUrl(url))
+    const ro = new ResizeObserver(update)
+    ro.observe(el)
 
-    return () => {
-      cancelled = true
-    }
-  }, [url])
-
-  const handleLoad = () => {
-    setLoaded(true)
-    setFailed(false)
-    if (src && src.includes('thum.io')) {
-      writeCache(url, src)
-    }
-  }
+    return () => ro.disconnect()
+  }, [])
 
   return (
-    <div className="relative aspect-16/10 w-full overflow-hidden bg-linear-to-br from-neutral-800 to-neutral-900">
-      {/* Fallback layer (behind the image) */}
+    <div
+      ref={boxRef}
+      className="relative aspect-16/10 w-full overflow-hidden bg-linear-to-br from-neutral-100 to-neutral-200 dark:from-neutral-800 dark:to-neutral-900"
+    >
+      {/* Fallback layer (behind the iframe) */}
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 p-6 text-center">
-        <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-neutral-700 bg-neutral-800">
-          <span className="text-lg font-bold text-neutral-300">
+        <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-neutral-300 bg-white dark:border-neutral-700 dark:bg-neutral-800">
+          <span className="text-lg font-bold text-neutral-700 dark:text-neutral-300">
             {title.charAt(0).toUpperCase()}
           </span>
         </div>
-        <span className="text-sm font-medium text-neutral-300">{title}</span>
-        {failed && (
-          <a
-            href={url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-1 text-[11px] text-neutral-500 underline-offset-2 hover:text-neutral-300 hover:underline"
-          >
-            {url.replace(/^https?:\/\//, '').replace(/\/$/, '')}
-          </a>
-        )}
+        <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+          {title}
+        </span>
       </div>
 
-      {/* Spinner while loading */}
-      {!loaded && !failed && (
-        <div className="absolute inset-0 flex items-center justify-center bg-neutral-900/70 backdrop-blur-sm">
-          <div className="h-5 w-5 animate-spin rounded-full border-2 border-neutral-600 border-t-transparent" />
-        </div>
-      )}
-
-      {/* Live screenshot on top when it loads */}
-      {src && !failed && (
-        <img
-          src={src}
-          alt={`${title} preview`}
-          loading="lazy"
-          onLoad={handleLoad}
-          onError={() => setFailed(true)}
-          className={`absolute inset-0 h-full w-full object-cover object-top transition-opacity duration-500 ${
-            loaded ? 'opacity-100' : 'opacity-0'
-          }`}
-        />
-      )}
+      {/* Live site rendered at 1280x800, scaled down to fit the card */}
+      <iframe
+        src={url}
+        title={`${title} preview`}
+        loading="lazy"
+        tabIndex={-1}
+        sandbox="allow-scripts allow-same-origin"
+        style={{
+          width: PREVIEW_WIDTH,
+          height: PREVIEW_HEIGHT,
+          transform: `scale(${scale})`,
+          transformOrigin: 'top left',
+        }}
+        className="pointer-events-none absolute left-0 top-0 border-0 bg-white"
+      />
     </div>
   )
 }
@@ -190,7 +132,7 @@ function ShowcaseCard({
   }
 
   return (
-    <div className="group flex flex-col overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900 transition-colors hover:border-neutral-700 hover:bg-neutral-800">
+    <div className="group flex flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white transition-colors hover:border-neutral-300 hover:bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-700 dark:hover:bg-neutral-800">
       <a
         href={project.url}
         target="_blank"
@@ -205,18 +147,18 @@ function ShowcaseCard({
           href={project.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="mb-1 inline-flex max-w-full items-center gap-1 text-base font-medium text-white transition-colors hover:text-cyan-400"
+          className="mb-1 inline-flex max-w-full items-center gap-1 text-base font-medium text-black transition-colors hover:text-cyan-600 dark:text-white dark:hover:text-cyan-400"
         >
           <span className="truncate">{project.title}</span>
         </a>
-        <p className="text-sm text-neutral-400">{project.category}</p>
+        <p className="text-sm text-neutral-600 dark:text-neutral-400">{project.category}</p>
       </div>
 
       <div className="px-4 pb-4">
         <button
           type="button"
           onClick={copyClone}
-          className="inline-flex w-full items-center justify-center rounded-full border border-neutral-700 bg-black px-6 py-2.5 text-sm font-medium text-white transition-colors hover:border-neutral-600 hover:bg-neutral-950"
+          className="inline-flex w-full items-center justify-center rounded-full border border-neutral-300 bg-white px-6 py-2.5 text-sm font-medium text-black transition-colors hover:border-neutral-400 hover:bg-neutral-100 dark:border-neutral-700 dark:bg-black dark:text-white dark:hover:border-neutral-600 dark:hover:bg-neutral-950"
         >
           Use template
         </button>
@@ -255,10 +197,10 @@ export default function ShowcasePage() {
     <div className="min-h-screen bg-white font-sans antialiased overflow-x-hidden dark:bg-black">
       <Header />
 
-      <section className="bg-black px-4 pt-20 pb-24 sm:px-6 lg:px-8 lg:pt-28 lg:pb-32">
+      <section className="bg-white px-4 pt-20 pb-24 dark:bg-black sm:px-6 lg:px-8 lg:pt-28 lg:pb-32">
         <div className="mx-auto max-w-6xl">
           <div className="mb-12 text-center">
-            <h1 className="whitespace-nowrap text-[clamp(1.5rem,4vw,3rem)] leading-[1.15] font-bold tracking-tight text-white">
+            <h1 className="whitespace-nowrap text-[clamp(1.5rem,4vw,3rem)] leading-[1.15] font-bold tracking-tight text-black dark:text-white">
               Meet beautiful websites built with Bini.js
             </h1>
           </div>
@@ -272,7 +214,9 @@ export default function ShowcasePage() {
                     key={cat}
                     onClick={() => setActiveCategory(cat)}
                     className={`rounded-full px-3.5 py-1.5 text-sm font-medium whitespace-nowrap transition-colors ${
-                      isActive ? 'bg-white text-black' : 'text-neutral-400 hover:text-white'
+                      isActive
+                        ? 'bg-black text-white dark:bg-white dark:text-black'
+                        : 'text-neutral-600 hover:text-black dark:text-neutral-400 dark:hover:text-white'
                     }`}
                   >
                     {cat}

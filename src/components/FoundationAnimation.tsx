@@ -35,7 +35,8 @@ type Side = 'top' | 'right' | 'bottom' | 'left'
 const TOOLS: {
   name: string
   icon: SimpleIconType | null
-  color: string
+  color: string // vivid colour used on dark backgrounds
+  lightColor: string // deeper colour used on light backgrounds (better contrast)
   description: string
   features: string[]
   label: string
@@ -45,6 +46,7 @@ const TOOLS: {
     name: 'Vite 8',
     icon: siVite as SimpleIconType,
     color: '#a855f7',
+    lightColor: '#7e22ce',
     description: 'Next Generation Frontend Tooling',
     features: ['Rust-powered build', 'Instant HMR', 'Optimized bundles'],
     label: 'Bundler',
@@ -54,6 +56,7 @@ const TOOLS: {
     name: 'Hono 4',
     icon: null,
     color: '#f97316',
+    lightColor: '#c2410c',
     description: 'Ultrafast Edge Framework',
     features: ['Edge-ready', 'Middleware', 'Type-safe RPC'],
     label: 'API',
@@ -63,6 +66,7 @@ const TOOLS: {
     name: 'Tauri 2',
     icon: siTauri as SimpleIconType,
     color: '#ffc131',
+    lightColor: '#b45309',
     description: 'Build Smaller, Faster, and More Secure Desktop & Mobile Apps',
     features: ['Native binaries', 'Rust-powered core', 'Web, desktop & mobile'],
     label: 'Native',
@@ -72,12 +76,15 @@ const TOOLS: {
     name: 'React 19',
     icon: siReact as SimpleIconType,
     color: '#00e5ff',
+    lightColor: '#0e7490',
     description: 'The Library for Web & Native',
     features: ['Actions', 'Concurrent rendering', 'Compiler'],
     label: 'UI',
     side: 'left',
   },
 ]
+
+type Tool = (typeof TOOLS)[number]
 
 /* ─── Types ───────────────────────────────────────────────────────── */
 
@@ -109,91 +116,6 @@ function segLen(ax: number, ay: number, bx: number, by: number) {
   return Math.hypot(bx - ax, by - ay)
 }
 
-/* ─── Chip diagonal sweep ─────────────────────────────────────────── */
-
-function ChipSweepLight() {
-  return (
-    <div
-      className="absolute inset-0 pointer-events-none overflow-hidden rounded-2xl"
-      style={{ zIndex: 10 }}
-    >
-      {/* Dark mode: soft white shimmer */}
-      <m.div
-        className="absolute hidden dark:block"
-        style={{
-          width: '220%',
-          height: '220%',
-          top: '-60%',
-          left: '-160%',
-          background:
-            'linear-gradient(125deg, transparent 40%, rgba(255,255,255,0.0) 44%, rgba(255,255,255,0.04) 48%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.04) 52%, rgba(255,255,255,0.0) 56%, transparent 60%)',
-        }}
-        animate={{ left: ['-160%', '120%'] }}
-        transition={{ duration: 3.0, repeat: Infinity, repeatDelay: 2.5, ease: 'easeInOut' }}
-      />
-      {/* Light mode: accent-tinted shimmer, visible on light backgrounds */}
-      <m.div
-        className="absolute block dark:hidden"
-        style={{
-          width: '220%',
-          height: '220%',
-          top: '-60%',
-          left: '-160%',
-          background:
-            'linear-gradient(125deg, transparent 40%, rgba(6,182,212,0.0) 44%, rgba(6,182,212,0.10) 48%, rgba(6,182,212,0.18) 50%, rgba(6,182,212,0.10) 52%, rgba(6,182,212,0.0) 56%, transparent 60%)',
-        }}
-        animate={{ left: ['-160%', '120%'] }}
-        transition={{ duration: 3.0, repeat: Infinity, repeatDelay: 2.5, ease: 'easeInOut' }}
-      />
-    </div>
-  )
-}
-
-/* ─── Continuous light ray ────────────────────────────────────────── */
-
-function LightRay({
-  wire,
-  color,
-  duration = 1.8,
-  delay = 0,
-  glowIntensity = 4,
-}: {
-  wire: WireGeo
-  color: string
-  duration?: number
-  delay?: number
-  glowIntensity?: number
-}) {
-  const pathRef = useRef<SVGPathElement>(null)
-  const [len, setLen] = useState(wire.totalLength || 200)
-
-  useEffect(() => {
-    if (pathRef.current) {
-      const l = pathRef.current.getTotalLength()
-      if (l > 0) setLen(l)
-    }
-  }, [wire.d])
-
-  const dashLen = Math.min(len * 0.22, 60)
-  const travel = len + dashLen * 2
-
-  return (
-    <m.path
-      ref={pathRef}
-      d={wire.d}
-      fill="none"
-      stroke={color}
-      strokeWidth={2.5}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeDasharray={`${dashLen} ${len + dashLen}`}
-      animate={{ strokeDashoffset: [travel, -travel] }}
-      transition={{ duration, delay, repeat: Infinity, ease: 'linear' }}
-      style={{ filter: `drop-shadow(0 0 ${glowIntensity}px ${color})` }}
-    />
-  )
-}
-
 /* ─── Hooks ───────────────────────────────────────────────────────── */
 
 function useIsMobile() {
@@ -223,40 +145,327 @@ function usePrefersReducedMotion() {
   return prefersReduced
 }
 
+/**
+ * Detects dark mode so SVG strokes / accents can swap to higher-contrast
+ * colours in light mode. Works with a `.dark` class on <html> (class strategy)
+ * and falls back to the OS preference when no `.dark` / `.light` class is used.
+ */
+function useIsDark() {
+  const [isDark, setIsDark] = useState(true)
+
+  useEffect(() => {
+    const root = document.documentElement
+    const mq = window.matchMedia('(prefers-color-scheme: dark)')
+
+    const check = () => {
+      if (root.classList.contains('dark')) setIsDark(true)
+      else if (root.classList.contains('light')) setIsDark(false)
+      else setIsDark(mq.matches)
+    }
+
+    check()
+    const mo = new MutationObserver(check)
+    mo.observe(root, { attributes: true, attributeFilter: ['class', 'data-theme'] })
+    mq.addEventListener('change', check)
+    return () => {
+      mo.disconnect()
+      mq.removeEventListener('change', check)
+    }
+  }, [])
+
+  return isDark
+}
+
+const toolColor = (tool: Tool, isDark: boolean) => (isDark ? tool.color : tool.lightColor)
+
+/* ─── Chip diagonal sweep ─────────────────────────────────────────── */
+
+function ChipSweepLight() {
+  return (
+    <div
+      className="absolute inset-0 pointer-events-none overflow-hidden rounded-2xl"
+      style={{ zIndex: 10 }}
+    >
+      {/* Dark mode: soft white shimmer */}
+      <m.div
+        className="absolute hidden dark:block"
+        style={{
+          width: '220%',
+          height: '220%',
+          top: '-60%',
+          left: '-160%',
+          background:
+            'linear-gradient(125deg, transparent 40%, rgba(255,255,255,0.0) 44%, rgba(255,255,255,0.04) 48%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.04) 52%, rgba(255,255,255,0.0) 56%, transparent 60%)',
+        }}
+        animate={{ left: ['-160%', '120%'] }}
+        transition={{ duration: 3.0, repeat: Infinity, repeatDelay: 2.5, ease: 'easeInOut' }}
+      />
+      {/* Light mode: stronger accent-tinted shimmer */}
+      <m.div
+        className="absolute block dark:hidden"
+        style={{
+          width: '220%',
+          height: '220%',
+          top: '-60%',
+          left: '-160%',
+          background:
+            'linear-gradient(125deg, transparent 38%, rgba(8,145,178,0.0) 43%, rgba(8,145,178,0.16) 47%, rgba(8,145,178,0.32) 50%, rgba(8,145,178,0.16) 53%, rgba(8,145,178,0.0) 57%, transparent 62%)',
+        }}
+        animate={{ left: ['-160%', '120%'] }}
+        transition={{ duration: 3.0, repeat: Infinity, repeatDelay: 2.5, ease: 'easeInOut' }}
+      />
+    </div>
+  )
+}
+
+/* ─── Continuous light ray ────────────────────────────────────────── */
+
+function LightRay({
+  wire,
+  color,
+  duration = 1.8,
+  delay = 0,
+  glowIntensity = 4,
+  strokeWidth = 2.5,
+}: {
+  wire: WireGeo
+  color: string
+  duration?: number
+  delay?: number
+  glowIntensity?: number
+  strokeWidth?: number
+}) {
+  const pathRef = useRef<SVGPathElement>(null)
+  const [len, setLen] = useState(wire.totalLength || 200)
+
+  useEffect(() => {
+    if (pathRef.current) {
+      const l = pathRef.current.getTotalLength()
+      if (l > 0) setLen(l)
+    }
+  }, [wire.d])
+
+  const dashLen = Math.min(len * 0.22, 60)
+  const travel = len + dashLen * 2
+
+  return (
+    <m.path
+      ref={pathRef}
+      d={wire.d}
+      fill="none"
+      stroke={color}
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeDasharray={`${dashLen} ${len + dashLen}`}
+      animate={{ strokeDashoffset: [travel, -travel] }}
+      transition={{ duration, delay, repeat: Infinity, ease: 'linear' }}
+      style={{ filter: `drop-shadow(0 0 ${glowIntensity}px ${color})` }}
+    />
+  )
+}
+
+/* ─── Wire layer (shared by desktop + mobile) ─────────────────────── */
+
+function WireLayer({
+  geo,
+  getWire,
+  isMobile,
+  isDark,
+  prefersReducedMotion,
+}: {
+  geo: Geo
+  getWire: (tool: Tool) => WireGeo | null
+  isMobile: boolean
+  isDark: boolean
+  prefersReducedMotion: boolean
+}) {
+  // Light mode gets noticeably stronger wires; dark mode stays close to the original.
+  const glowWidth = isMobile ? 4 : 8
+  const glowOpacity = isDark ? 0.06 : 0.14
+  const lineWidth = isMobile ? (isDark ? 0.8 : 1.2) : isDark ? 1 : 1.6
+  const startOpacity = isDark ? 0.1 : 0.35
+  const endOpacity = isDark ? 0.6 : 1
+  const dotR = isMobile ? 1.8 : 2.5
+  const startDot = isDark ? 0.35 : 0.7
+  const endDot = isDark ? 0.55 : 0.95
+
+  return (
+    <svg
+      className="absolute inset-0 pointer-events-none"
+      width={geo.w}
+      height={geo.h}
+      style={{ zIndex: 1 }}
+    >
+      <defs>
+        {TOOLS.map((tool, i) => {
+          const c = toolColor(tool, isDark)
+          return (
+            <linearGradient
+              key={i}
+              id={`wg${i}`}
+              x1={tool.side === 'right' ? '1' : '0'}
+              y1={tool.side === 'top' ? '1' : '0'}
+              x2={tool.side === 'left' ? '1' : '0'}
+              y2={tool.side === 'bottom' ? '1' : '0'}
+            >
+              <stop offset="0%" stopColor={c} stopOpacity={startOpacity} />
+              <stop offset="100%" stopColor={c} stopOpacity={endOpacity} />
+            </linearGradient>
+          )
+        })}
+      </defs>
+
+      {TOOLS.map((tool, i) => {
+        const w = getWire(tool)
+        if (!w) return null
+        const c = toolColor(tool, isDark)
+        return (
+          <g key={i}>
+            <path
+              d={w.d}
+              fill="none"
+              stroke={c}
+              strokeWidth={glowWidth}
+              strokeOpacity={glowOpacity}
+              strokeLinecap="round"
+            />
+            <path
+              d={w.d}
+              fill="none"
+              stroke={`url(#wg${i})`}
+              strokeWidth={lineWidth}
+              strokeLinecap="round"
+            />
+            <circle cx={w.sx} cy={w.sy} r={dotR} fill={c} opacity={startDot} />
+            <circle cx={w.ex} cy={w.ey} r={dotR} fill={c} opacity={endDot} />
+          </g>
+        )
+      })}
+
+      {!prefersReducedMotion &&
+        TOOLS.map((tool, i) => {
+          const w = getWire(tool)
+          if (!w) return null
+          return (
+            <LightRay
+              key={i}
+              wire={w}
+              color={toolColor(tool, isDark)}
+              duration={1.6 + i * 0.25}
+              delay={i * 0.5}
+              glowIntensity={isMobile ? 2 : isDark ? 4 : 3}
+              strokeWidth={isDark ? 2.5 : 3}
+            />
+          )
+        })}
+    </svg>
+  )
+}
+
+/* ─── Pin ticks around the chip ───────────────────────────────────── */
+
+function Ticks({
+  vertical,
+  count,
+  accent,
+  duration,
+  delayStep,
+  delayOffset = 0,
+  prefersReducedMotion,
+  small,
+}: {
+  vertical: boolean
+  count: number
+  accent: string
+  duration: number
+  delayStep: number
+  delayOffset?: number
+  prefersReducedMotion: boolean
+  small: boolean
+}) {
+  const mid = Math.floor(count / 2)
+
+  const sizeClass = vertical ? (small ? 'w-px h-2' : 'w-px h-4') : small ? 'h-px w-2' : 'h-px w-4'
+  // Slightly thicker ticks in light mode so they actually read on white
+  const thick = vertical ? 'w-[1.5px] dark:w-px' : 'h-[1.5px] dark:h-px'
+  const sizeCls = vertical ? sizeClass.replace('w-px', thick) : sizeClass.replace('h-px', thick)
+
+  const containerClass = vertical
+    ? small
+      ? 'flex gap-0.5'
+      : 'flex gap-1.5'
+    : small
+      ? 'flex flex-col gap-0.5'
+      : 'flex flex-col gap-2'
+
+  return (
+    <div className={containerClass}>
+      {[...Array(count)].map((_, i) => (
+        <m.div
+          key={i}
+          className={`${sizeCls} rounded-full bg-neutral-500 dark:bg-slate-600`}
+          style={i === mid ? { background: accent } : undefined}
+          animate={
+            prefersReducedMotion
+              ? {}
+              : { opacity: i === mid ? [0.5, 1, 0.5] : [0.25, 0.55, 0.25] }
+          }
+          transition={
+            prefersReducedMotion
+              ? {}
+              : { duration, repeat: Infinity, delay: i * delayStep + delayOffset }
+          }
+        />
+      ))}
+    </div>
+  )
+}
+
 /* ─── Chip (shared by desktop + mobile) ───────────────────────────── */
 
 const Chip = React.forwardRef<
   HTMLDivElement,
-  { size: 'sm' | 'lg'; prefersReducedMotion: boolean }
->(({ size, prefersReducedMotion }, ref) => {
+  { size: 'sm' | 'lg'; prefersReducedMotion: boolean; isDark: boolean }
+>(({ size, prefersReducedMotion, isDark }, ref) => {
   const isLarge = size === 'lg'
+  const c = (i: number) => toolColor(TOOLS[i], isDark)
 
   return (
     <m.div
       ref={ref}
       className={
-        isLarge
-          ? 'relative w-32 h-32 rounded-2xl flex items-center justify-center overflow-hidden bg-linear-to-br from-white to-neutral-50 dark:from-[#1e293b] dark:to-[#0f172a]'
-          : 'relative w-14 h-14 rounded-lg flex items-center justify-center overflow-hidden bg-linear-to-br from-white to-neutral-50 dark:from-[#1e293b] dark:to-[#0f172a]'
+        (isLarge
+          ? 'relative w-32 h-32 rounded-2xl '
+          : 'relative w-14 h-14 rounded-lg ') +
+        'flex items-center justify-center overflow-hidden border border-slate-400/60 dark:border-slate-400/15 ' +
+        'bg-linear-to-br from-white to-slate-200 dark:from-[#1e293b] dark:to-[#0f172a]'
       }
       style={{
-        border: '1px solid rgba(148,163,184,0.15)',
-        boxShadow: isLarge
-          ? '0 20px 40px rgba(0,0,0,0.12)'
-          : '0 8px 16px rgba(0,0,0,0.12)',
+        boxShadow: isDark
+          ? isLarge
+            ? '0 20px 40px rgba(0,0,0,0.12)'
+            : '0 8px 16px rgba(0,0,0,0.12)'
+          : isLarge
+            ? '0 0 0 1px rgba(15,23,42,0.06), 0 18px 36px rgba(15,23,42,0.22)'
+            : '0 0 0 1px rgba(15,23,42,0.06), 0 8px 16px rgba(15,23,42,0.2)',
       }}
     >
       {!prefersReducedMotion && <ChipSweepLight />}
 
-      <svg className="absolute inset-0 w-full h-full opacity-[0.15]" viewBox="0 0 128 128">
-        <line x1="64" y1="0" x2="64" y2="28" stroke="#a855f7" strokeWidth="1.5" />
-        <circle cx="64" cy="28" r="2" fill="#a855f7" />
-        <line x1="128" y1="64" x2="100" y2="64" stroke="#f97316" strokeWidth="1.5" />
-        <circle cx="100" cy="64" r="2" fill="#f97316" />
-        <line x1="64" y1="128" x2="64" y2="100" stroke="#ffc131" strokeWidth="1.5" />
-        <circle cx="64" cy="100" r="2" fill="#ffc131" />
-        <line x1="0" y1="64" x2="28" y2="64" stroke="#00e5ff" strokeWidth="1.5" />
-        <circle cx="28" cy="64" r="2" fill="#00e5ff" />
+      <svg
+        className="absolute inset-0 w-full h-full"
+        viewBox="0 0 128 128"
+        style={{ opacity: isDark ? 0.15 : 0.7 }}
+      >
+        <line x1="64" y1="0" x2="64" y2="28" stroke={c(0)} strokeWidth="1.5" />
+        <circle cx="64" cy="28" r="2" fill={c(0)} />
+        <line x1="128" y1="64" x2="100" y2="64" stroke={c(1)} strokeWidth="1.5" />
+        <circle cx="100" cy="64" r="2" fill={c(1)} />
+        <line x1="64" y1="128" x2="64" y2="100" stroke={c(2)} strokeWidth="1.5" />
+        <circle cx="64" cy="100" r="2" fill={c(2)} />
+        <line x1="0" y1="64" x2="28" y2="64" stroke={c(3)} strokeWidth="1.5" />
+        <circle cx="28" cy="64" r="2" fill={c(3)} />
         <rect
           x="44"
           y="44"
@@ -264,8 +473,8 @@ const Chip = React.forwardRef<
           height="40"
           rx="4"
           fill="none"
-          stroke="rgba(148,163,184,0.4)"
-          strokeWidth="0.75"
+          stroke={isDark ? 'rgba(148,163,184,0.4)' : 'rgba(71,85,105,0.65)'}
+          strokeWidth={isDark ? 0.75 : 1}
         />
       </svg>
 
@@ -292,6 +501,7 @@ export function FoundationAnimation() {
 
   const [geo, setGeo] = useState<Geo | null>(null)
   const isMobile = useIsMobile()
+  const isDark = useIsDark()
   const prefersReducedMotion = usePrefersReducedMotion()
 
   useEffect(() => {
@@ -335,10 +545,10 @@ export function FoundationAnimation() {
       ro.disconnect()
       clearTimeout(t)
     }
-  }, [])
+  }, [isMobile])
 
   const getWire = useCallback(
-    (tool: (typeof TOOLS)[number]): WireGeo | null => {
+    (tool: Tool): WireGeo | null => {
       if (!geo) return null
       const card = geo.cardPoints[tool.name]
       if (!card) return null
@@ -363,239 +573,12 @@ export function FoundationAnimation() {
     [geo]
   )
 
-  // ── Mobile ──────────────────────────────────────────────────────
-  if (isMobile) {
-    return (
-      <div
-        ref={containerRef}
-        className="relative w-full h-full select-none overflow-hidden"
-        style={{ minHeight: '100%' }}
-      >
-        {geo && (
-          <svg
-            className="absolute inset-0 pointer-events-none"
-            width={geo.w}
-            height={geo.h}
-            style={{ zIndex: 1 }}
-          >
-            <defs>
-              {TOOLS.map((tool, i) => (
-                <linearGradient
-                  key={i}
-                  id={`wg${i}`}
-                  x1={
-                    tool.side === 'top'
-                      ? '0'
-                      : tool.side === 'bottom'
-                        ? '0'
-                        : tool.side === 'left'
-                          ? '0'
-                          : '1'
-                  }
-                  y1={tool.side === 'top' ? '1' : tool.side === 'bottom' ? '0' : '0'}
-                  x2={
-                    tool.side === 'top'
-                      ? '0'
-                      : tool.side === 'bottom'
-                        ? '0'
-                        : tool.side === 'left'
-                          ? '1'
-                          : '0'
-                  }
-                  y2={tool.side === 'top' ? '0' : tool.side === 'bottom' ? '1' : '0'}
-                >
-                  <stop offset="0%" stopColor={tool.color} stopOpacity="0.08" />
-                  <stop offset="100%" stopColor={tool.color} stopOpacity="0.55" />
-                </linearGradient>
-              ))}
-            </defs>
+  const CardComponent = isMobile ? MiniToolCard : ToolCard
+  const refOf = (name: string) => cardRefs.current[name] as React.RefObject<HTMLDivElement>
+  const accent = (i: number) => toolColor(TOOLS[i], isDark)
 
-            {TOOLS.map((tool, i) => {
-              const w = getWire(tool)
-              if (!w) return null
-              return (
-                <g key={i}>
-                  <path
-                    d={w.d}
-                    fill="none"
-                    stroke={tool.color}
-                    strokeWidth={3}
-                    strokeOpacity={0.04}
-                    strokeLinecap="round"
-                  />
-                  <path
-                    d={w.d}
-                    fill="none"
-                    stroke={`url(#wg${i})`}
-                    strokeWidth={0.8}
-                    strokeLinecap="round"
-                  />
-                  <circle cx={w.sx} cy={w.sy} r={1.5} fill={tool.color} opacity={0.3} />
-                  <circle cx={w.ex} cy={w.ey} r={1.5} fill={tool.color} opacity={0.5} />
-                </g>
-              )
-            })}
+  const tickCount = isMobile ? 3 : 5
 
-            {!prefersReducedMotion &&
-              TOOLS.map((tool, i) => {
-                const w = getWire(tool)
-                if (!w) return null
-                return (
-                  <LightRay
-                    key={i}
-                    wire={w}
-                    color={tool.color}
-                    duration={1.6 + i * 0.25}
-                    delay={i * 0.5}
-                    glowIntensity={2}
-                  />
-                )
-              })}
-          </svg>
-        )}
-
-        <div
-          className="relative w-full h-full grid"
-          style={{
-            zIndex: 2,
-            gridTemplateColumns: '1fr auto 1fr',
-            gridTemplateRows: 'auto auto auto',
-            columnGap: 'clamp(12px, 8vw, 24px)',
-            rowGap: 'clamp(16px, 6vh, 28px)',
-            alignItems: 'center',
-            justifyItems: 'center',
-            padding: 'clamp(8px, 2vw, 16px)',
-            height: '100%',
-            minHeight: '300px',
-          }}
-        >
-          <div style={{ gridColumn: 2, gridRow: 1 }}>
-            <MiniToolCard
-              tool={TOOLS[0]}
-              cardRef={cardRefs.current['Vite 8'] as React.RefObject<HTMLDivElement>}
-              delay={0.1}
-            />
-          </div>
-
-          <div style={{ gridColumn: 1, gridRow: 2 }}>
-            <MiniToolCard
-              tool={TOOLS[3]}
-              cardRef={cardRefs.current['React 19'] as React.RefObject<HTMLDivElement>}
-              delay={0.2}
-            />
-          </div>
-
-          <m.div
-            initial={{ opacity: 0, scale: 0.88 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, ease: [0.34, 1.56, 0.64, 1] }}
-            className="flex flex-col items-center"
-            style={{ gridColumn: 2, gridRow: 2 }}
-          >
-            <div className="flex gap-0.5 mb-0.5">
-              {[...Array(3)].map((_, i) => (
-                <m.div
-                  key={i}
-                  className="w-px h-2 rounded-full bg-neutral-300 dark:bg-slate-600"
-                  style={i === 1 ? { background: '#a855f7' } : undefined}
-                  animate={
-                    prefersReducedMotion
-                      ? {}
-                      : { opacity: i === 1 ? [0.4, 0.8, 0.4] : [0.15, 0.4, 0.15] }
-                  }
-                  transition={
-                    prefersReducedMotion ? {} : { duration: 2.5, repeat: Infinity, delay: i * 0.13 }
-                  }
-                />
-              ))}
-            </div>
-
-            <div className="relative flex items-center">
-              <div className="flex flex-col gap-0.5 mr-1">
-                {[...Array(3)].map((_, i) => (
-                  <m.div
-                    key={i}
-                    className="h-px w-2 rounded-full bg-neutral-300 dark:bg-slate-600"
-                    style={i === 1 ? { background: '#00e5ff' } : undefined}
-                    animate={
-                      prefersReducedMotion
-                        ? {}
-                        : { opacity: i === 1 ? [0.4, 0.8, 0.4] : [0.15, 0.4, 0.15] }
-                    }
-                    transition={
-                      prefersReducedMotion
-                        ? {}
-                        : { duration: 2.2, repeat: Infinity, delay: i * 0.18 }
-                    }
-                  />
-                ))}
-              </div>
-
-              <Chip ref={chipRef} size="sm" prefersReducedMotion={prefersReducedMotion} />
-
-              <div className="flex flex-col gap-0.5 ml-1">
-                {[...Array(3)].map((_, i) => (
-                  <m.div
-                    key={i}
-                    className="h-px w-2 rounded-full bg-neutral-300 dark:bg-slate-600"
-                    style={i === 1 ? { background: '#f97316' } : undefined}
-                    animate={
-                      prefersReducedMotion
-                        ? {}
-                        : { opacity: i === 1 ? [0.4, 0.8, 0.4] : [0.15, 0.4, 0.15] }
-                    }
-                    transition={
-                      prefersReducedMotion
-                        ? {}
-                        : { duration: 2.2, repeat: Infinity, delay: i * 0.18 + 0.5 }
-                    }
-                  />
-                ))}
-              </div>
-            </div>
-
-            <div className="flex gap-0.5 mt-0.5">
-              {[...Array(3)].map((_, i) => (
-                <m.div
-                  key={i}
-                  className="w-px h-2 rounded-full bg-neutral-300 dark:bg-slate-600"
-                  style={i === 1 ? { background: '#ffc131' } : undefined}
-                  animate={
-                    prefersReducedMotion
-                      ? {}
-                      : { opacity: i === 1 ? [0.4, 0.8, 0.4] : [0.15, 0.4, 0.15] }
-                  }
-                  transition={
-                    prefersReducedMotion
-                      ? {}
-                      : { duration: 2.5, repeat: Infinity, delay: i * 0.13 + 0.9 }
-                  }
-                />
-              ))}
-            </div>
-          </m.div>
-
-          <div style={{ gridColumn: 3, gridRow: 2 }}>
-            <MiniToolCard
-              tool={TOOLS[1]}
-              cardRef={cardRefs.current['Hono 4'] as React.RefObject<HTMLDivElement>}
-              delay={0.15}
-            />
-          </div>
-
-          <div style={{ gridColumn: 2, gridRow: 3 }}>
-            <MiniToolCard
-              tool={TOOLS[2]}
-              cardRef={cardRefs.current['Tauri 2'] as React.RefObject<HTMLDivElement>}
-              delay={0.25}
-            />
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  // ── Desktop ─────────────────────────────────────────────────────
   return (
     <div
       ref={containerRef}
@@ -603,119 +586,56 @@ export function FoundationAnimation() {
       style={{ minHeight: '100%' }}
     >
       {geo && (
-        <svg
-          className="absolute inset-0 pointer-events-none"
-          width={geo.w}
-          height={geo.h}
-          style={{ zIndex: 1 }}
-        >
-          <defs>
-            {TOOLS.map((tool, i) => (
-              <linearGradient
-                key={i}
-                id={`wg${i}`}
-                x1={
-                  tool.side === 'top'
-                    ? '0'
-                    : tool.side === 'bottom'
-                      ? '0'
-                      : tool.side === 'left'
-                        ? '0'
-                        : '1'
-                }
-                y1={tool.side === 'top' ? '1' : tool.side === 'bottom' ? '0' : '0'}
-                x2={
-                  tool.side === 'top'
-                    ? '0'
-                    : tool.side === 'bottom'
-                      ? '0'
-                      : tool.side === 'left'
-                        ? '1'
-                        : '0'
-                }
-                y2={tool.side === 'top' ? '0' : tool.side === 'bottom' ? '1' : '0'}
-              >
-                <stop offset="0%" stopColor={tool.color} stopOpacity="0.08" />
-                <stop offset="100%" stopColor={tool.color} stopOpacity="0.55" />
-              </linearGradient>
-            ))}
-          </defs>
-
-          {TOOLS.map((tool, i) => {
-            const w = getWire(tool)
-            if (!w) return null
-            return (
-              <g key={i}>
-                <path
-                  d={w.d}
-                  fill="none"
-                  stroke={tool.color}
-                  strokeWidth={8}
-                  strokeOpacity={0.04}
-                  strokeLinecap="round"
-                />
-                <path
-                  d={w.d}
-                  fill="none"
-                  stroke={`url(#wg${i})`}
-                  strokeWidth={1}
-                  strokeLinecap="round"
-                />
-                <circle cx={w.sx} cy={w.sy} r={2} fill={tool.color} opacity={0.3} />
-                <circle cx={w.ex} cy={w.ey} r={2} fill={tool.color} opacity={0.5} />
-              </g>
-            )
-          })}
-
-          {!prefersReducedMotion &&
-            TOOLS.map((tool, i) => {
-              const w = getWire(tool)
-              if (!w) return null
-              return (
-                <LightRay
-                  key={i}
-                  wire={w}
-                  color={tool.color}
-                  duration={1.6 + i * 0.25}
-                  delay={i * 0.5}
-                  glowIntensity={4}
-                />
-              )
-            })}
-        </svg>
+        <WireLayer
+          geo={geo}
+          getWire={getWire}
+          isMobile={isMobile}
+          isDark={isDark}
+          prefersReducedMotion={prefersReducedMotion}
+        />
       )}
 
       <div
         className="relative w-full h-full grid"
-        style={{
-          zIndex: 2,
-          gridTemplateColumns: '1fr auto 1fr',
-          gridTemplateRows: 'auto auto auto',
-          columnGap: 'clamp(48px, 12vw, 120px)',
-          rowGap: 'clamp(48px, 10vh, 80px)',
-          alignItems: 'center',
-          justifyItems: 'center',
-          padding: '20px',
-          height: '100%',
-          minHeight: '500px',
-        }}
+        style={
+          isMobile
+            ? {
+                zIndex: 2,
+                gridTemplateColumns: '1fr auto 1fr',
+                gridTemplateRows: 'auto auto auto',
+                columnGap: 'clamp(12px, 8vw, 24px)',
+                rowGap: 'clamp(16px, 6vh, 28px)',
+                alignItems: 'center',
+                justifyItems: 'center',
+                padding: 'clamp(8px, 2vw, 16px)',
+                height: '100%',
+                minHeight: '300px',
+              }
+            : {
+                zIndex: 2,
+                gridTemplateColumns: '1fr auto 1fr',
+                gridTemplateRows: 'auto auto auto',
+                columnGap: 'clamp(48px, 12vw, 120px)',
+                rowGap: 'clamp(48px, 10vh, 80px)',
+                alignItems: 'center',
+                justifyItems: 'center',
+                padding: '20px',
+                height: '100%',
+                minHeight: '500px',
+              }
+        }
       >
+        {/* Top — Vite */}
         <div style={{ gridColumn: 2, gridRow: 1 }}>
-          <ToolCard
-            tool={TOOLS[0]}
-            cardRef={cardRefs.current['Vite 8'] as React.RefObject<HTMLDivElement>}
-            delay={0.1}
-          />
+          <CardComponent tool={TOOLS[0]} cardRef={refOf('Vite 8')} delay={0.1} isDark={isDark} />
         </div>
 
+        {/* Left — React */}
         <div style={{ gridColumn: 1, gridRow: 2 }}>
-          <ToolCard
-            tool={TOOLS[3]}
-            cardRef={cardRefs.current['React 19'] as React.RefObject<HTMLDivElement>}
-            delay={0.2}
-          />
+          <CardComponent tool={TOOLS[3]} cardRef={refOf('React 19')} delay={0.2} isDark={isDark} />
         </div>
 
+        {/* Center — chip */}
         <m.div
           initial={{ opacity: 0, scale: 0.88 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -723,101 +643,74 @@ export function FoundationAnimation() {
           className="flex flex-col items-center"
           style={{ gridColumn: 2, gridRow: 2 }}
         >
-          <div className="flex gap-1.5 mb-1.5">
-            {[...Array(5)].map((_, i) => (
-              <m.div
-                key={i}
-                className="w-px h-4 rounded-full bg-neutral-300 dark:bg-slate-600"
-                style={i === 2 ? { background: '#a855f7' } : undefined}
-                animate={
-                  prefersReducedMotion
-                    ? {}
-                    : { opacity: i === 2 ? [0.4, 0.8, 0.4] : [0.15, 0.4, 0.15] }
-                }
-                transition={
-                  prefersReducedMotion ? {} : { duration: 2.5, repeat: Infinity, delay: i * 0.13 }
-                }
-              />
-            ))}
+          <div className={isMobile ? 'mb-0.5' : 'mb-1.5'}>
+            <Ticks
+              vertical
+              small={isMobile}
+              count={tickCount}
+              accent={accent(0)}
+              duration={2.5}
+              delayStep={0.13}
+              prefersReducedMotion={prefersReducedMotion}
+            />
           </div>
 
           <div className="relative flex items-center">
-            <div className="flex flex-col gap-2 mr-2">
-              {[...Array(5)].map((_, i) => (
-                <m.div
-                  key={i}
-                  className="h-px w-4 rounded-full bg-neutral-300 dark:bg-slate-600"
-                  style={i === 2 ? { background: '#00e5ff' } : undefined}
-                  animate={
-                    prefersReducedMotion
-                      ? {}
-                      : { opacity: i === 2 ? [0.4, 0.8, 0.4] : [0.15, 0.4, 0.15] }
-                  }
-                  transition={
-                    prefersReducedMotion ? {} : { duration: 2.2, repeat: Infinity, delay: i * 0.18 }
-                  }
-                />
-              ))}
+            <div className={isMobile ? 'mr-1' : 'mr-2'}>
+              <Ticks
+                vertical={false}
+                small={isMobile}
+                count={tickCount}
+                accent={accent(3)}
+                duration={2.2}
+                delayStep={0.18}
+                prefersReducedMotion={prefersReducedMotion}
+              />
             </div>
 
-            <Chip ref={chipRef} size="lg" prefersReducedMotion={prefersReducedMotion} />
+            <Chip
+              ref={chipRef}
+              size={isMobile ? 'sm' : 'lg'}
+              prefersReducedMotion={prefersReducedMotion}
+              isDark={isDark}
+            />
 
-            <div className="flex flex-col gap-2 ml-2">
-              {[...Array(5)].map((_, i) => (
-                <m.div
-                  key={i}
-                  className="h-px w-4 rounded-full bg-neutral-300 dark:bg-slate-600"
-                  style={i === 2 ? { background: '#f97316' } : undefined}
-                  animate={
-                    prefersReducedMotion
-                      ? {}
-                      : { opacity: i === 2 ? [0.4, 0.8, 0.4] : [0.15, 0.4, 0.15] }
-                  }
-                  transition={
-                    prefersReducedMotion
-                      ? {}
-                      : { duration: 2.2, repeat: Infinity, delay: i * 0.18 + 0.5 }
-                  }
-                />
-              ))}
+            <div className={isMobile ? 'ml-1' : 'ml-2'}>
+              <Ticks
+                vertical={false}
+                small={isMobile}
+                count={tickCount}
+                accent={accent(1)}
+                duration={2.2}
+                delayStep={0.18}
+                delayOffset={0.5}
+                prefersReducedMotion={prefersReducedMotion}
+              />
             </div>
           </div>
 
-          <div className="flex gap-1.5 mt-1.5">
-            {[...Array(5)].map((_, i) => (
-              <m.div
-                key={i}
-                className="w-px h-4 rounded-full bg-neutral-300 dark:bg-slate-600"
-                style={i === 2 ? { background: '#ffc131' } : undefined}
-                animate={
-                  prefersReducedMotion
-                    ? {}
-                    : { opacity: i === 2 ? [0.4, 0.8, 0.4] : [0.15, 0.4, 0.15] }
-                }
-                transition={
-                  prefersReducedMotion
-                    ? {}
-                    : { duration: 2.5, repeat: Infinity, delay: i * 0.13 + 0.9 }
-                }
-              />
-            ))}
+          <div className={isMobile ? 'mt-0.5' : 'mt-1.5'}>
+            <Ticks
+              vertical
+              small={isMobile}
+              count={tickCount}
+              accent={accent(2)}
+              duration={2.5}
+              delayStep={0.13}
+              delayOffset={0.9}
+              prefersReducedMotion={prefersReducedMotion}
+            />
           </div>
         </m.div>
 
+        {/* Right — Hono */}
         <div style={{ gridColumn: 3, gridRow: 2 }}>
-          <ToolCard
-            tool={TOOLS[1]}
-            cardRef={cardRefs.current['Hono 4'] as React.RefObject<HTMLDivElement>}
-            delay={0.15}
-          />
+          <CardComponent tool={TOOLS[1]} cardRef={refOf('Hono 4')} delay={0.15} isDark={isDark} />
         </div>
 
+        {/* Bottom — Tauri */}
         <div style={{ gridColumn: 2, gridRow: 3 }}>
-          <ToolCard
-            tool={TOOLS[2]}
-            cardRef={cardRefs.current['Tauri 2'] as React.RefObject<HTMLDivElement>}
-            delay={0.25}
-          />
+          <CardComponent tool={TOOLS[2]} cardRef={refOf('Tauri 2')} delay={0.25} isDark={isDark} />
         </div>
       </div>
     </div>
@@ -830,11 +723,15 @@ function ToolCard({
   tool,
   cardRef,
   delay,
+  isDark,
 }: {
-  tool: (typeof TOOLS)[number]
+  tool: Tool
   cardRef: React.RefObject<HTMLDivElement>
   delay: number
+  isDark: boolean
 }) {
+  const c = toolColor(tool, isDark)
+
   const initialOffset =
     tool.side === 'top'
       ? { y: -18 }
@@ -860,16 +757,21 @@ function ToolCard({
       animate={{ opacity: 1, x: 0, y: 0 }}
       transition={{ delay, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
       whileHover={{ ...hoverOffset, transition: { duration: 0.18 } }}
-      className="w-48 sm:w-52 rounded-2xl p-5 flex flex-col gap-3 cursor-default bg-linear-to-br from-white to-neutral-50 dark:from-[#151f2e] dark:to-[#0d1422]"
+      className="w-48 sm:w-52 rounded-2xl p-5 flex flex-col gap-3 cursor-default bg-linear-to-br from-white to-slate-100 dark:from-[#151f2e] dark:to-[#0d1422]"
       style={{
-        border: `1px solid ${tool.color}33`,
-        boxShadow: `0 0 0 1px ${tool.color}14, 0 8px 28px rgba(0,0,0,0.08)`,
+        border: `1px solid ${c}${isDark ? '33' : '80'}`,
+        boxShadow: isDark
+          ? `0 0 0 1px ${c}14, 0 8px 28px rgba(0,0,0,0.08)`
+          : `0 0 0 1px ${c}22, 0 10px 28px rgba(15,23,42,0.16)`,
       }}
     >
       <div className="flex items-center gap-3">
         <div
           className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
-          style={{ background: `${tool.color}12`, border: `1px solid ${tool.color}22` }}
+          style={{
+            background: `${c}${isDark ? '12' : '1f'}`,
+            border: `1px solid ${c}${isDark ? '22' : '55'}`,
+          }}
         >
           {tool.name === 'Hono 4' ? (
             <HonoLogo size={20} />
@@ -879,27 +781,27 @@ function ToolCard({
               viewBox="0 0 24 24"
               width={20}
               height={20}
-              fill={tool.color}
+              fill={c}
               dangerouslySetInnerHTML={{ __html: tool.icon.svg }}
             />
           ) : null}
         </div>
         <div>
-          <h3 className="text-[13px] font-semibold leading-tight text-neutral-900 dark:text-white/90">
+          <h3 className="text-[13px] font-semibold leading-tight text-neutral-950 dark:text-white/90">
             {tool.name}
           </h3>
           <span
-            className="text-[10px] font-medium tracking-wide uppercase"
-            style={{ color: tool.color, opacity: 0.85 }}
+            className="text-[10px] font-semibold tracking-wide uppercase"
+            style={{ color: c, opacity: isDark ? 0.85 : 1 }}
           >
             {tool.label}
           </span>
         </div>
       </div>
 
-      <div className="h-px bg-neutral-200 dark:bg-slate-700/60" />
+      <div className="h-px bg-neutral-300 dark:bg-slate-700/60" />
 
-      <p className="text-[11.5px] leading-relaxed text-neutral-600 dark:text-slate-400">
+      <p className="text-[11.5px] leading-relaxed text-neutral-700 dark:text-slate-400">
         {tool.description}
       </p>
 
@@ -907,10 +809,10 @@ function ToolCard({
         {tool.features.map((f, fi) => (
           <div key={fi} className="flex items-center gap-2">
             <div
-              className="w-1 h-1 rounded-full shrink-0"
-              style={{ background: tool.color, opacity: 0.7 }}
+              className="w-1.5 h-1.5 dark:w-1 dark:h-1 rounded-full shrink-0"
+              style={{ background: c, opacity: isDark ? 0.7 : 1 }}
             />
-            <span className="text-[11px] text-neutral-500 dark:text-slate-500">{f}</span>
+            <span className="text-[11px] text-neutral-700 dark:text-slate-500">{f}</span>
           </div>
         ))}
       </div>
@@ -924,11 +826,15 @@ function MiniToolCard({
   tool,
   cardRef,
   delay,
+  isDark,
 }: {
-  tool: (typeof TOOLS)[number]
+  tool: Tool
   cardRef: React.RefObject<HTMLDivElement>
   delay: number
+  isDark: boolean
 }) {
+  const c = toolColor(tool, isDark)
+
   const initialOffset =
     tool.side === 'top'
       ? { y: -8 }
@@ -944,15 +850,20 @@ function MiniToolCard({
       initial={{ opacity: 0, ...initialOffset }}
       animate={{ opacity: 1, x: 0, y: 0 }}
       transition={{ delay, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-      className="rounded-lg p-1.5 flex items-center gap-1.5 cursor-default bg-linear-to-br from-white to-neutral-50 dark:from-[#151f2e] dark:to-[#0d1422]"
+      className="rounded-lg p-1.5 flex items-center gap-1.5 cursor-default bg-linear-to-br from-white to-slate-100 dark:from-[#151f2e] dark:to-[#0d1422]"
       style={{
-        border: `1px solid ${tool.color}33`,
-        boxShadow: `0 0 0 1px ${tool.color}14, 0 4px 12px rgba(0,0,0,0.08)`,
+        border: `1px solid ${c}${isDark ? '33' : '80'}`,
+        boxShadow: isDark
+          ? `0 0 0 1px ${c}14, 0 4px 12px rgba(0,0,0,0.08)`
+          : `0 0 0 1px ${c}22, 0 4px 12px rgba(15,23,42,0.16)`,
       }}
     >
       <div
         className="w-5 h-5 rounded-md flex items-center justify-center shrink-0"
-        style={{ background: `${tool.color}12`, border: `1px solid ${tool.color}22` }}
+        style={{
+          background: `${c}${isDark ? '12' : '1f'}`,
+          border: `1px solid ${c}${isDark ? '22' : '55'}`,
+        }}
       >
         {tool.name === 'Hono 4' ? (
           <HonoLogo size={12} />
@@ -962,18 +873,18 @@ function MiniToolCard({
             viewBox="0 0 24 24"
             width={12}
             height={12}
-            fill={tool.color}
+            fill={c}
             dangerouslySetInnerHTML={{ __html: tool.icon.svg }}
           />
         ) : null}
       </div>
       <div className="flex flex-col min-w-0">
-        <h3 className="text-[9px] font-semibold leading-tight text-neutral-900 dark:text-white/90">
+        <h3 className="text-[9px] font-semibold leading-tight text-neutral-950 dark:text-white/90">
           {tool.name}
         </h3>
         <span
-          className="text-[7px] font-medium tracking-wide uppercase"
-          style={{ color: tool.color, opacity: 0.85 }}
+          className="text-[7px] font-semibold tracking-wide uppercase"
+          style={{ color: c, opacity: isDark ? 0.85 : 1 }}
         >
           {tool.label}
         </span>
