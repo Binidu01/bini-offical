@@ -437,31 +437,6 @@ const PluginAnimation = () => {
           </div>
         </div>
       </div>
-
-      <style>{`
-        :root {
-          --chip-top: #e8edf4;
-          --chip-top-border: 2px solid rgba(0, 80, 180, 0.22);
-          --card-bg: #f1f5f9;
-          --card-border: rgba(15, 23, 42, 0.18);
-          --card-text: #0f172a;
-          --card-text-glow: rgba(0, 100, 220, 0.35);
-          --shadow-core: rgba(0, 40, 100, 0.22);
-          --wire-a: #0099cc;
-          --wire-b: #0055cc;
-        }
-        .dark {
-          --chip-top: #1a1a2e;
-          --chip-top-border: 2px solid rgba(255, 255, 255, 0.12);
-          --card-bg: #0a0a15;
-          --card-border: rgba(255, 255, 255, 0.08);
-          --card-text: #ffffff;
-          --card-text-glow: rgba(0, 207, 255, 0.3);
-          --shadow-core: rgba(0, 0, 0, 0.25);
-          --wire-a: #00CFFF;
-          --wire-b: #0077FF;
-        }
-      `}</style>
     </div>
   )
 }

@@ -314,23 +314,6 @@ function AnimatedLine({
         animate={{ pathLength: 1 }}
         transition={{ delay: delay + 0.3, duration: 0.8, ease: easeSmooth }}
       />
-      <m.circle
-        r="4"
-        className={COLOR[color]?.fill || 'fill-emerald-600 dark:fill-emerald-400'}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: [0, 1, 1, 0], offsetDistance: ['0%', '100%'] }}
-        transition={{
-          duration: 1.5,
-          delay: delay + 0.8,
-          repeat: Infinity,
-          repeatDelay: 0.5,
-          ease: 'linear',
-        }}
-        style={{
-          offsetPath: `path("M${x1} ${y1} L${x2} ${y2}")`,
-          offsetRotate: 'auto',
-        }}
-      />
     </>
   )
 }
@@ -1082,20 +1065,6 @@ export function BiniAnimation() {
       ref={containerRef}
       className={`relative w-full flex items-center justify-center select-none overflow-hidden ${isMobile ? 'min-h-110' : 'min-h-150'}`}
     >
-      <style>{`
-        @keyframes flow {
-          0% { offset-distance: 0%; opacity: 0; }
-          10% { opacity: 1; }
-          90% { opacity: 1; }
-          100% { offset-distance: 100%; opacity: 0; }
-        }
-        .animate-flow {
-          animation: flow 2s ease-in-out infinite;
-        }
-      `}</style>
-
-      {/* Global phase label — skipped for phase3c / phase3d (build and
-          pre-render) so their labels render inline under their boxes. */}
       <AnimatePresence mode="wait">
         {phaseLabel && (
           <m.div

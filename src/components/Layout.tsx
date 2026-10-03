@@ -1,7 +1,7 @@
 // src/components/Layout.tsx
 import { Menu, X, ChevronRight, ExternalLink, Star, Search, Sun, Monitor, Moon } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { siGithub, siNpm, siReddit, siDiscord } from 'simple-icons'
 
 function SimpleIcon({
@@ -16,13 +16,15 @@ function SimpleIcon({
   return (
     <svg
       role="img"
+      aria-label={icon.title}
       viewBox="0 0 24 24"
       width={size}
       height={size}
       fill="currentColor"
       className={className}
-      dangerouslySetInnerHTML={{ __html: icon.svg }}
-    />
+    >
+      <path d={icon.path} />
+    </svg>
   )
 }
 
@@ -75,9 +77,13 @@ type Theme = 'light' | 'system' | 'dark'
 
 const getStoredTheme = (): Theme => {
   if (typeof window === 'undefined') return 'system'
-  const stored = localStorage.getItem('bini-theme')
-  if (stored === 'light' || stored === 'dark' || stored === 'system') {
-    return stored
+  try {
+    const stored = localStorage.getItem('bini-theme')
+    if (stored === 'light' || stored === 'dark' || stored === 'system') {
+      return stored
+    }
+  } catch {
+    /* storage unavailable */
   }
   return 'system'
 }
@@ -192,13 +198,24 @@ const searchSuggestions = [
 ]
 
 export const Header = () => {
+  const navigate = useNavigate()
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedIndex, setSelectedIndex] = useState(0)
 
+  // Platform-dependent hint. Starts as "Ctrl K" (same on server and client),
+  // then switches to ⌘K on Apple devices after mount, so hydration always matches.
+  const [shortcutHint, setShortcutHint] = useState('Ctrl K')
+
   const searchInputRef = useRef<HTMLInputElement>(null)
   const searchModalRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const platform = navigator.platform || navigator.userAgent || ''
+    if (/Mac|iPhone|iPad|iPod/i.test(platform)) setShortcutHint('⌘ K')
+  }, [])
 
   const filteredSuggestions = (() => {
     if (!searchQuery) {
@@ -264,6 +281,17 @@ export const Header = () => {
     setSelectedIndex(0)
   }, [searchQuery])
 
+  const openSuggestion = (suggestion: (typeof searchSuggestions)[number]) => {
+    if (suggestion.href) {
+      window.open(suggestion.href, '_blank', 'noopener,noreferrer')
+    } else if (suggestion.path) {
+      navigate(suggestion.path) // client-side navigation, no full reload
+    }
+
+    setSearchOpen(false)
+    setSearchQuery('')
+  }
+
   const handleSearchKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'ArrowDown') {
       e.preventDefault()
@@ -275,29 +303,8 @@ export const Header = () => {
       setSelectedIndex((prev) => (prev > 0 ? prev - 1 : prev))
     } else if (e.key === 'Enter' && filteredSuggestions[selectedIndex]) {
       e.preventDefault()
-
-      const selected = filteredSuggestions[selectedIndex]
-
-      if (selected.href) {
-        window.open(selected.href, '_blank', 'noopener,noreferrer')
-      } else if (selected.path) {
-        window.location.href = selected.path
-      }
-
-      setSearchOpen(false)
-      setSearchQuery('')
+      openSuggestion(filteredSuggestions[selectedIndex])
     }
-  }
-
-  const handleSuggestionClick = (suggestion: (typeof searchSuggestions)[number]) => {
-    if (suggestion.href) {
-      window.open(suggestion.href, '_blank', 'noopener,noreferrer')
-    } else if (suggestion.path) {
-      window.location.href = suggestion.path
-    }
-
-    setSearchOpen(false)
-    setSearchQuery('')
   }
 
   return (
@@ -349,7 +356,9 @@ export const Header = () => {
             </div>
 
             <button
+              type="button"
               onClick={() => setSearchOpen(true)}
+              aria-label="Search documentation"
               className="hidden w-64 items-center justify-between gap-4 rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-1.5 text-sm text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-700 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-500 dark:hover:bg-neutral-900 dark:hover:text-neutral-400 md:flex md:w-80 lg:w-96"
             >
               <span className="flex min-w-0 items-center gap-2">
@@ -358,7 +367,7 @@ export const Header = () => {
               </span>
 
               <kbd className="shrink-0 rounded-md border border-neutral-200 bg-white px-1.5 py-0.5 text-[11px] font-semibold text-neutral-600 dark:border-neutral-700 dark:bg-black dark:text-neutral-300">
-                Ctrl K
+                {shortcutHint}
               </kbd>
             </button>
 
@@ -384,6 +393,7 @@ export const Header = () => {
               </a>
 
               <button
+                type="button"
                 onClick={() => setSearchOpen(true)}
                 className="rounded-lg p-2 text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-black dark:text-neutral-400 dark:hover:bg-neutral-900 dark:hover:text-white sm:hidden"
                 aria-label="Search"
@@ -412,6 +422,7 @@ export const Header = () => {
               </a>
 
               <button
+                type="button"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 className="rounded-lg p-2 text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-black dark:text-neutral-400 dark:hover:bg-neutral-900 dark:hover:text-white lg:hidden"
                 aria-label="Toggle menu"
@@ -427,6 +438,7 @@ export const Header = () => {
           <div className="border-t border-neutral-200 bg-white dark:border-neutral-800 dark:bg-black lg:hidden">
             <nav className="mx-auto flex max-w-7xl flex-col gap-1 px-4 py-4">
               <button
+                type="button"
                 onClick={() => {
                   setSearchOpen(true)
                   setMobileMenuOpen(false)
@@ -439,7 +451,7 @@ export const Header = () => {
                 </span>
 
                 <kbd className="shrink-0 rounded-md border border-neutral-200 bg-white px-1.5 py-0.5 text-[11px] font-semibold text-neutral-600 dark:border-neutral-700 dark:bg-black dark:text-neutral-300">
-                  Ctrl K
+                  {shortcutHint}
                 </kbd>
               </button>
 
@@ -503,6 +515,9 @@ export const Header = () => {
             <div className="flex min-h-full items-start justify-center p-4 pt-[12vh]">
               <div
                 ref={searchModalRef}
+                role="dialog"
+                aria-modal="true"
+                aria-label="Search documentation"
                 className="w-full max-w-2xl transform overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-2xl dark:border-neutral-800 dark:bg-[#0a0a0a]"
               >
                 <div className="relative flex items-center border-b border-neutral-200 dark:border-neutral-800">
@@ -512,8 +527,12 @@ export const Header = () => {
                   />
 
                   <input
+                    id="site-search"
+                    name="search"
                     ref={searchInputRef}
                     type="text"
+                    autoComplete="off"
+                    aria-label="Search documentation"
                     placeholder="What are you searching for?"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -536,8 +555,9 @@ export const Header = () => {
 
                       return (
                         <button
+                          type="button"
                           key={`${suggestion.label}-${index}`}
-                          onClick={() => handleSuggestionClick(suggestion)}
+                          onClick={() => openSuggestion(suggestion)}
                           onMouseEnter={() => setSelectedIndex(index)}
                           className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors ${
                             isActive
@@ -638,7 +658,13 @@ export const Header = () => {
 export const Footer = () => {
   const currentYear = new Date().getFullYear()
 
-  const [theme, setTheme] = useState<Theme>(() => getStoredTheme())
+  // Start with a value that is identical on the server and the client,
+  // then read the real preference after mount.
+  const [theme, setTheme] = useState<Theme>('system')
+
+  useEffect(() => {
+    setTheme(getStoredTheme())
+  }, [])
 
   useEffect(() => {
     // Only needed for system preference changes while preference is "system"
@@ -655,7 +681,11 @@ export const Footer = () => {
 
   const handleThemeChange = (nextTheme: Theme) => {
     setTheme(nextTheme)
-    localStorage.setItem('bini-theme', nextTheme)
+    try {
+      localStorage.setItem('bini-theme', nextTheme)
+    } catch {
+      /* storage unavailable */
+    }
     applyTheme(nextTheme)
   }
 
@@ -828,7 +858,9 @@ export const Footer = () => {
         {/* Footer bottom */}
         <div className="flex flex-col gap-6 border-t border-neutral-200 pt-8 dark:border-neutral-800 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-neutral-600 dark:text-neutral-400">
-            © {currentYear}{' '}
+            ©{' '}
+            {/* Year is computed at build time for pre-rendered HTML and at runtime in the browser. */}
+            <span suppressHydrationWarning>{currentYear}</span>{' '}
             <a
               href="https://binicooperations.dpdns.org/"
               target="_blank"

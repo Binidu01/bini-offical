@@ -44,8 +44,9 @@ const PROJECTS: Project[] = [
  * already finished loading.
  */
 
-const PREVIEW_WIDTH = 1280
-const PREVIEW_HEIGHT = 800
+const PREVIEW_WIDTH = 1280 // desktop / tablet
+const MOBILE_PREVIEW_WIDTH = 480 // phones: sites show their mobile layout and stay legible
+const PREVIEW_ASPECT = 10 / 16 // matches the card's aspect-16/10
 const HOST_ID = 'bini-showcase-frames'
 
 function getHost(): HTMLElement {
@@ -82,7 +83,7 @@ function getFrame(p: Project): HTMLIFrameElement {
       left: '0',
       top: '0',
       width: `${PREVIEW_WIDTH}px`,
-      height: `${PREVIEW_HEIGHT}px`,
+      height: `${PREVIEW_WIDTH * PREVIEW_ASPECT}px`,
       border: '0',
       background: '#fff',
       opacity: '0',
@@ -105,7 +106,15 @@ function placeFrame(frame: HTMLIFrameElement, slot: HTMLElement) {
   const r = slot.getBoundingClientRect()
   if (r.width === 0) return
 
-  const scale = r.width / PREVIEW_WIDTH
+  // Resizing the iframe re-lays-out the site inside it but never reloads it.
+  const designWidth = window.innerWidth < 640 ? MOBILE_PREVIEW_WIDTH : PREVIEW_WIDTH
+  if (frame.dataset.designWidth !== String(designWidth)) {
+    frame.dataset.designWidth = String(designWidth)
+    frame.style.width = `${designWidth}px`
+    frame.style.height = `${designWidth * PREVIEW_ASPECT}px`
+  }
+
+  const scale = r.width / designWidth
   const radius = 12 / scale // matches the card's rounded-xl top corners
 
   frame.style.visibility = 'visible'
@@ -211,7 +220,7 @@ function CopyToast({ visible }: { visible: boolean }) {
           transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
           className="pointer-events-none fixed inset-x-0 top-20 z-100 flex justify-center px-4"
         >
-          <div className="flex items-center gap-2.5 rounded-full border border-neutral-200 bg-neutral-50 px-4 py-2.5 shadow-lg dark:border-neutral-800 dark:bg-neutral-900">
+          <div className="flex max-w-full items-center gap-2.5 rounded-full border border-neutral-200 bg-neutral-50 px-4 py-2.5 shadow-lg dark:border-neutral-800 dark:bg-neutral-900">
             <Link2 className="h-4 w-4 shrink-0 text-neutral-700 dark:text-neutral-300" />
             <span className="text-sm font-medium text-neutral-800 dark:text-neutral-200">
               Command copied to clipboard
@@ -235,7 +244,7 @@ function ShowcaseCard({
   const cloneCommand = `git clone https://github.com/Binidu01/${project.repo}.git`
 
   const copyClone = () => {
-    navigator.clipboard.writeText(cloneCommand)
+    navigator.clipboard?.writeText(cloneCommand).catch(() => {})
     onCopy(cloneCommand)
   }
 
@@ -305,23 +314,23 @@ export default function ShowcasePage() {
     <div className="min-h-screen bg-white font-sans antialiased overflow-x-hidden dark:bg-black">
       <Header />
 
-      <section className="bg-white px-4 pt-20 pb-24 dark:bg-black sm:px-6 lg:px-8 lg:pt-28 lg:pb-32">
+      <section className="bg-white px-4 pt-20 pb-16 dark:bg-black sm:px-6 sm:pb-24 lg:px-8 lg:pt-28 lg:pb-32">
         <div className="mx-auto max-w-6xl">
-          <div className="mb-12 text-center">
-            <h1 className="whitespace-nowrap text-[clamp(1.5rem,4vw,3rem)] leading-[1.15] font-bold tracking-tight text-black dark:text-white">
+          <div className="mb-8 text-center sm:mb-12">
+            <h1 className="text-balance text-[clamp(1.75rem,5vw,3rem)] leading-[1.15] font-bold tracking-tight text-black md:whitespace-nowrap dark:text-white">
               Meet beautiful websites built with Bini.js
             </h1>
           </div>
 
           {categories.length > 1 && (
-            <div className="mb-10 flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
+            <div className="mb-8 flex flex-wrap items-center justify-center gap-1.5 sm:mb-10 sm:gap-2">
               {categories.map((cat) => {
                 const isActive = effectiveCategory === cat
                 return (
                   <button
                     key={cat}
                     onClick={() => setActiveCategory(cat)}
-                    className={`rounded-full px-3.5 py-1.5 text-sm font-medium whitespace-nowrap transition-colors ${
+                    className={`rounded-full px-3.5 py-2 text-sm font-medium whitespace-nowrap transition-colors sm:py-1.5 ${
                       isActive
                         ? 'bg-black text-white dark:bg-white dark:text-black'
                         : 'text-neutral-600 hover:text-black dark:text-neutral-400 dark:hover:text-white'
@@ -335,13 +344,13 @@ export default function ShowcasePage() {
           )}
 
           {filtered.length > 0 ? (
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
               {filtered.map((project) => (
                 <ShowcaseCard key={project.id} project={project} onCopy={handleCopy} />
               ))}
             </div>
           ) : (
-            <div className="py-24 text-center text-sm text-neutral-500">
+            <div className="py-16 text-center text-sm text-neutral-500 sm:py-24">
               No projects in this category yet.
             </div>
           )}

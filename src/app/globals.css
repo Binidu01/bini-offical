@@ -7,3 +7,86 @@
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
+
+/* ─── Color scheme ────────────────────────────────────────────────── */
+html {
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+/* ─── Global thin scrollbar ───────────────────────────────────────── */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #c4c4c4 transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #c4c4c4;
+  border-radius: 9999px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #a3a3a3;
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+.dark * {
+  scrollbar-color: #3a3a3a transparent;
+}
+
+.dark *::-webkit-scrollbar-thumb {
+  background: #3a3a3a;
+}
+
+.dark *::-webkit-scrollbar-thumb:hover {
+  background: #525252;
+}
+
+/* ─── Font overrides ──────────────────────────────────────────────── */
+span.font-mono.text-\[9px\],
+span.font-mono.text-\[10px\],
+span.font-mono.text-\[12px\],
+span.font-mono.text-\[13px\],
+td.font-mono {
+  font-family: var(--font-sans);
+}
+
+/* ─── Plugin animation theme variables ───────────────────────────── */
+:root {
+  --chip-top: #e8edf4;
+  --chip-top-border: 2px solid rgba(0, 80, 180, 0.22);
+  --card-bg: #f1f5f9;
+  --card-border: rgba(15, 23, 42, 0.18);
+  --card-text: #0f172a;
+  --card-text-glow: rgba(0, 100, 220, 0.35);
+  --shadow-core: rgba(0, 40, 100, 0.22);
+  --wire-a: #0099cc;
+  --wire-b: #0055cc;
+}
+
+.dark {
+  --chip-top: #1a1a2e;
+  --chip-top-border: 2px solid rgba(255, 255, 255, 0.12);
+  --card-bg: #0a0a15;
+  --card-border: rgba(255, 255, 255, 0.08);
+  --card-text: #ffffff;
+  --card-text-glow: rgba(0, 207, 255, 0.3);
+  --shadow-core: rgba(0, 0, 0, 0.25);
+  --wire-a: #00CFFF;
+  --wire-b: #0077FF;
+}

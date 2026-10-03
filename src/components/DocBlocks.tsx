@@ -522,13 +522,16 @@ function tokenize(code: string, theme: Theme, lang: CodeLang): Token[] {
   }
 }
 
-/** Follow the site theme by watching the `dark` class on <html>. */
+/**
+ * Follow the site theme by watching the `dark` class on <html>.
+ *
+ * Starts as `false` (light) so the first client render matches the
+ * pre-rendered HTML exactly, then syncs with the real theme after mount.
+ * Reading `document` during the first render caused React error #418
+ * (hydration mismatch) for visitors in dark mode.
+ */
 function useIsDark() {
-  const [dark, setDark] = useState(() =>
-    typeof document !== 'undefined'
-      ? document.documentElement.classList.contains('dark')
-      : false
-  )
+  const [dark, setDark] = useState(false)
   useEffect(() => {
     const update = () => setDark(document.documentElement.classList.contains('dark'))
     update()
@@ -564,8 +567,8 @@ function Highlighted({ code, lang }: { code: string; lang: CodeLang }) {
 /* ------------------------------------------------------------------ */
 
 /**
- * Scroll container. Uses the global thin native scrollbar (see
- * `ScrollbarStyles`), but keeps the non-vertical wheel forwarding so
+ * Scroll container. Uses the global thin native scrollbar (defined in global.css),
+ * but keeps the non-vertical wheel forwarding so
  * code blocks / terminals still let the page scroll when the cursor is
  * over them.
  */
@@ -646,9 +649,12 @@ function readLang(): Lang {
 export const useDocLang = () => useContext(LangContext).lang
 
 function LangProvider({ children }: { children: ReactNode }) {
-  const [lang, setLang] = useState<Lang>(readLang)
+  // Must equal the pre-rendered value ('ts'). The saved preference is read
+  // after mount so hydration never sees a different code variant/label.
+  const [lang, setLang] = useState<Lang>('ts')
   useEffect(() => {
     const sync = () => setLang(readLang())
+    sync()
     window.addEventListener('storage', sync)
     window.addEventListener('focus', sync)
     return () => {
@@ -680,15 +686,27 @@ function CopyButton({
   className?: string
 }) {
   const [copied, setCopied] = useState(false)
-  const copy = () => {
-    navigator.clipboard.writeText(text)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+
+  useEffect(() => () => clearTimeout(timer.current), [])
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopied(true)
+      clearTimeout(timer.current)
+      timer.current = setTimeout(() => setCopied(false), 2000)
+    } catch {
+      /* clipboard unavailable or permission denied: don't claim success */
+    }
   }
+
   return (
     <button
+      type="button"
       onClick={copy}
       title={title}
+      aria-label={title ?? 'Copy'}
       className={`inline-flex h-6 w-6 items-center justify-center rounded text-neutral-500 hover:text-neutral-700 dark:text-neutral-500 dark:hover:text-neutral-300 ${className}`}
     >
       {copied ? (
@@ -772,7 +790,7 @@ function TerminalFrame({
           <span>{label}</span>
         </div>
         {center}
-        <CopyButton text={copy} className="ml-auto" />
+        <CopyButton text={copy} title="Copy" className="ml-auto" />
       </div>
       {/* no p-4 here — padding lives on the pre inside FakeScrollArea */}
       {children}
@@ -791,6 +809,7 @@ export function MultiTerminal({ tabs }: { tabs: TerminalTab[] }) {
         <div className="absolute left-1/2 flex -translate-x-1/2 items-center gap-1">
           {tabs.map((tab) => (
             <button
+              type="button"
               key={tab.id}
               onClick={() => setActiveId(tab.id)}
               className={`rounded px-3 py-1 text-xs font-medium transition-colors ${activeId === tab.id ? 'bg-neutral-200 text-neutral-800 dark:bg-neutral-800 dark:text-neutral-100' : 'text-neutral-500 hover:text-neutral-700 dark:text-neutral-500 dark:hover:text-neutral-200'}`}
@@ -801,18 +820,21 @@ export function MultiTerminal({ tabs }: { tabs: TerminalTab[] }) {
         </div>
       }
     >
-      <AnimatePresence mode="wait">
-        <FakeScrollArea key={activeId} vertical={false}>
-          <m.pre
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.12 }}
-            className="p-4 text-left font-mono text-[13px] leading-relaxed whitespace-pre"
-          >
-            {active && <Highlighted code={active.command} lang="shell" />}
-          </m.pre>
-        </FakeScrollArea>
+      <AnimatePresence mode="wait" initial={false}>
+        {/* The keyed child must be a motion element so its exit animation runs */}
+        <m.div
+          key={activeId}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.12 }}
+        >
+          <FakeScrollArea vertical={false}>
+            <pre className="p-4 text-left font-mono text-[13px] leading-relaxed whitespace-pre">
+              {active && <Highlighted code={active.command} lang="shell" />}
+            </pre>
+          </FakeScrollArea>
+        </m.div>
       </AnimatePresence>
     </TerminalFrame>
   )
@@ -1100,7 +1122,10 @@ export function CodeBlock({
             {switchable && (
               <div ref={menuRef} className="relative">
                 <button
+                  type="button"
                   onClick={() => setMenuOpen(!menuOpen)}
+                  aria-haspopup="menu"
+                  aria-expanded={menuOpen}
                   className="flex items-center gap-1.5 text-[13px] text-neutral-500 hover:text-neutral-700 dark:text-neutral-500 dark:hover:text-neutral-300"
                 >
                   <span>{LANG_LABEL[docLang]}</span>
@@ -1118,6 +1143,7 @@ export function CodeBlock({
                   <div className="absolute right-0 top-7 z-20 min-w-40 overflow-hidden rounded-lg border border-neutral-200 bg-white py-1 shadow-xl dark:border-neutral-700 dark:bg-neutral-900">
                     {(Object.keys(LANG_LABEL) as Lang[]).map((id) => (
                       <button
+                        type="button"
                         key={id}
                         onClick={() => {
                           setLang(id)
@@ -1302,60 +1328,6 @@ export function Table({
 /* Page shell                                                          */
 /* ------------------------------------------------------------------ */
 
-/**
- * Global scrollbar styling. Applies the thin pill scrollbar to every
- * scrollable element on the site (page, code blocks, terminals, TOC,
- * tables) so everything looks consistent.
- */
-function ScrollbarStyles() {
-  return (
-    <style>{`
-      html { color-scheme: light; }
-      html.dark { color-scheme: dark; }
-
-      /* Global thin scrollbar */
-      * {
-        scrollbar-width: thin;
-        scrollbar-color: #c4c4c4 transparent;
-      }
-      *::-webkit-scrollbar {
-        width: 4px;
-        height: 4px;
-      }
-      *::-webkit-scrollbar-track {
-        background: transparent;
-      }
-      *::-webkit-scrollbar-thumb {
-        background: #c4c4c4;
-        border-radius: 9999px;
-      }
-      *::-webkit-scrollbar-thumb:hover {
-        background: #a3a3a3;
-      }
-      *::-webkit-scrollbar-corner {
-        background: transparent;
-      }
-
-      .dark * {
-        scrollbar-color: #3a3a3a transparent;
-      }
-      .dark *::-webkit-scrollbar-thumb {
-        background: #3a3a3a;
-      }
-      .dark *::-webkit-scrollbar-thumb:hover {
-        background: #525252;
-      }
-
-      /* Font overrides */
-      span.font-mono.text-[9px],
-      span.font-mono.text-[10px],
-      span.font-mono.text-[12px],
-      span.font-mono.text-[13px],
-      td.font-mono { font-family: var(--font-sans); }
-    `}</style>
-  )
-}
-
 type PagerTarget = { to: string; title: string }
 
 function PagerLink({ dir, to, title }: PagerTarget & { dir: 'prev' | 'next' }) {
@@ -1433,7 +1405,6 @@ export function DocPage({
   return (
     <LangProvider>
       <div className="min-h-screen bg-white font-sans antialiased dark:bg-black">
-        <ScrollbarStyles />
         <Header />
         <div className="pt-16 lg:pt-20">
           <div className="mx-auto w-full max-w-[1600px] px-6 sm:px-8 lg:px-12 xl:px-16">
