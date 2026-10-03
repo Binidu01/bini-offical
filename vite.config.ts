@@ -78,7 +78,7 @@ export default defineConfig(({ command, mode }) => {
       outDir: 'dist',
       sourcemap: !isBuild,
       emptyOutDir: true,
-      minify: false,
+      minify: isBuild,
       cssCodeSplit: true,
       reportCompressedSize: true,
       chunkSizeWarningLimit: 1000,
