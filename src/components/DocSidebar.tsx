@@ -303,9 +303,30 @@ interface DocLayoutProps {
 
 export function DocLayout({ children }: DocLayoutProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const location = useLocation()
 
   const desktopAsideRef = useRef<HTMLElement>(null)
   const desktopMainRef = useRef<HTMLElement>(null)
+
+  // Close the mobile menu whenever the user navigates to another page
+  useEffect(() => {
+    setMobileMenuOpen(false)
+  }, [location.pathname])
+
+  // Close with the Escape key
+  useEffect(() => {
+    if (!mobileMenuOpen) return
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setMobileMenuOpen(false)
+    }
+
+    document.addEventListener('keydown', onKeyDown)
+
+    return () => {
+      document.removeEventListener('keydown', onKeyDown)
+    }
+  }, [mobileMenuOpen])
 
   useEffect(() => {
     if (!mobileMenuOpen) return
@@ -428,15 +449,12 @@ export function DocLayout({ children }: DocLayoutProps) {
       {/* Mobile / Tablet */}
       <div className="lg:hidden">
         <button
-          onClick={() => setMobileMenuOpen((value) => !value)}
+          onClick={() => setMobileMenuOpen(true)}
           className="flex items-center gap-2 text-lg font-semibold text-neutral-700 transition-colors hover:text-cyan-600 dark:text-neutral-200 dark:hover:text-cyan-400"
-          aria-label={mobileMenuOpen ? 'Close documentation menu' : 'Open documentation menu'}
+          aria-label="Open documentation menu"
+          aria-expanded={mobileMenuOpen}
         >
-          {mobileMenuOpen ? (
-            <ChevronDown className="h-5 w-5" />
-          ) : (
-            <ChevronRight className="h-5 w-5" />
-          )}
+          <ChevronRight className="h-5 w-5" />
 
           <span>Menu</span>
         </button>
@@ -446,9 +464,26 @@ export function DocLayout({ children }: DocLayoutProps) {
         {mobileMenuOpen && (
           <div
             data-mobile-doc-menu
-            className="fixed inset-x-0 bottom-0 top-14 z-40 overflow-y-auto bg-white px-6 py-6 dark:bg-black"
+            className="fixed inset-x-0 bottom-0 top-14 z-40 flex flex-col bg-white dark:bg-black"
           >
-            <DocSidebar />
+            {/* Close bar — the overlay covers the page's own Menu button, so the
+                collapse control lives inside the overlay and stays visible. */}
+            <div className="shrink-0 border-b border-neutral-200 px-6 py-3 dark:border-neutral-800">
+              <button
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center gap-2 text-lg font-semibold text-neutral-700 transition-colors hover:text-cyan-600 dark:text-neutral-200 dark:hover:text-cyan-400"
+                aria-label="Close documentation menu"
+                aria-expanded
+              >
+                <ChevronDown className="h-5 w-5" />
+
+                <span>Menu</span>
+              </button>
+            </div>
+
+            <div className="min-h-0 flex-1 px-6 pt-4">
+              <DocSidebar />
+            </div>
           </div>
         )}
 

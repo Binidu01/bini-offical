@@ -928,6 +928,8 @@ export function BiniAnimation() {
 
   const isMobile = useIsMobile()
   const prefersReducedMotion = usePrefersReducedMotion()
+  const isMobileRef = useRef(isMobile)
+  isMobileRef.current = isMobile
   const filePositions = isMobile ? FILE_POSITIONS_MOBILE : FILE_POSITIONS
   const mergeDots = isMobile ? MERGE_DOTS_MOBILE : MERGE_DOTS
 
@@ -1027,7 +1029,7 @@ export function BiniAnimation() {
                 later(() => setMergeDotsVisible(true), 350)
 
                 later(() => {
-                  setPhaseLabel(isMobile ? 'Deploy Everywhere' : 'One Codebase · Deploy Everywhere')
+                  setPhaseLabel(isMobileRef.current ? 'Deploy Everywhere' : 'One Codebase · Deploy Everywhere')
                   setPhase('phase5')
                   setMergeDotsVisible(false)
                   later(() => {
@@ -1055,31 +1057,21 @@ export function BiniAnimation() {
     }, 2500)
   }
 
+  // Start on mount and keep looping. No pausing / resetting when the
+  // animation scrolls out of view.
   useEffect(() => {
     if (prefersReducedMotion) return
 
-    const el = containerRef.current
-    if (!el) return
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          play()
-        } else {
-          resetAll()
-        }
-      },
-      { threshold: 0.1 }
-    )
-
-    observer.observe(el)
+    play()
 
     return () => {
-      observer.disconnect()
       timeouts.current.forEach(clearTimeout)
       intervals.current.forEach(clearInterval)
+      timeouts.current = []
+      intervals.current = []
+      isPlayingRef.current = false
     }
-  }, [isMobile, prefersReducedMotion])
+  }, [prefersReducedMotion])
 
   if (prefersReducedMotion) {
     return <StaticFallback />

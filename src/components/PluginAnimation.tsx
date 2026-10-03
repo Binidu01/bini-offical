@@ -79,20 +79,27 @@ const PluginAnimation = () => {
     }
   }, [])
 
+  // Runs continuously from mount. Nothing here depends on whether the
+  // animation is on screen, so it never pauses or resets when scrolled away.
   useEffect(() => {
     if (prefersReducedMotion) return
 
     const HOLD_MS = 2000
     const TRANSITION_MS = 700
+    let holdTimer: ReturnType<typeof setTimeout> | undefined
+
     const interval = setInterval(() => {
       setIsPaused(true)
-      setTimeout(() => {
+      holdTimer = setTimeout(() => {
         setOffset((prev) => (prev + 1) % PLUGIN_COUNT)
         setIsPaused(false)
       }, HOLD_MS)
     }, HOLD_MS + TRANSITION_MS)
 
-    return () => clearInterval(interval)
+    return () => {
+      clearInterval(interval)
+      clearTimeout(holdTimer)
+    }
   }, [prefersReducedMotion])
 
   useEffect(() => {

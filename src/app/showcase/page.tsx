@@ -5,64 +5,6 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { Header, Footer } from '../../components/Layout'
 
-/* ─── Live preview (scaled iframe) ────────────────────────────────── */
-
-const PREVIEW_WIDTH = 1280
-const PREVIEW_HEIGHT = 800
-
-function LiveScreenshot({ url, title }: { url: string; title: string }) {
-  const boxRef = useRef<HTMLDivElement>(null)
-  const [scale, setScale] = useState(0.3)
-
-  useEffect(() => {
-    const el = boxRef.current
-    if (!el) return
-
-    const update = () => setScale(el.clientWidth / PREVIEW_WIDTH)
-    update()
-
-    const ro = new ResizeObserver(update)
-    ro.observe(el)
-
-    return () => ro.disconnect()
-  }, [])
-
-  return (
-    <div
-      ref={boxRef}
-      className="relative aspect-16/10 w-full overflow-hidden bg-linear-to-br from-neutral-100 to-neutral-200 dark:from-neutral-800 dark:to-neutral-900"
-    >
-      {/* Fallback layer (behind the iframe) */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 p-6 text-center">
-        <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-neutral-300 bg-white dark:border-neutral-700 dark:bg-neutral-800">
-          <span className="text-lg font-bold text-neutral-700 dark:text-neutral-300">
-            {title.charAt(0).toUpperCase()}
-          </span>
-        </div>
-        <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
-          {title}
-        </span>
-      </div>
-
-      {/* Live site rendered at 1280x800, scaled down to fit the card */}
-      <iframe
-        src={url}
-        title={`${title} preview`}
-        loading="lazy"
-        tabIndex={-1}
-        sandbox="allow-scripts allow-same-origin"
-        style={{
-          width: PREVIEW_WIDTH,
-          height: PREVIEW_HEIGHT,
-          transform: `scale(${scale})`,
-          transformOrigin: 'top left',
-        }}
-        className="pointer-events-none absolute left-0 top-0 border-0 bg-white"
-      />
-    </div>
-  )
-}
-
 /* ─── Data ────────────────────────────────────────────────────────── */
 
 type Project = {
@@ -89,6 +31,172 @@ const PROJECTS: Project[] = [
     category: 'AI',
   },
 ]
+
+/* ─── Persistent live previews ────────────────────────────────────── */
+/*
+ * Each project's site is loaded in ONE iframe that lives in a host element on
+ * <body>, outside React. Pages that unmount (leaving /showcase) only hide the
+ * iframe; coming back just moves it over the new card slot. Because the iframe
+ * is never removed or re-parented, it never reloads.
+ *
+ * The same iframes double as the preloader: they are created in the background
+ * as soon as this module loads, so by the time you open /showcase they have
+ * already finished loading.
+ */
+
+const PREVIEW_WIDTH = 1280
+const PREVIEW_HEIGHT = 800
+const HOST_ID = 'bini-showcase-frames'
+
+function getHost(): HTMLElement {
+  let host = document.getElementById(HOST_ID)
+  if (!host) {
+    host = document.createElement('div')
+    host.id = HOST_ID
+    host.setAttribute('aria-hidden', 'true')
+    host.style.cssText =
+      'position:absolute;top:0;left:0;width:0;height:0;overflow:visible;pointer-events:none;z-index:10;'
+    document.body.appendChild(host)
+  }
+  return host
+}
+
+function parkFrame(frame: HTMLIFrameElement) {
+  frame.style.visibility = 'hidden'
+  frame.style.transform = 'translate(-9999px, 0)'
+}
+
+/** Returns the project's iframe, creating it (once) if it doesn't exist yet. */
+function getFrame(p: Project): HTMLIFrameElement {
+  const host = getHost()
+  let frame = host.querySelector<HTMLIFrameElement>(`iframe[data-id="${p.id}"]`)
+
+  if (!frame) {
+    frame = document.createElement('iframe')
+    frame.dataset.id = p.id
+    frame.src = p.url
+    frame.tabIndex = -1
+    frame.setAttribute('sandbox', 'allow-scripts allow-same-origin')
+    Object.assign(frame.style, {
+      position: 'absolute',
+      left: '0',
+      top: '0',
+      width: `${PREVIEW_WIDTH}px`,
+      height: `${PREVIEW_HEIGHT}px`,
+      border: '0',
+      background: '#fff',
+      opacity: '0',
+      transformOrigin: 'top left',
+      transition: 'opacity 500ms',
+      pointerEvents: 'none',
+    })
+    parkFrame(frame)
+    frame.addEventListener('load', () => {
+      frame!.dataset.loaded = '1'
+    })
+    host.appendChild(frame)
+  }
+
+  return frame
+}
+
+/** Moves the iframe over its slot and scales it to fit. */
+function placeFrame(frame: HTMLIFrameElement, slot: HTMLElement) {
+  const r = slot.getBoundingClientRect()
+  if (r.width === 0) return
+
+  const scale = r.width / PREVIEW_WIDTH
+  const radius = 12 / scale // matches the card's rounded-xl top corners
+
+  frame.style.visibility = 'visible'
+  frame.style.opacity = frame.dataset.loaded ? '1' : '0'
+  frame.style.borderRadius = `${radius}px ${radius}px 0 0`
+  frame.style.transform = `translate(${r.left + window.scrollX}px, ${
+    r.top + window.scrollY
+  }px) scale(${scale})`
+}
+
+let preloadStarted = false
+
+/** Warms connections now, then creates the iframes once the browser is idle. */
+function preloadShowcase() {
+  if (typeof window === 'undefined' || preloadStarted) return
+  preloadStarted = true
+
+  for (const p of PROJECTS) {
+    try {
+      const origin = new URL(p.url).origin
+      for (const rel of ['dns-prefetch', 'preconnect']) {
+        const link = document.createElement('link')
+        link.rel = rel
+        link.href = origin
+        if (rel === 'preconnect') link.crossOrigin = ''
+        document.head.appendChild(link)
+      }
+    } catch {
+      /* ignore bad URLs */
+    }
+  }
+
+  const createAll = () => PROJECTS.forEach(getFrame)
+
+  const schedule = () => {
+    const w = window as Window & {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number
+    }
+    if (w.requestIdleCallback) w.requestIdleCallback(createAll, { timeout: 4000 })
+    else setTimeout(createAll, 1500)
+  }
+
+  if (document.readyState === 'complete') schedule()
+  else window.addEventListener('load', schedule, { once: true })
+}
+
+preloadShowcase()
+
+function LiveScreenshot({ project }: { project: Project }) {
+  const slotRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const slot = slotRef.current
+    if (!slot) return
+
+    const frame = getFrame(project)
+    let raf = 0
+
+    // Follow the slot every frame so scrolling, resizing and layout shifts
+    // never leave the iframe out of place.
+    const tick = () => {
+      placeFrame(frame, slot)
+      raf = requestAnimationFrame(tick)
+    }
+    tick()
+
+    return () => {
+      cancelAnimationFrame(raf)
+      parkFrame(frame) // hide only, never remove, so it doesn't reload
+    }
+  }, [project])
+
+  return (
+    <div
+      ref={slotRef}
+      className="relative aspect-16/10 w-full overflow-hidden bg-linear-to-br from-neutral-100 to-neutral-200 dark:from-neutral-800 dark:to-neutral-900"
+    >
+      {/* Placeholder, visible until the live preview has loaded on top of it */}
+      <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 p-6 text-center">
+        <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-neutral-300 bg-white dark:border-neutral-700 dark:bg-neutral-800">
+          <span className="text-lg font-bold text-neutral-700 dark:text-neutral-300">
+            {project.title.charAt(0).toUpperCase()}
+          </span>
+        </div>
+        <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+          {project.title}
+        </span>
+      </div>
+    </div>
+  )
+}
 
 /* ─── Copy toast (top-center, right below the header) ─────────────── */
 
@@ -139,7 +247,7 @@ function ShowcaseCard({
         rel="noopener noreferrer"
         className="relative block overflow-hidden"
       >
-        <LiveScreenshot url={project.url} title={project.title} />
+        <LiveScreenshot project={project} />
       </a>
 
       <div className="p-4 pb-3">

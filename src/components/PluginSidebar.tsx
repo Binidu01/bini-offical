@@ -69,11 +69,12 @@ function PluginSidebarContent() {
 }
 
 export function PluginSidebar() {
-  // Same fixed top-24 pattern as TableOfContents — global scrollbar styles apply
+  // Same fixed top-24 pattern as TableOfContents — global scrollbar styles apply.
+  // Width must match the <aside> in PluginLayout (w-44).
   return (
-    <div className="fixed top-24 w-56 max-h-[calc(100vh-8rem)] overflow-y-auto">
+    <div className="fixed top-24 w-44 max-h-[calc(100vh-8rem)] overflow-y-auto">
       <div className="relative">
-        <div className="w-full pr-3 pb-4">
+        <div className="w-full pl-6 pr-3 pb-4">
           <PluginSidebarContent />
         </div>
       </div>
@@ -117,9 +118,9 @@ export function PluginLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <div className="hidden lg:block">
-        <div className="flex gap-12 xl:gap-16">
+        <div className="flex gap-4 xl:gap-6">
           {/* Reserves space — sidebar inside is fixed like TOC */}
-          <aside className="w-56 shrink-0">
+          <aside className="w-44 shrink-0">
             <PluginSidebar />
           </aside>
           <main className="min-w-0 flex-1 pb-8">{children}</main>
