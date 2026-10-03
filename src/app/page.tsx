@@ -4,7 +4,6 @@ import {
   ArrowRight,
   Check,
   Copy,
-  ExternalLink,
   Gauge,
   Globe,
   Heart,
@@ -391,12 +390,11 @@ const Home = () => {
                   href="https://github.com/Binidu01/bini-cli"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="rounded-lg border border-neutral-300 bg-white px-5 py-2.5 font-medium text-neutral-700 shadow-sm transition-all hover:border-neutral-400 hover:bg-neutral-50 dark:border-slate-700 dark:bg-black dark:text-slate-300 dark:hover:border-slate-600 dark:hover:bg-slate-900"
+                  className="rounded-lg border border-neutral-300 bg-white px-5 py-2.5 font-medium text-neutral-700 shadow-sm transition-all hover:border-neutral-400 hover:bg-neutral-50 dark:border-neutral-800 dark:bg-black dark:text-neutral-300 dark:hover:border-neutral-700 dark:hover:bg-neutral-900 dark:hover:text-white"
                 >
                   <span className="flex items-center gap-2">
                     <SimpleIcon icon={siGithub} size={18} />
                     GitHub
-                    <ExternalLink className="h-3.5 w-3.5 opacity-50" />
                   </span>
                 </a>
               </div>
@@ -738,7 +736,7 @@ const Home = () => {
                 href="https://github.com/Binidu01/bini-cli"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-lg border border-neutral-300 px-5 py-2.5 font-medium text-neutral-700 transition-all hover:border-neutral-400 hover:bg-neutral-50 dark:border-slate-700 dark:text-slate-300 dark:hover:border-slate-600 dark:hover:bg-slate-900"
+                className="rounded-lg border border-neutral-300 bg-white px-5 py-2.5 font-medium text-neutral-700 transition-all hover:border-neutral-400 hover:bg-neutral-50 dark:border-neutral-800 dark:bg-black dark:text-neutral-300 dark:hover:border-neutral-700 dark:hover:bg-neutral-900 dark:hover:text-white"
               >
                 <span className="flex items-center gap-2">
                   <SimpleIcon icon={siGithub} size={18} />

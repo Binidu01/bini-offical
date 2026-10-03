@@ -1,0 +1,5 @@
+allowBuilds:
+  esbuild: true
+minimumReleaseAgeExclude:
+  - bini-router@2.1.1
+  - bini-ssg@2.0.1
