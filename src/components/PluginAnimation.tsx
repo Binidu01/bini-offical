@@ -44,23 +44,6 @@ const LAYERS = PLUGIN_COUNT
 const WIRE_GRADIENT_LR = 'linear-gradient(90deg, var(--wire-a), var(--wire-b))'
 const WIRE_GRADIENT_RL = 'linear-gradient(90deg, var(--wire-b), var(--wire-a))'
 
-/**
- * The lower layers of the 3D stack used to render a 4x4 grid of 16 child
- * <div>s each (112 DOM nodes in total). The same look is drawn here with a
- * single element: two thin line gradients (the cell borders) on top of the
- * layer's diagonal gradient.
- */
-const CELL_LINE = 'rgba(0, 100, 200, 0.2)'
-const LAYER_BACKGROUND_IMAGE = [
-  `linear-gradient(to right, ${CELL_LINE} 1px, transparent 1px)`,
-  `linear-gradient(to bottom, ${CELL_LINE} 1px, transparent 1px)`,
-  'linear-gradient(135deg, var(--wire-a), var(--wire-b))',
-].join(', ')
-const LAYER_BACKGROUND_SIZE = '25% 25%, 25% 25%, 100% 100%'
-
-/** Text alternative for the whole animated diagram (it is purely illustrative). */
-const DIAGRAM_LABEL = `Bini.js ecosystem packages: ${PLUGINS.map((p) => p.pkg).join(', ')}`
-
 /* ─── Main component ──────────────────────────────────────────────── */
 
 const PluginAnimation = () => {
@@ -82,15 +65,12 @@ const PluginAnimation = () => {
     }
 
     updateScale()
+    window.addEventListener('resize', updateScale)
 
-    // ResizeObserver already fires when the wrapper's width changes (including
-    // window resizes), so a separate window "resize" listener is not needed.
     let observer: ResizeObserver | undefined
     if (typeof ResizeObserver !== 'undefined' && wrapperRef.current) {
       observer = new ResizeObserver(updateScale)
       observer.observe(wrapperRef.current)
-    } else {
-      window.addEventListener('resize', updateScale)
     }
 
     return () => {
@@ -175,8 +155,6 @@ const PluginAnimation = () => {
   return (
     <div
       ref={wrapperRef}
-      role="img"
-      aria-label={DIAGRAM_LABEL}
       className="flex w-full items-center justify-center bg-transparent px-2 py-6 sm:p-8"
     >
       <div style={{ width: DESIGN_WIDTH * scale, height: DESIGN_HEIGHT * scale }}>
@@ -222,15 +200,21 @@ const PluginAnimation = () => {
                         width: '100%',
                         height: '100%',
                         transform: 'rotate(45deg)',
+                        background: isTopLayer
+                          ? 'var(--chip-top)'
+                          : 'linear-gradient(135deg, var(--wire-a), var(--wire-b))',
                         borderRadius: '18px',
                         border: isTopLayer
                           ? 'var(--chip-top-border)'
                           : '1px solid rgba(0, 100, 200, 0.28)',
                         ...(isTopLayer
-                          ? { backgroundColor: 'var(--chip-top)' }
+                          ? {}
                           : {
-                              backgroundImage: LAYER_BACKGROUND_IMAGE,
-                              backgroundSize: LAYER_BACKGROUND_SIZE,
+                              display: 'grid',
+                              gridTemplateColumns: 'repeat(4, 1fr)',
+                              gridTemplateRows: 'repeat(4, 1fr)',
+                              gap: '1px',
+                              padding: '2px',
                               opacity: 0.45 + (layerIndex / LAYERS) * 0.55,
                             }),
                         boxShadow:
@@ -238,7 +222,21 @@ const PluginAnimation = () => {
                             ? '0 15px 40px rgba(0,40,100,0.25), 0 0 30px rgba(0, 119, 255, 0.2)'
                             : '0 2px 8px rgba(0,40,100,0.1)',
                       }}
-                    />
+                    >
+                      {!isTopLayer &&
+                        Array.from({ length: 16 }, (_, i) => (
+                          <div
+                            key={i}
+                            style={{
+                              background:
+                                'linear-gradient(135deg, var(--wire-a), var(--wire-b))',
+                              borderRadius: '6px',
+                              border: '1px solid rgba(0, 100, 200, 0.15)',
+                              boxShadow: 'inset 0 0 4px rgba(0, 119, 255, 0.15)',
+                            }}
+                          />
+                        ))}
+                    </div>
                   </div>
                 )
               })}
@@ -367,12 +365,8 @@ const PluginAnimation = () => {
                   ? 'opacity 0.3s ease-in-out'
                   : 'transform 0.6s ease-in-out, opacity 0.3s ease-in-out'
 
-                // Plain <div>: the card wrapper has no border of its own (the
-                // visible border lives on the inner element), so the infinite
-                // borderColor animation that used to run here had no visual
-                // effect. Transform / opacity are driven by the CSS transition.
                 return (
-                  <div
+                  <m.div
                     key={cardIndex}
                     className="absolute"
                     style={{
@@ -386,6 +380,20 @@ const PluginAnimation = () => {
                       transition,
                       pointerEvents: 'none',
                       opacity,
+                    }}
+                    animate={{
+                      borderColor:
+                        isMiddlePosition && isPaused
+                          ? [
+                              'rgba(0, 100, 200, 0.45)',
+                              'rgba(0, 85, 200, 0.9)',
+                              'rgba(0, 100, 200, 0.45)',
+                            ]
+                          : undefined,
+                    }}
+                    transition={{
+                      duration: 1,
+                      repeat: Infinity,
                     }}
                   >
                     <div
@@ -422,7 +430,7 @@ const PluginAnimation = () => {
                         {plugin.label}
                       </span>
                     </div>
-                  </div>
+                  </m.div>
                 )
               })}
             </div>
