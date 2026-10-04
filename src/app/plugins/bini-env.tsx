@@ -10,6 +10,7 @@ import {
   Table,
   UL,
 } from '../../components/DocBlocks'
+import { FolderVisual, GridBg, Arrow, CARD } from '../../components/DocVisuals'
 import { PluginPage } from '../../components/PluginPage'
 import type { TocItem } from '../../components/TableOfContents'
 
@@ -18,10 +19,9 @@ const TOC_ITEMS: TocItem[] = [
   { id: 'installation', label: 'Installation' },
   { id: 'quick-start', label: 'Quick Start' },
   { id: 'prefixes', label: 'Prefixes' },
-  { id: 'how-it-works', label: 'How It Works' },
   { id: 'platform-support', label: 'Platform Support' },
   { id: 'api-reference', label: 'API Reference' },
-  { id: 'security', label: 'Security' },
+  { id: 'troubleshooting', label: 'Troubleshooting' },
   { id: 'compatibility', label: 'Compatibility' },
 ]
 
@@ -36,12 +36,41 @@ const DEV_BANNER_TEXT = `  Bini.js (dev)
   Local:   http://localhost:3000/
   Network: http://192.168.1.7:3000/`
 
-const WARN_BANNER_TEXT = `10:45:55 (warning) [bini-env] Failed to inject .env into process.env: <reason>`
-
 const REQUIRE_ENV_ERROR_TEXT = `[bini-env] error  Missing required environment variable: "SMTP_HOST"
   -> Set it in your platform's env config or hosting dashboard.`
 
-/** Colored dev server banner, matching the real terminal output. */
+const BOX = `${CARD} flex items-center px-3 text-[12px] text-neutral-800 dark:text-neutral-200`
+
+/** How a request resolves an env var. */
+function EnvFlowVisual() {
+  return (
+    <GridBg>
+      <div className="flex items-center gap-3">
+        <span className={`${BOX} h-10 w-28 shrink-0 justify-center font-semibold`}>
+          Hono handler
+        </span>
+        <Arrow />
+        <span className={`${BOX} h-10 w-32 shrink-0 justify-center`}>
+          <span className="mr-2 text-neutral-500">getEnv(c,</span>
+          key)
+        </span>
+        <Arrow />
+        <div className="flex flex-col gap-2">
+          <span className={`${BOX} h-10 w-64 shrink-0`}>
+            <span className="mr-2 text-neutral-500">dev</span>
+            mirrors .env → process.env
+          </span>
+          <span className={`${BOX} h-10 w-64 shrink-0`}>
+            <span className="mr-2 text-neutral-500">prod</span>
+            platform env binding
+          </span>
+        </div>
+      </div>
+    </GridBg>
+  )
+}
+
+/** Colored dev server banner. */
 function DevBanner() {
   const label = (s: string) => (
     <strong className="font-bold text-neutral-900 dark:text-white">{s}</strong>
@@ -65,22 +94,6 @@ function DevBanner() {
       {url('localhost')}
       {'\n  '}
       {label('Network:')} {url('192.168.1.7')}
-    </OutputBlock>
-  )
-}
-
-/** Colored warning banner. */
-function WarnBanner() {
-  return (
-    <OutputBlock code={WARN_BANNER_TEXT}>
-      <span className="text-neutral-500">10:45:55</span>{' '}
-      <span className="text-amber-600 dark:text-amber-400">(warning)</span>{' '}
-      <span className="text-rose-600 dark:text-rose-400">[bini-env]</span>{' '}
-      <span className="text-neutral-700 dark:text-neutral-300">
-        Failed to inject <span className="text-cyan-700 dark:text-cyan-400">.env</span> into{' '}
-        <span className="text-cyan-700 dark:text-cyan-400">process.env</span>:{' '}
-      </span>
-      <span className="text-neutral-500">&lt;reason&gt;</span>
     </OutputBlock>
   )
 }
@@ -122,10 +135,7 @@ export default function BiniEnvPage() {
           always resolve from the correct runtime binding - Node.js, Bun, Deno, Vercel Edge,
           Netlify Edge, or Cloudflare Workers - without any per-platform code.
         </P>
-        <P>
-          In dev, it also mirrors non-prefixed <C>.env</C> values into <C>process.env</C> so
-          Node-hosted Hono routes can read server-side secrets with no manual setup.
-        </P>
+        <EnvFlowVisual />
       </Section>
 
       <Section id="installation" title="Installation">
@@ -154,9 +164,6 @@ export default defineConfig({
   plugins: [biniEnv()],
 })`}
         />
-        <P>
-          <C>biniEnv()</C> takes no options.
-        </P>
 
         <h3 className={H3_CLS}>2. Read env vars in a Hono handler</h3>
         <CodeBlock
@@ -188,10 +195,22 @@ app.post('/hello', async (c) => {
 
 export default app`}
         />
-        <P>
-          Non-prefixed keys like <C>MY_API_KEY</C> are read from your <C>.env</C> file in dev. In
-          production, set them in your hosting platform's environment config.
-        </P>
+
+        <h3 className={H3_CLS}>3. Your .env file</h3>
+        <CodeBlock
+          filename=".env"
+          lang="env"
+          code={`# Server-side only
+DATABASE_URL=postgres://...
+STRIPE_SECRET_KEY=sk_live_...
+
+# Exposed to the browser
+BINI_API_URL=https://api.example.com
+VITE_ANALYTICS_ID=UA-XXXX`}
+        />
+
+        <h3 className={H3_CLS}>4. Dev banner</h3>
+        <DevBanner />
       </Section>
 
       <Section id="prefixes" title="Prefixes">
@@ -207,80 +226,26 @@ export default app`}
             ['VITE_', 'Always', 'Yes', 'Public config'],
           ]}
         />
-        <CodeBlock
-          filename=".env"
-          lang="env"
-          code={`# Server-side only
-DATABASE_URL=postgres://...
-STRIPE_SECRET_KEY=sk_live_...
-
-# Exposed to the browser
-BINI_API_URL=https://api.example.com
-VITE_ANALYTICS_ID=UA-XXXX`}
-        />
         <Callout>
           The prefix list is fixed - there's no config surface that can widen what's exposed. Use
           no prefix for anything secret.
         </Callout>
       </Section>
 
-      <Section id="how-it-works" title="How It Works">
-        <h3 className="mb-3 text-base font-semibold text-neutral-900 dark:text-neutral-200">
-          Dev and preview
-        </h3>
-        <P>
-          On <C>vite dev</C> / <C>vite preview</C>, <C>biniEnv()</C> loads your <C>.env*</C> files
-          with Vite's own <C>loadEnv</C> and mirrors every non-prefixed value into{' '}
-          <C>process.env</C>. That's what makes server-side secrets readable inside Hono routes
-          without a manual loop.
-        </P>
-        <UL>
-          <li>Runs only in dev / preview - never on <C>vite build</C>.</li>
-          <li>
-            Reads from Vite's <C>envDir</C>, then <C>root</C>, then the working directory.
-          </li>
-          <li>
-            Never overrides a value already set in <C>process.env</C> (OS / shell / CI wins).
-          </li>
-          <li>Skips empty values, so <C>requireEnv</C> still fails loudly on placeholders.</li>
-          <li>
-            Respects <C>envDir: false</C> by skipping the mirror entirely.
-          </li>
-        </UL>
-        <P>On success it's silent. On failure it warns - but the dev server still boots:</P>
-        <WarnBanner />
-        <P>The startup banner is unchanged:</P>
-        <DevBanner />
-        <P>
-          If you already have a manual <C>loadEnv</C> loop in <C>vite.config.ts</C>, delete it -
-          this plugin replaces it:
-        </P>
-        <CodeBlock
-          filename="vite.config.ts"
-          lang="js"
-          code={`export default defineConfig({
-  plugins: [biniEnv()],
-})`}
-        />
-
-        <h3 className={H3_CLS}>Reading env vars</h3>
-        <P>
-          <C>getEnv</C> and <C>requireEnv</C> read from <C>env(c)</C> via <C>hono/adapter</C>.
-          Every read is request-scoped and resolved by Hono for the current platform. <C>dotenv</C>{' '}
-          is never used.
-        </P>
-      </Section>
-
       <Section id="platform-support" title="Platform Support">
+        <P>
+          <C>getEnv</C> / <C>requireEnv</C> delegate to Hono's <C>env(c)</C> adapter, which reads
+          from the correct source on every platform automatically.
+        </P>
         <Table
-          headers={['Platform', 'Runtime', 'Source', 'How Hono reads it']}
+          headers={['Platform', 'Runtime', 'Source']}
           rows={[
-            ['Node.js', 'Node', 'System env / dev mirror', 'process.env'],
-            ['Bun', 'Bun', 'System env / dev mirror', 'process.env'],
-            ['Vercel Edge', 'V8 isolate', 'Project settings', 'process.env'],
-            ['Netlify Edge', 'Deno', 'Site settings', 'Deno.env.get()'],
-            ['Cloudflare Workers', 'V8 isolate', 'wrangler.toml / dashboard', 'c.env'],
-            ['Deno Deploy', 'Deno', 'Project settings', 'Deno.env.get()'],
+            ['Node.js', 'Node', 'process.env'],
+            ['Bun', 'Bun', 'process.env'],
+            ['Vercel Edge', 'V8 isolate', 'process.env'],
+            ['Netlify Edge', 'Deno', 'Deno.env.get()'],
+            ['Cloudflare Workers', 'V8 isolate', 'c.env'],
+            ['Deno Deploy', 'Deno', 'Deno.env.get()'],
           ]}
         />
         <Callout>
@@ -295,7 +260,7 @@ VITE_ANALYTICS_ID=UA-XXXX`}
           getEnv(c, key)
         </h3>
         <P>
-          Returns <C>string | undefined</C>.
+          Returns <C>string | undefined</C>. Use for optional config.
         </P>
         <CodeBlock
           filename="src/app/api/config.ts"
@@ -306,70 +271,46 @@ const debug  = getEnv(ctx, 'DEBUG_MODE') === 'true'`}
 
         <h3 className={H3_CLS}>requireEnv(c, key)</h3>
         <P>
-          Returns <C>string</C>. Throws if the variable is missing or empty, and logs the failure
-          to the terminal:
+          Returns <C>string</C>. Throws if the variable is missing or empty.
         </P>
         <RequireEnvError />
-
-        <h3 className={H3_CLS}>biniEnv()</h3>
-        <P>Vite plugin. Takes no options.</P>
-
-        <h3 className={H3_CLS}>biniLogger</h3>
-        <P>Vite-style logger for your own plugins or server code.</P>
-        <CodeBlock
-          filename="src/lib/logger.ts"
-          lang="js"
-          code={`import { biniLogger } from 'bini-env'
-
-biniLogger.info('Server ready')
-biniLogger.warn('Missing optional var')
-biniLogger.error('Something broke', error)`}
-        />
-
-        <h3 className={H3_CLS}>HonoContext</h3>
-        <P>
-          Exported type (<C>Context</C> from Hono). Use it to type helpers that group env reads.
-        </P>
-        <CodeBlock
-          filename="src/lib/db-config.ts"
-          lang="js"
-          code={`import type { HonoContext } from 'bini-env'
-
-function readDbConfig(c: HonoContext) {
-  const ctx = c as any
-  return {
-    url: requireEnv(ctx, 'DATABASE_URL'),
-    poolSize: parseInt(getEnv(ctx, 'DB_POOL_SIZE') ?? '10'),
-  }
-}`}
-        />
       </Section>
 
-      <Section id="security" title="Security">
+      <Section id="troubleshooting" title="Troubleshooting">
         <UL>
           <li>
-            <strong className={STRONG}>Never prefix secrets.</strong> <C>BINI_</C> and <C>VITE_</C>{' '}
-            are always exposed to the browser.
+            <strong className={STRONG}>Works in dev, undefined in prod</strong> - <C>.env</C>{' '}
+            files are only loaded by Vite during dev and preview. In production, set vars in your
+            hosting platform's dashboard.
           </li>
           <li>
-            <strong className={STRONG}>Use no prefix for secrets.</strong> Available server-side via{' '}
+            <strong className={STRONG}>
+              My .env value isn't taking effect in dev
+            </strong>{' '}
+            - either the value is already set in your shell / CI (which wins), or it's empty (
+            <C>KEY=</C>), which is skipped by design.
+          </li>
+          <li>
+            <strong className={STRONG}>requireEnv throws even though the key is in .env</strong>{' '}
+            - an empty <C>KEY=</C> is treated as unset. Give it a real value, or remove the line.
+          </li>
+          <li>
+            <strong className={STRONG}>bini-env reads .env from the wrong folder</strong> - it
+            uses Vite's <C>envDir</C>, then <C>root</C>, then the working directory. Check{' '}
+            <C>envDir</C> / <C>root</C> in <C>vite.config.ts</C> if your <C>.env</C> lives
+            somewhere non-standard.
+          </li>
+          <li>
+            <strong className={STRONG}>Cloudflare secret not found</strong> -{' '}
+            <C>wrangler secret put</C> secrets only live on <C>c.env</C>. Pass <C>c</C> to{' '}
             <C>getEnv</C> / <C>requireEnv</C>.
           </li>
           <li>
-            <strong className={STRONG}>Don't leave secret placeholders empty.</strong>{' '}
-            <C>API_KEY=</C> is skipped, so <C>requireEnv</C> throws instead of silently returning
-            an empty string.
-          </li>
-          <li>
-            <strong className={STRONG}>Let OS / CI win in dev.</strong> Override locally with a
-            shell var instead of editing <C>.env</C>:
-            <div className="mt-3">
-              <CodeBlock
-                filename="Terminal"
-                lang="shell"
-                code={`$ DATABASE_URL=postgres://staging... pnpm dev`}
-              />
-            </div>
+            <strong className={STRONG}>
+              TypeScript: Context not assignable to HonoContext
+            </strong>{' '}
+            - Hono 4.12+ added a symbol to <C>HonoRequest</C> that breaks strict assignability.
+            Cast once per handler: <C>const ctx = c as any</C>.
           </li>
         </UL>
       </Section>
