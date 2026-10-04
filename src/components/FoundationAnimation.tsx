@@ -198,6 +198,7 @@ function ChipSweepLight({ isDark }: { isDark: boolean }) {
       className="absolute inset-0 pointer-events-none overflow-hidden rounded-2xl"
       style={{ zIndex: 10 }}
     >
+      {/* Dark mode: soft white shimmer */}
       <m.div
         className="absolute"
         style={{

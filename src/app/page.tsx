@@ -22,6 +22,7 @@ import { siAndroid, siApple, siGithub, siLinux } from 'simple-icons'
 import { BiniAnimation } from '../components/BiniAnimation'
 import { MultiTerminal } from '../components/DocBlocks'
 import { Header, Footer } from '../components/Layout'
+import PluginAnimation from '../components/PluginAnimation'
 
 // Below-the-fold animations are split into their own chunks and only
 // mounted once they get close to the viewport.
