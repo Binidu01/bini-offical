@@ -1,39 +1,40 @@
-// src/components/DocSidebar.tsx
-import React, { useState, useEffect, useRef } from 'react'
-import { ChevronDown, ChevronUp } from 'lucide-react'
+import { ChevronDown, ChevronRight } from 'lucide-react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 
-// ────────────────────────────────────────────────────────────────────────────────
-// Section Component (non-collapsible, always visible)
-// ────────────────────────────────────────────────────────────────────────────────
-function Section({ 
-  title, 
-  items 
-}: { 
+function Section({
+  title,
+  items,
+}: {
   title: string
-  items: { title: string; href: string }[]
+  items: {
+    label: string
+    href: string
+  }[]
 }) {
   const location = useLocation()
 
   return (
     <div className="mb-4">
-      <h3 className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-1.5">
+      <h3 className="mb-2 text-xs font-semibold tracking-wider text-neutral-400 uppercase dark:text-neutral-500">
         {title}
       </h3>
-      <div className="space-y-0">
+
+      <div className="space-y-0.5">
         {items.map((item) => {
-          const isItemActive = location.pathname === item.href
+          const active = location.pathname === item.href
+
           return (
             <Link
               key={item.href}
               to={item.href}
               className={`block py-1 text-sm transition-colors ${
-                isItemActive 
-                  ? 'text-cyan-400 font-medium' 
-                  : 'text-white/70 hover:text-white'
+                active
+                  ? 'font-medium text-cyan-600 dark:text-cyan-400'
+                  : 'text-neutral-600 hover:text-cyan-600 dark:text-neutral-400 dark:hover:text-cyan-400'
               }`}
             >
-              {item.title}
+              {item.label}
             </Link>
           )
         })}
@@ -42,207 +43,442 @@ function Section({
   )
 }
 
-// ────────────────────────────────────────────────────────────────────────────────
-// Documentation Sidebar Content
-// ────────────────────────────────────────────────────────────────────────────────
 function DocSidebarContent() {
-  // ─── GETTING STARTED ──────────────────────────────────────────────────────────
-  const gettingStartedItems = [
-    { title: 'Introduction', href: '/docs' },
-    { title: 'Installation', href: '/docs/installation' },
-    { title: 'Project Structure', href: '/docs/project-structure' },
-    { title: 'Layouts and Pages', href: '/docs/layouts-and-pages' },
-    { title: 'Linking and Navigating', href: '/docs/linking-and-navigating' },
-  ]
-
-  // ─── DEFINING ROUTES ──────────────────────────────────────────────────────────
-  const definingRoutesItems = [
-    { title: 'Folder-Based Routing', href: '/docs/folder-based-routing' },
-    { title: 'File-Based Routing', href: '/docs/file-based-routing' },
-    { title: 'Dynamic Routes', href: '/docs/dynamic-routes' },
-    { title: 'Catch-All Routes', href: '/docs/catch-all-routes' },
-    { title: 'MDX & Markdown Pages', href: '/docs/mdx-markdown' },
-  ]
-
-  // ─── SPECIAL FILES ──────────────────────────────────────────────────────────────
-  const specialFilesItems = [
-    { title: 'Loading UI', href: '/docs/load' },
-    { title: 'Error Boundaries', href: '/docs/error-boundaries' },
-    { title: 'Not Found (404)', href: '/docs/notfound' },
-  ]
-
-  // ─── METADATA ──────────────────────────────────────────────────────────────────
-  const metadataItems = [
-    { title: 'Metadata & SEO', href: '/docs/metadata' },
-    { title: 'Open Graph & Twitter', href: '/docs/og-twitter' },
-    { title: 'Icons & Favicons', href: '/docs/icons' },
-  ]
-
-  // ─── API ROUTES ──────────────────────────────────────────────────────────────
-  const apiItems = [
-    { title: 'API Routes Overview', href: '/docs/api-routes' },
-    { title: 'Plain Function Handlers', href: '/docs/api-plain' },
-    { title: 'Hono Integration', href: '/docs/api-hono' },
-    { title: 'Dynamic API Routes', href: '/docs/api-dynamic' },
-    { title: 'CORS', href: '/docs/api-cors' },
-  ]
-
-  // ─── ENVIRONMENT VARIABLES ──────────────────────────────────────────────────────
-  const envItems = [
-    { title: 'Overview', href: '/docs/environment-variables' },
-    { title: 'Prefixes & Client Exposure', href: '/docs/env-prefixes' },
-    { title: 'Using in API Routes', href: '/docs/env-api' },
-  ]
-
-  // ─── STYLING ──────────────────────────────────────────────────────────────────
-  const stylingItems = [
-    { title: 'CSS Overview', href: '/docs/css' },
-    { title: 'Tailwind CSS', href: '/docs/tailwind' },
-    { title: 'CSS Modules', href: '/docs/css-modules' },
-  ]
-
-  // ─── PLATFORMS ──────────────────────────────────────────────────────────────
-  const platformsItems = [
-    { title: 'Web', href: '/docs/platform-web' },
-    { title: 'Windows', href: '/docs/platform-windows' },
-    { title: 'macOS', href: '/docs/platform-macos' },
-    { title: 'Linux', href: '/docs/platform-linux' },
-    { title: 'Android', href: '/docs/platform-android' },
-    { title: 'iOS', href: '/docs/platform-ios' },
-  ]
-
-  // ─── DEPLOYMENT ──────────────────────────────────────────────────────────────
-  const deployItems = [
-    { title: 'Deployment Overview', href: '/docs/deploying' },
-    { title: 'Production Server', href: '/docs/production-server' },
-    { title: 'Static Export', href: '/docs/static-export' },
-    { title: 'Hosting Providers', href: '/docs/hosting' },
-  ]
-
   return (
-    <nav className="py-1">
-      <Section title="Getting Started" items={gettingStartedItems} />
-      <Section title="Defining Routes" items={definingRoutesItems} />
-      <Section title="Special Files" items={specialFilesItems} />
-      <Section title="Metadata" items={metadataItems} />
-      <Section title="API Routes" items={apiItems} />
-      <Section title="Environment Variables" items={envItems} />
-      <Section title="Styling" items={stylingItems} />
-      <Section title="Platforms" items={platformsItems} />
-      <Section title="Deployment" items={deployItems} />
+    <nav>
+      <Section
+        title="Getting Started"
+        items={[
+          { label: 'Introduction', href: '/docs' },
+          {
+            label: 'Installation',
+            href: '/docs/installation',
+          },
+          {
+            label: 'Project Structure',
+            href: '/docs/project-structure',
+          },
+          {
+            label: 'Layouts and Pages',
+            href: '/docs/layouts-and-pages',
+          },
+          {
+            label: 'Linking and Navigating',
+            href: '/docs/linking-and-navigating',
+          },
+        ]}
+      />
+
+      <Section
+        title="Defining Routes"
+        items={[
+          {
+            label: 'Folder-Based Routing',
+            href: '/docs/folder-based-routing',
+          },
+          {
+            label: 'File-Based Routing',
+            href: '/docs/file-based-routing',
+          },
+          {
+            label: 'Dynamic Routes',
+            href: '/docs/dynamic-routes',
+          },
+          {
+            label: 'Parallel Routes',
+            href: '/docs/parallel-routes',
+          },
+          {
+            label: 'Catch-All Routes',
+            href: '/docs/catch-all-routes',
+          },
+          {
+            label: 'MDX & Markdown Pages',
+            href: '/docs/mdx-markdown',
+          },
+        ]}
+      />
+
+      <Section
+        title="Special Files"
+        items={[
+          {
+            label: 'Loading UI',
+            href: '/docs/load',
+          },
+          {
+            label: 'Error Boundaries',
+            href: '/docs/error-boundaries',
+          },
+          {
+            label: 'Template',
+            href: '/docs/templates',
+          },
+          {
+            label: 'Default',
+            href: '/docs/defaults',
+          },
+          {
+            label: 'Not Found',
+            href: '/docs/notfound',
+          },
+        ]}
+      />
+
+      <Section
+        title="Metadata"
+        items={[
+          {
+            label: 'Metadata & SEO',
+            href: '/docs/metadata',
+          },
+          {
+            label: 'Open Graph & Twitter',
+            href: '/docs/og-twitter',
+          },
+          {
+            label: 'Icons & Favicons',
+            href: '/docs/icons',
+          },
+        ]}
+      />
+
+      <Section
+        title="API Routes"
+        items={[
+          {
+            label: 'API Routes Overview',
+            href: '/docs/api-routes',
+          },
+          {
+            label: 'Plain Function Handlers',
+            href: '/docs/api-plain',
+          },
+          {
+            label: 'Hono Integration',
+            href: '/docs/api-hono',
+          },
+          {
+            label: 'Dynamic API Routes',
+            href: '/docs/api-dynamic',
+          },
+          {
+            label: 'CORS',
+            href: '/docs/api-cors',
+          },
+        ]}
+      />
+
+      <Section
+        title="Environment Variables"
+        items={[
+          {
+            label: 'Overview',
+            href: '/docs/environment-variables',
+          },
+          {
+            label: 'Prefixes & Client Exposure',
+            href: '/docs/env-prefixes',
+          },
+          {
+            label: 'Using in API Routes',
+            href: '/docs/env-api',
+          },
+        ]}
+      />
+
+      <Section
+        title="Styling"
+        items={[
+          {
+            label: 'CSS Overview',
+            href: '/docs/css',
+          },
+          {
+            label: 'Tailwind CSS',
+            href: '/docs/tailwind',
+          },
+          {
+            label: 'CSS Modules',
+            href: '/docs/css-modules',
+          },
+        ]}
+      />
+
+      <Section
+        title="Platforms"
+        items={[
+          {
+            label: 'Web',
+            href: '/docs/platform-web',
+          },
+          {
+            label: 'Windows',
+            href: '/docs/platform-windows',
+          },
+          {
+            label: 'macOS',
+            href: '/docs/platform-macos',
+          },
+          {
+            label: 'Linux',
+            href: '/docs/platform-linux',
+          },
+          {
+            label: 'Android',
+            href: '/docs/platform-android',
+          },
+          {
+            label: 'iOS',
+            href: '/docs/platform-ios',
+          },
+        ]}
+      />
+
+      <Section
+        title="Deployment"
+        items={[
+          {
+            label: 'Deployment Overview',
+            href: '/docs/deploying',
+          },
+          {
+            label: 'Production Server',
+            href: '/docs/production-server',
+          },
+          {
+            label: 'Static Export',
+            href: '/docs/static-export',
+          },
+          {
+            label: 'Hosting Providers',
+            href: '/docs/hosting',
+          },
+        ]}
+      />
     </nav>
   )
 }
 
-// ────────────────────────────────────────────────────────────────────────────────
-// Documentation Sidebar (Desktop only)
-// ────────────────────────────────────────────────────────────────────────────────
 export function DocSidebar() {
-  const [sidebarTop, setSidebarTop] = useState(80) // Default top position (20 * 4 = 80px)
-  const sidebarRef = useRef<HTMLDivElement>(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const handleScroll = () => {
-      const footer = document.querySelector('footer')
-      const sidebar = sidebarRef.current
-      
-      if (!footer || !sidebar) return
+    const el = scrollRef.current
 
-      const footerRect = footer.getBoundingClientRect()
-      const windowHeight = window.innerHeight
+    if (!el) return
 
-      // Check if footer is visible in viewport
-      if (footerRect.top < windowHeight) {
-        // Footer is visible - calculate how much to push sidebar up
-        const overlap = windowHeight - footerRect.top
-        const newTop = Math.max(20, 80 - overlap) // Minimum 20px from top
-        setSidebarTop(newTop)
-      } else {
-        // Footer not visible - reset to default
-        setSidebarTop(80)
-      }
+    const onWheel = (event: WheelEvent) => {
+      if (Math.abs(event.deltaY) < 1) return
+
+      event.preventDefault()
+
+      el.scrollTop += event.deltaY * 0.22
     }
 
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    window.addEventListener('resize', handleScroll, { passive: true })
-    
-    // Initial check
-    handleScroll()
+    el.addEventListener('wheel', onWheel, {
+      passive: false,
+    })
 
     return () => {
-      window.removeEventListener('scroll', handleScroll)
-      window.removeEventListener('resize', handleScroll)
+      el.removeEventListener('wheel', onWheel)
     }
   }, [])
 
   return (
-    <div 
-      ref={sidebarRef}
-      className="fixed w-48 overflow-y-auto overflow-x-hidden pb-4 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent hover:scrollbar-thumb-white/40 transition-all duration-300"
-      style={{
-        top: `${sidebarTop}px`,
-        maxHeight: `calc(100vh - ${sidebarTop + 20}px)`,
-      }}
-    >
-      <DocSidebarContent />
+    <div className="relative h-full w-full">
+      <div
+        ref={scrollRef}
+        className="h-full w-full overflow-y-auto overscroll-contain pr-3 pb-4"
+      >
+        <DocSidebarContent />
+      </div>
     </div>
   )
 }
 
-// ────────────────────────────────────────────────────────────────────────────────
-// Full Documentation Layout
-// ────────────────────────────────────────────────────────────────────────────────
-export function DocLayout({ children }: { children: React.ReactNode }) {
+interface DocLayoutProps {
+  children: React.ReactNode
+}
+
+export function DocLayout({ children }: DocLayoutProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const location = useLocation()
+
+  const desktopAsideRef = useRef<HTMLElement>(null)
+  const desktopMainRef = useRef<HTMLElement>(null)
+
+  // Close the mobile menu whenever the user navigates to another page
+  useEffect(() => {
+    setMobileMenuOpen(false)
+  }, [location.pathname])
+
+  // Close with the Escape key
+  useEffect(() => {
+    if (!mobileMenuOpen) return
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setMobileMenuOpen(false)
+    }
+
+    document.addEventListener('keydown', onKeyDown)
+
+    return () => {
+      document.removeEventListener('keydown', onKeyDown)
+    }
+  }, [mobileMenuOpen])
+
+  // While the mobile menu is open: start from the top, hide the site footer
+  // (it lives outside this component, in DocPage), and close the menu if the
+  // screen grows to desktop width so the footer can never stay hidden.
+  useEffect(() => {
+    if (!mobileMenuOpen) return
+
+    window.scrollTo(0, 0)
+
+    const footer = Array.from(document.querySelectorAll<HTMLElement>('footer')).at(-1)
+    const previousDisplay = footer?.style.display ?? ''
+
+    if (footer) footer.style.display = 'none'
+
+    // The menu never needs sideways scrolling, so lock the X axis while open.
+    const root = document.documentElement
+    const previousOverflowX = root.style.overflowX
+
+    root.style.overflowX = 'hidden'
+
+    const desktop = window.matchMedia('(min-width: 1024px)')
+    const onChange = () => {
+      if (desktop.matches) setMobileMenuOpen(false)
+    }
+
+    desktop.addEventListener('change', onChange)
+
+    return () => {
+      if (footer) footer.style.display = previousDisplay
+      root.style.overflowX = previousOverflowX
+      desktop.removeEventListener('change', onChange)
+    }
+  }, [mobileMenuOpen])
+
+  useEffect(() => {
+    const aside = desktopAsideRef.current
+    const main = desktopMainRef.current
+
+    if (!aside || !main) return
+
+    // Matches sticky top-20 (5rem)
+    const TOP = 80
+    // Small gap so the sidebar bottom never touches the separator
+    const GAP = 0
+
+    const updateHeight = () => {
+      // Prefer the exact "Next" separator that has border-t + the next-link
+      // Fallback to any .border-t that is below the header
+      let separator: HTMLElement | null = main.querySelector<HTMLElement>(
+        '.border-t.pt-8, .border-t.mt-12, .mt-12.border-t'
+      )
+
+      if (!separator) {
+        const candidates = Array.from(main.querySelectorAll<HTMLElement>('.border-t'))
+
+        separator =
+          candidates
+            .filter((el) => {
+              const r = el.getBoundingClientRect()
+              return r.width > 40 && r.top > TOP
+            })
+            .at(-1) ?? null
+      }
+
+      const full = window.innerHeight - TOP
+
+      if (!separator) {
+        aside.style.height = `${full}px`
+        return
+      }
+
+      const sepTop = separator.getBoundingClientRect().top
+
+      // Distance from sticky top edge → separator
+      const available = sepTop - TOP - GAP
+
+      // Clamp: never taller than viewport, never smaller than a usable min
+      const height = Math.max(160, Math.min(full, available))
+
+      aside.style.height = `${height}px`
+    }
+
+    const onScroll = () => requestAnimationFrame(updateHeight)
+
+    updateHeight()
+
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', updateHeight)
+
+    const ro = new ResizeObserver(updateHeight)
+    ro.observe(main)
+
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', updateHeight)
+      ro.disconnect()
+    }
+  }, [])
 
   return (
-    <>
-      {/* Desktop Layout */}
+    <div className="w-full">
+      {/* Desktop */}
       <div className="hidden lg:block">
-        <div className="flex">
-          <aside className="w-48 shrink-0">
+        <div className="grid grid-cols-[14rem_minmax(0,1fr)] items-start gap-12 xl:grid-cols-[14rem_minmax(0,1fr)] xl:gap-16">
+          <aside
+            ref={desktopAsideRef}
+            className="sticky top-20 w-full self-start"
+            style={{ height: 'calc(100vh - 5rem)' }}
+          >
             <DocSidebar />
           </aside>
-          
-          <div className="w-48 shrink-0" />
-          
-          <main className="flex-1 min-w-0 pb-8">
+
+          <main ref={desktopMainRef} className="min-w-0 pb-12">
             {children}
           </main>
         </div>
       </div>
 
-      {/* Mobile Layout */}
+      {/* Mobile / Tablet
+          The menu is NOT a fixed overlay. It sits in normal page flow and
+          replaces the page content while open, so the browser's own page
+          scroll handles it — exactly like the footer. Browsers already keep
+          the end of the document clear of their bottom bars, so no
+          device-specific padding or height tricks are needed. */}
       <div className="lg:hidden">
-        <div className="mb-1">
-          <button 
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)} 
-            className="flex items-center gap-1 text-white hover:text-cyan-400 transition-colors"
-            aria-label={mobileMenuOpen ? 'Collapse documentation menu' : 'Expand documentation menu'}
-          >
-            <span className="text-sm font-medium">Menu</span>
-            {mobileMenuOpen ? (
-              <ChevronUp className="w-3 h-3" />
-            ) : (
-              <ChevronDown className="w-3 h-3" />
-            )}
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={() => setMobileMenuOpen((open) => !open)}
+          className="flex items-center gap-2 text-lg font-semibold text-neutral-700 transition-colors hover:text-cyan-600 dark:text-neutral-200 dark:hover:text-cyan-400"
+          aria-label={mobileMenuOpen ? 'Close documentation menu' : 'Open documentation menu'}
+          aria-expanded={mobileMenuOpen}
+          aria-controls="mobile-doc-menu"
+        >
+          {mobileMenuOpen ? (
+            <ChevronDown className="h-5 w-5" />
+          ) : (
+            <ChevronRight className="h-5 w-5" />
+          )}
 
-        <div className="border-t border-slate-800 mb-2" />
+          <span>Menu</span>
+        </button>
 
-        <div className={`overflow-hidden transition-all duration-300 ${mobileMenuOpen ? 'max-h-80 mb-2' : 'max-h-0'}`}>
-          <div className="max-h-72 overflow-y-auto pb-1 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
+        <div className="my-3 border-t border-neutral-200 dark:border-neutral-800" />
+
+        {mobileMenuOpen && (
+          <div id="mobile-doc-menu" className="overflow-x-hidden pb-8">
             <DocSidebarContent />
           </div>
-        </div>
+        )}
 
-        <main className="pb-8">
-          {children}
-        </main>
+        <main className={mobileMenuOpen ? 'hidden' : 'pb-8'}>{children}</main>
       </div>
-    </>
+    </div>
   )
 }
-
-export default DocSidebar

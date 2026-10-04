@@ -1,142 +1,65 @@
-// src/pages/docs/og-twitter/page.tsx
-import React from 'react'
-import { m } from 'framer-motion'
+// src/app/docs/og-twitter.tsx
 import {
-  ArrowLeft,
-  ArrowRight,
-} from 'lucide-react'
-import { Link } from 'react-router-dom'
-import { Header } from '../../components/Layout'
-import { DocLayout } from '../../components/DocSidebar'
-import { CopyPageButton } from '../../components/CopyPageButton'
-import { TableOfContents, type TocItem } from '../../components/TableOfContents'
+  C,
+  Callout,
+  CodeBlock,
+  DocPage,
+  H3,
+  P,
+  Section,
+  Table,
+  useDocLang,
+} from '../../components/DocBlocks'
+import type { TocItem } from '../../components/TableOfContents'
 
-// ────────────────────────────────────────────────────────────────────────────────
-// "On this page" entries
-// ────────────────────────────────────────────────────────────────────────────────
 const TOC_ITEMS: TocItem[] = [
+  { id: 'overview', label: 'Overview' },
   { id: 'open-graph-overview', label: 'Open Graph Overview' },
   { id: 'open-graph-fields', label: 'Open Graph Fields' },
   { id: 'twitter-cards-overview', label: 'Twitter Cards Overview' },
   { id: 'twitter-card-fields', label: 'Twitter Card Fields' },
+  { id: 'bini-ssg-injection', label: 'bini-ssg Injection' },
   { id: 'complete-example', label: 'Complete Example' },
 ]
 
-const PAGE_TITLE = 'Open Graph & Twitter Cards'
-const PAGE_URL = 'https://bini.js.org/docs/og-twitter'
-const EDIT_URL = 'https://github.com/Binidu01/bini-offical/edit/main/src/app/docs/og-twitter.tsx'
+/* ---------- content (reads the TS/JS choice from DocPage) ---------- */
 
-// ────────────────────────────────────────────────────────────────────────────────
-// Code Block Component with horizontal scrollbar
-// ────────────────────────────────────────────────────────────────────────────────
-function CodeBlock({ code, filename }: { code: string; filename?: string }) {
-  const [copied, setCopied] = React.useState(false)
-  const handleCopy = () => { 
-    const cleanCode = code.replace(/\$ /g, '')
-    navigator.clipboard.writeText(cleanCode)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000) 
-  }
+function Content() {
+  const lang = useDocLang()
+  const e = lang === 'js' ? 'jsx' : 'tsx'
 
   return (
-    <div className="relative group mb-6">
-      {filename && (
-        <div className="flex items-center justify-between px-4 py-2 bg-slate-900 border border-slate-800 border-b-0 rounded-t-lg">
-          <span className="text-sm text-slate-300 font-mono">{filename}</span>
-        </div>
-      )}
-      <button onClick={handleCopy} className="absolute top-2 right-2 p-1.5 rounded-md bg-slate-800 hover:bg-slate-700 transition-colors z-10 opacity-0 group-hover:opacity-100" style={{ top: filename ? '3rem' : '0.5rem' }}>
-        {copied ? (
-          <svg className="w-3.5 h-3.5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
-        ) : (
-          <svg className="w-3.5 h-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-          </svg>
-        )}
-      </button>
-      <div className={`bg-[#0a0a0a] border border-slate-700 ${filename ? 'rounded-t-none' : 'rounded-lg'} overflow-x-auto scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-transparent hover:scrollbar-thumb-slate-500`}>
-        <pre className="p-4 min-w-max">
-          <code className="text-sm font-mono text-slate-200 whitespace-pre">{code}</code>
-        </pre>
-      </div>
-    </div>
-  )
-}
+    <>
+      <Section id="overview" title="Overview">
+        <P>
+          Open Graph and Twitter Cards control how pages look when shared on Facebook, LinkedIn,
+          Slack, and X. Define them in the <C>metadata</C> export on layouts and pages.
+        </P>
+        <Callout>
+          <ul className="list-disc space-y-2 pl-5">
+            <li>
+              <strong>Open Graph:</strong> title, description, url, type, images, siteName, locale
+            </li>
+            <li>
+              <strong>Twitter Cards:</strong> card type, title, description, creator, images
+            </li>
+            <li>
+              <strong>Default image:</strong> replace <C>public/og-image.png</C> (1200×630
+              recommended)
+            </li>
+            <li>
+              <strong>bini-ssg:</strong> injects tags via <C>getMetadataForRoute</C> during{' '}
+              <C>vite build</C>
+            </li>
+          </ul>
+        </Callout>
+      </Section>
 
-// ────────────────────────────────────────────────────────────────────────────────
-// Table Component
-// ────────────────────────────────────────────────────────────────────────────────
-function Table({ headers, rows }: { headers: string[]; rows: string[][] }) {
-  return (
-    <div className="overflow-x-auto rounded-lg border border-slate-700 my-6">
-      <table className="w-full text-sm">
-        <thead className="bg-slate-900 border-b border-slate-800">
-          <tr>{headers.map((h, i) => <th key={i} className="text-left py-3 px-4 font-medium text-white">{h}</th>)}</tr>
-        </thead>
-        <tbody className="divide-y divide-slate-800">
-          {rows.map((row, i) => <tr key={i}>{row.map((cell, j) => <td key={j} className="py-3 px-4 text-slate-300 text-xs">{cell}</td>)}</tr>)}
-        </tbody>
-      </table>
-    </div>
-  )
-}
-
-// ────────────────────────────────────────────────────────────────────────────────
-// Open Graph & Twitter Cards Page
-// ────────────────────────────────────────────────────────────────────────────────
-export default function OgTwitterPage() {
-  return (
-    <div className="min-h-screen bg-black font-sans antialiased overflow-x-hidden">
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute inset-0 bg-black" />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-300 h-200 bg-linear-to-b from-cyan-500/5 via-sky-500/3 to-transparent rounded-full blur-3xl" />
-      </div>
-
-      <Header />
-
-      <div className="relative pt-16 lg:pt-20">
-        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 overflow-x-hidden">
-          
-          <DocLayout>
-            <div className="flex gap-10 xl:gap-14">
-              {/* Main content column */}
-              <div className="max-w-4xl min-w-0 flex-1">
-
-                {/* Title + Copy page button */}
-                <m.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex items-start justify-between gap-4 mb-4"
-                >
-                  <div>
-                    <h1 className="text-4xl font-bold text-white mb-2">{PAGE_TITLE}</h1>
-                    <p className="text-slate-400 text-sm">Learn how to add Open Graph and Twitter Cards to your pages for better social sharing.</p>
-                  </div>
-                  <div className="shrink-0 pt-2 hidden sm:block">
-                    <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
-                  </div>
-                </m.div>
-                {/* Copy button on small screens */}
-                <div className="sm:hidden mb-8">
-                  <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
-                </div>
-
-                {/* Open Graph Overview */}
-                <m.section id="open-graph-overview" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Open Graph Overview</h2>
-                  <p className="text-slate-300 mb-4">
-                    Open Graph tags control how your page appears when shared on social media platforms like Facebook, LinkedIn, Slack, and others. Bini.js allows you to define Open Graph metadata directly in your layouts and pages.
-                  </p>
-                  <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-4 mb-4">
-                    <p className="text-slate-300 text-sm">
-                      Bini.js includes a default <code className="text-cyan-400">og-image.png</code> in the <code className="text-cyan-400">public/</code> folder. Replace it with your own image to customize your Open Graph and Twitter Card images.
-                    </p>
-                  </div>
-                  <CodeBlock 
-                    code={`// src/app/about/page.tsx
-export const metadata = {
+      <Section id="open-graph-overview" title="Open Graph Overview">
+        <P>Open Graph tags control previews on Facebook, LinkedIn, and Slack.</P>
+        <CodeBlock
+          filename={`app/about/page.${e}`}
+          tsCode={`export const metadata = {
   title: 'About Us',
   description: 'Learn more about our company and team',
   openGraph: {
@@ -155,53 +78,67 @@ export const metadata = {
     siteName: 'My Bini.js App',
     locale: 'en_US',
   },
-}
-
-export default function AboutPage() {
-  return <h1>About Us</h1>
 }`}
-                    filename="app/about/page.tsx"
-                  />
-                </m.section>
+          jsCode={`export const metadata = {
+  title: 'About Us',
+  description: 'Learn more about our company and team',
+  openGraph: {
+    title: 'About Us - My Bini.js App',
+    description: 'Learn more about our company and team',
+    url: 'https://myapp.com/about',
+    type: 'website',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'About Us',
+      },
+    ],
+    siteName: 'My Bini.js App',
+    locale: 'en_US',
+  },
+}`}
+        />
+        <Callout>
+          Put a default image at <C>public/og-image.png</C> and reference it from metadata. Replace
+          it with your own 1200×630 asset.
+        </Callout>
+      </Section>
 
-                {/* Open Graph Fields */}
-                <m.section id="open-graph-fields" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Open Graph Fields</h2>
-                  <Table 
-                    headers={['Field', 'Type', 'Description']}
-                    rows={[
-                      ['title', 'string', 'Title for social sharing'],
-                      ['description', 'string', 'Description for social sharing'],
-                      ['url', 'string', 'Canonical URL for the page'],
-                      ['type', 'string', 'Type of content (website, article, etc.)'],
-                      ['images', 'array', 'Array of image objects for social cards'],
-                      ['siteName', 'string', 'Name of the site'],
-                      ['locale', 'string', 'Language locale (e.g., en_US)'],
-                    ]}
-                  />
-                  <p className="text-slate-300 mt-4">
-                    <strong className="text-white">Image object fields:</strong>
-                  </p>
-                  <Table 
-                    headers={['Field', 'Type', 'Description']}
-                    rows={[
-                      ['url', 'string', 'URL to the image'],
-                      ['width', 'number', 'Width of the image in pixels'],
-                      ['height', 'number', 'Height of the image in pixels'],
-                      ['alt', 'string', 'Alt text for the image'],
-                    ]}
-                  />
-                </m.section>
+      <Section id="open-graph-fields" title="Open Graph Fields">
+        <Table
+          headers={['Field', 'Type', 'Injected as']}
+          rows={[
+            ['title', 'string', 'og:title'],
+            ['description', 'string', 'og:description'],
+            ['url', 'string', 'og:url'],
+            ['type', 'string', 'og:type'],
+            ['images', 'array', 'og:image (+ width/height/alt)'],
+            ['siteName', 'string', 'og:site_name'],
+            ['locale', 'string', 'og:locale'],
+          ]}
+        />
+        <H3 className="mt-6 mb-4">Image object fields</H3>
+        <Table
+          headers={['Field', 'Type', 'Notes']}
+          rows={[
+            ['url', 'string', 'Image URL'],
+            ['width', 'number', '1200 recommended'],
+            ['height', 'number', '630 recommended'],
+            ['alt', 'string', 'Alt text'],
+          ]}
+        />
+      </Section>
 
-                {/* Twitter Cards Overview */}
-                <m.section id="twitter-cards-overview" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Twitter Cards Overview</h2>
-                  <p className="text-slate-300 mb-4">
-                    Twitter Cards control how your page appears when shared on Twitter/X. Bini.js supports all Twitter Card types including summary, summary_large_image, app, and player.
-                  </p>
-                  <CodeBlock 
-                    code={`// src/app/blog/[slug]/page.tsx
-export const metadata = {
+      <Section id="twitter-cards-overview" title="Twitter Cards Overview">
+        <P>
+          Twitter (X) cards control how links appear in the feed. Common types: <C>summary</C> and{' '}
+          <C>summary_large_image</C>.
+        </P>
+        <CodeBlock
+          filename={`app/blog/[slug]/page.${e}`}
+          tsCode={`export const metadata = {
   title: 'Blog Post',
   description: 'A comprehensive guide to Bini.js',
   twitter: {
@@ -211,53 +148,88 @@ export const metadata = {
     creator: '@bini_js',
     images: ['/og-image.png'],
   },
-}
-
-export default function BlogPost() {
-  return <h1>Blog Post</h1>
 }`}
-                    filename="app/blog/[slug]/page.tsx"
-                  />
-                </m.section>
+          jsCode={`export const metadata = {
+  title: 'Blog Post',
+  description: 'A comprehensive guide to Bini.js',
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Blog Post - My Bini.js App',
+    description: 'A comprehensive guide to Bini.js',
+    creator: '@bini_js',
+    images: ['/og-image.png'],
+  },
+}`}
+        />
+      </Section>
 
-                {/* Twitter Card Fields */}
-                <m.section id="twitter-card-fields" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Twitter Card Fields</h2>
-                  <Table 
-                    headers={['Field', 'Type', 'Description']}
-                    rows={[
-                      ['card', 'string', 'Card type: summary, summary_large_image, app, player'],
-                      ['title', 'string', 'Title for Twitter card'],
-                      ['description', 'string', 'Description for Twitter card'],
-                      ['creator', 'string', 'Twitter handle of the content creator'],
-                      ['images', 'array', 'Array of image URLs for the card'],
-                    ]}
-                  />
-                  <p className="text-slate-300 mt-4">
-                    <strong className="text-white">Card types:</strong>
-                  </p>
-                  <ul className="space-y-2 text-slate-300 mb-4 list-disc list-inside">
-                    <li><code className="text-cyan-400">summary</code> — Standard card with a small image</li>
-                    <li><code className="text-cyan-400">summary_large_image</code> — Card with a large, prominent image</li>
-                    <li><code className="text-cyan-400">app</code> — Card for mobile apps</li>
-                    <li><code className="text-cyan-400">player</code> — Card for video/audio content</li>
-                  </ul>
-                </m.section>
+      <Section id="twitter-card-fields" title="Twitter Card Fields">
+        <Table
+          headers={['Field', 'Type', 'Injected as']}
+          rows={[
+            ['card', 'string', 'twitter:card'],
+            ['title', 'string', 'twitter:title'],
+            ['description', 'string', 'twitter:description'],
+            ['creator', 'string', 'twitter:creator'],
+            ['images', 'array', 'twitter:image'],
+          ]}
+        />
+        <Callout>
+          <p className="mb-2 font-semibold text-neutral-900 dark:text-neutral-100">Card types</p>
+          <ul className="list-disc space-y-2 pl-5">
+            <li>
+              <C>summary</C> - small image
+            </li>
+            <li>
+              <C>summary_large_image</C> - large image (recommended)
+            </li>
+            <li>
+              <C>app</C> - mobile app card
+            </li>
+            <li>
+              <C>player</C> - video / audio
+            </li>
+          </ul>
+        </Callout>
+      </Section>
 
-                {/* Complete Example */}
-                <m.section id="complete-example" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Complete Example</h2>
-                  <p className="text-slate-300 mb-4">
-                    Here's a comprehensive example combining Open Graph and Twitter Cards for optimal social sharing:
-                  </p>
-                  <CodeBlock 
-                    code={`// src/app/blog/[slug]/page.tsx
-export const metadata = {
+      <Section id="bini-ssg-injection" title="bini-ssg Injection">
+        <P>
+          During <C>vite build</C>, <C>bini-ssg</C> injects OG and Twitter tags into pre-rendered
+          HTML. Existing matching tags are updated in place.
+        </P>
+        <Table
+          headers={['Metadata', 'Injected tags']}
+          rows={[
+            ['openGraph.title', 'og:title'],
+            ['openGraph.description', 'og:description'],
+            ['openGraph.url', 'og:url'],
+            ['openGraph.type', 'og:type'],
+            ['openGraph.images', 'og:image, og:image:width, og:image:height, og:image:alt'],
+            ['twitter.card', 'twitter:card'],
+            ['twitter.creator', 'twitter:creator'],
+            ['twitter.images', 'twitter:image'],
+          ]}
+        />
+        <Callout>
+          Injection is best-effort and does not fail the build. For dynamic routes like{' '}
+          <C>/blog/:slug</C>, metadata is keyed by the route pattern unless you resolve per-URL
+          values yourself.
+        </Callout>
+      </Section>
+
+      <Section id="complete-example" title="Complete Example">
+        <P>Combined Open Graph and Twitter metadata for a blog post.</P>
+        <CodeBlock
+          filename={`app/blog/[slug]/page.${e}`}
+          tsCode={`export const metadata = {
   title: 'Getting Started with Bini.js',
-  description: 'Learn how to build native cross-platform apps with Bini.js',
+  description:
+    'Learn how to build native cross-platform apps with Bini.js',
   openGraph: {
     title: 'Getting Started with Bini.js',
-    description: 'Learn how to build native cross-platform apps with Bini.js',
+    description:
+      'Learn how to build native cross-platform apps with Bini.js',
     url: 'https://myapp.com/blog/getting-started',
     type: 'article',
     images: [
@@ -270,63 +242,67 @@ export const metadata = {
     ],
     siteName: 'My Bini.js App',
     locale: 'en_US',
-    article: {
-      publishedTime: '2025-08-01T00:00:00.000Z',
-      modifiedTime: '2025-08-01T00:00:00.000Z',
-      authors: ['https://myapp.com/authors/john'],
-      tags: ['bini', 'react', 'framework'],
-    },
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Getting Started with Bini.js',
-    description: 'Learn how to build native cross-platform apps with Bini.js',
+    description:
+      'Learn how to build native cross-platform apps with Bini.js',
     creator: '@bini_js',
     images: ['https://myapp.com/images/blog/og.png'],
   },
+}`}
+          jsCode={`export const metadata = {
+  title: 'Getting Started with Bini.js',
+  description:
+    'Learn how to build native cross-platform apps with Bini.js',
+  openGraph: {
+    title: 'Getting Started with Bini.js',
+    description:
+      'Learn how to build native cross-platform apps with Bini.js',
+    url: 'https://myapp.com/blog/getting-started',
+    type: 'article',
+    images: [
+      {
+        url: 'https://myapp.com/images/blog/og.png',
+        width: 1200,
+        height: 630,
+        alt: 'Getting Started with Bini.js',
+      },
+    ],
+    siteName: 'My Bini.js App',
+    locale: 'en_US',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Getting Started with Bini.js',
+    description:
+      'Learn how to build native cross-platform apps with Bini.js',
+    creator: '@bini_js',
+    images: ['https://myapp.com/images/blog/og.png'],
+  },
+}`}
+        />
+        <Callout>Use images at least 1200×630 for consistent previews across platforms.</Callout>
+      </Section>
+    </>
+  )
 }
 
-export default function BlogPost() {
-  return <h1>Getting Started with Bini.js</h1>
-}`}
-                    filename="app/blog/[slug]/page.tsx"
-                  />
-                  <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-4 mt-4">
-                    <p className="text-slate-300 text-sm">
-                      <strong className="text-white">Note:</strong> For best results, use images that are at least 1200x630 pixels. This ensures your content looks great on all platforms.
-                    </p>
-                  </div>
-                </m.section>
+/* ---------- page ---------- */
 
-                {/* Previous / Next Navigation */}
-                <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
-                  <Link to="/docs/metadata" className="group flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
-                    <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                    <div>
-                      <div className="text-xs text-slate-500">Previous</div>
-                      <div className="text-sm font-medium">Metadata</div>
-                    </div>
-                  </Link>
-                  <Link to="/docs/icons" className="group flex items-center gap-2 text-right text-slate-400 hover:text-white transition-colors">
-                    <div>
-                      <div className="text-xs text-slate-500">Next</div>
-                      <div className="text-sm font-medium">Icons & Favicons</div>
-                    </div>
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                </m.div>
-
-              </div>
-
-              {/* Right-hand "On this page" sidebar */}
-              <aside className="hidden xl:block w-56 shrink-0">
-                <TableOfContents items={TOC_ITEMS} editUrl={EDIT_URL} />
-              </aside>
-            </div>
-          </DocLayout>
-          
-        </div>
-      </div>
-    </div>
+export default function OgTwitterPage() {
+  return (
+    <DocPage
+      title="Open Graph & Twitter Cards"
+      description="Open Graph and Twitter Cards for social previews - injected by bini-ssg at build time."
+      url="https://bini.js.org/docs/og-twitter"
+      editUrl="https://github.com/Binidu01/bini-official/edit/main/src/app/docs/og-twitter.tsx"
+      toc={TOC_ITEMS}
+      prev={{ to: '/docs/metadata', title: 'Metadata' }}
+      next={{ to: '/docs/icons', title: 'Icons & Favicons' }}
+    >
+      <Content />
+    </DocPage>
   )
 }

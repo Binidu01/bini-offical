@@ -1,475 +1,617 @@
-// src/pages/docs/platform-windows/page.tsx
-import React from 'react'
-import { m } from 'framer-motion'
-import {
-  ArrowLeft,
-  ArrowRight,
-  Monitor,
-  CheckCircle,
-  Terminal,
-  Package,
-  Shield,
-  Zap,
-  Apple,
-} from 'lucide-react'
-import { Link } from 'react-router-dom'
-import { Header } from '../../components/Layout'
-import { DocLayout } from '../../components/DocSidebar'
-import { CopyPageButton } from '../../components/CopyPageButton'
-import { TableOfContents, type TocItem } from '../../components/TableOfContents'
+// src/app/docs/platform-windows.tsx
+import type { ReactNode } from 'react'
 import { siGithub } from 'simple-icons'
 
-// ────────────────────────────────────────────────────────────────────────────────
-// Simple Icon Component
-// ────────────────────────────────────────────────────────────────────────────────
-function SimpleIcon({ 
-  icon, 
-  className = "", 
-  size = 20 
-}: { 
-  icon: typeof siGithub
-  className?: string
-  size?: number 
-}) {
-  return (
-    <svg
-      role="img"
-      viewBox="0 0 24 24"
-      width={size}
-      height={size}
-      fill="currentColor"
-      className={className}
-      dangerouslySetInnerHTML={{ __html: icon.svg }}
-    />
-  )
-}
+import {
+  BrandIcon,
+  C,
+  Callout,
+  CodeBlock,
+  DocPage,
+  ExtLink,
+  H3,
+  MultiTerminal,
+  P,
+  PromptOutput,
+  Section,
+  UL,
+  type TerminalTab,
+} from '../../components/DocBlocks'
+import { Arrow, CARD, FeatureCard, FolderVisual, GridBg } from '../../components/DocVisuals'
+import type { TocItem } from '../../components/TableOfContents'
 
-// ────────────────────────────────────────────────────────────────────────────────
-// "On this page" entries
-// ────────────────────────────────────────────────────────────────────────────────
 const TOC_ITEMS: TocItem[] = [
   { id: 'windows-overview', label: 'Windows Overview' },
   { id: 'requirements', label: 'Requirements' },
-  { id: 'native-windows', label: 'Native Windows' },
+  { id: 'native-windows', label: 'Windows' },
   { id: 'macos', label: 'macOS' },
   { id: 'linux', label: 'Linux' },
-  { id: 'creating-windows-app', label: 'Creating a Windows App' },
   { id: 'development', label: 'Development' },
   { id: 'building', label: 'Building' },
   { id: 'code-signing', label: 'Code Signing' },
 ]
 
-const PAGE_TITLE = 'Windows'
-const PAGE_URL = 'https://bini.js.org/docs/platform-windows'
-const EDIT_URL = 'https://github.com/Binidu01/bini-offical/edit/main/src/app/docs/platform-windows.tsx'
+const OL =
+  'mb-6 list-decimal space-y-2 pl-5 text-[15px] leading-relaxed text-neutral-600 dark:text-neutral-400'
 
-// ────────────────────────────────────────────────────────────────────────────────
-// Code Block Component with horizontal scrollbar
-// ────────────────────────────────────────────────────────────────────────────────
-function CodeBlock({ code, filename }: { code: string; filename?: string }) {
-  const [copied, setCopied] = React.useState(false)
-  const handleCopy = () => { 
-    const cleanCode = code.replace(/\$ /g, '')
-    navigator.clipboard.writeText(cleanCode)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000) 
-  }
+const STRONG = 'font-medium text-neutral-900 dark:text-neutral-100'
 
-  return (
-    <div className="relative group mb-6">
-      {filename && (
-        <div className="flex items-center justify-between px-4 py-2 bg-slate-900 border border-slate-800 border-b-0 rounded-t-lg">
-          <span className="text-sm text-slate-300 font-mono">{filename}</span>
-        </div>
-      )}
-      <button onClick={handleCopy} className="absolute top-2 right-2 p-1.5 rounded-md bg-slate-800 hover:bg-slate-700 transition-colors z-10 opacity-0 group-hover:opacity-100" style={{ top: filename ? '3rem' : '0.5rem' }}>
-        {copied ? (
-          <svg className="w-3.5 h-3.5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
-        ) : (
-          <svg className="w-3.5 h-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-          </svg>
-        )}
-      </button>
-      <div className={`bg-[#0a0a0a] border border-slate-700 ${filename ? 'rounded-t-none' : 'rounded-lg'} overflow-x-auto scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-transparent hover:scrollbar-thumb-slate-500`}>
-        <pre className="p-4 min-w-max">
-          <code className="text-sm font-mono text-slate-200 whitespace-pre">{code}</code>
-        </pre>
-      </div>
-    </div>
-  )
-}
+/* ---------- terminal tabs ---------- */
 
-// ────────────────────────────────────────────────────────────────────────────────
-// Table Component
-// ────────────────────────────────────────────────────────────────────────────────
-function Table({ headers, rows }: { headers: string[]; rows: React.ReactNode[][] }) {
-  return (
-    <div className="overflow-x-auto rounded-lg border border-slate-700 my-6">
-      <table className="w-full text-sm">
-        <thead className="bg-slate-900 border-b border-slate-800">
-          <tr>{headers.map((h, i) => <th key={i} className="text-left py-3 px-4 font-medium text-white">{h}</th>)}</tr>
-        </thead>
-        <tbody className="divide-y divide-slate-800">
-          {rows.map((row, i) => <tr key={i}>{row.map((cell, j) => <td key={j} className="py-3 px-4 text-slate-300 text-xs">{cell}</td>)}</tr>)}
-        </tbody>
-      </table>
-    </div>
-  )
-}
+const INTERACTIVE_TABS: TerminalTab[] = [
+  { id: 'npm', label: 'npm', command: `$ npx create-bini-app@latest` },
+  { id: 'pnpm', label: 'pnpm', command: `$ pnpm dlx create-bini-app@latest` },
+  { id: 'yarn', label: 'yarn', command: `$ yarn dlx create-bini-app@latest` },
+  { id: 'bun', label: 'bun', command: `$ bunx create-bini-app@latest` },
+]
 
-// ────────────────────────────────────────────────────────────────────────────────
-// Note Component
-// ────────────────────────────────────────────────────────────────────────────────
-function Note({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="p-4 rounded-lg bg-slate-900/50 border border-slate-800 my-6">
-      <div className="text-sm text-slate-300 [&>strong]:text-white [&>code]:text-cyan-400 [&>code]:bg-slate-800 [&>code]:px-1 [&>code]:py-0.5 [&>code]:rounded">{children}</div>
-    </div>
-  )
-}
+const NATIVE_TABS: TerminalTab[] = [
+  {
+    id: 'npm',
+    label: 'npm',
+    command: `$ npx create-bini-app@latest my-app --platform windows
+$ cd my-app
+$ npm install
+$ npm run tauri:dev
+$ npm run tauri:build`,
+  },
+  {
+    id: 'pnpm',
+    label: 'pnpm',
+    command: `$ pnpm dlx create-bini-app@latest my-app --platform windows
+$ cd my-app
+$ pnpm install
+$ pnpm tauri:dev
+$ pnpm tauri:build`,
+  },
+  {
+    id: 'yarn',
+    label: 'yarn',
+    command: `$ yarn dlx create-bini-app@latest my-app --platform windows
+$ cd my-app
+$ yarn install
+$ yarn tauri:dev
+$ yarn tauri:build`,
+  },
+  {
+    id: 'bun',
+    label: 'bun',
+    command: `$ bunx create-bini-app@latest my-app --platform windows
+$ cd my-app
+$ bun install
+$ bun run tauri:dev
+$ bun run tauri:build`,
+  },
+]
 
-// ────────────────────────────────────────────────────────────────────────────────
-// GitHub Actions Workflow Component
-// ────────────────────────────────────────────────────────────────────────────────
-function GitHubActionsWorkflow() {
-  return (
-    <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-4 mb-4">
-      <div className="flex items-center gap-2 mb-3">
-        <SimpleIcon icon={siGithub} className="w-5 h-5 text-white" size={20} />
-        <span className="text-white font-medium">GitHub Actions Workflow</span>
-      </div>
-      <CodeBlock 
-        code={`# .github/workflows/build-windows.yml
+const CREATE_AND_INSTALL_TABS: TerminalTab[] = [
+  {
+    id: 'npm',
+    label: 'npm',
+    command: `$ npx create-bini-app@latest my-app --platform windows
+$ cd my-app
+$ npm install`,
+  },
+  {
+    id: 'pnpm',
+    label: 'pnpm',
+    command: `$ pnpm dlx create-bini-app@latest my-app --platform windows
+$ cd my-app
+$ pnpm install`,
+  },
+  {
+    id: 'yarn',
+    label: 'yarn',
+    command: `$ yarn dlx create-bini-app@latest my-app --platform windows
+$ cd my-app
+$ yarn install`,
+  },
+  {
+    id: 'bun',
+    label: 'bun',
+    command: `$ bunx create-bini-app@latest my-app --platform windows
+$ cd my-app
+$ bun install`,
+  },
+]
+
+const DEPLOY_TABS: TerminalTab[] = [
+  { id: 'npm', label: 'npm', command: `$ npm run deploy` },
+  { id: 'pnpm', label: 'pnpm', command: `$ pnpm deploy` },
+  { id: 'yarn', label: 'yarn', command: `$ yarn deploy` },
+  { id: 'bun', label: 'bun', command: `$ bun run deploy` },
+]
+
+const DEV_TABS: TerminalTab[] = [
+  { id: 'npm', label: 'npm', command: `$ npm run tauri:dev` },
+  { id: 'pnpm', label: 'pnpm', command: `$ pnpm tauri:dev` },
+  { id: 'yarn', label: 'yarn', command: `$ yarn tauri:dev` },
+  { id: 'bun', label: 'bun', command: `$ bun run tauri:dev` },
+]
+
+const BUILD_TABS: TerminalTab[] = [
+  { id: 'npm', label: 'npm', command: `$ npm run tauri:build` },
+  { id: 'pnpm', label: 'pnpm', command: `$ pnpm tauri:build` },
+  { id: 'yarn', label: 'yarn', command: `$ yarn tauri:build` },
+  { id: 'bun', label: 'bun', command: `$ bun run tauri:build` },
+]
+
+/* ---------- workflow files ---------- */
+
+const TAURI_ACTION_WORKFLOW = `# .github/workflows/build-windows.yml
 name: Build Windows App
 
 on:
   push:
     branches: [main]
-  pull_request:
-    branches: [main]
+  workflow_dispatch:
 
 jobs:
   build-windows:
     runs-on: windows-latest
-    
+
     steps:
-      - uses: actions/checkout@v3
-      
+      - uses: actions/checkout@v4
+
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
-          
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
       - name: Install dependencies
         run: npm install
-        
-      - name: Build Windows app
-        run: npm run tauri:build
-        
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+
+      - name: Build Tauri app
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
         with:
-          name: windows-build
-          path: src-tauri/target/release/*.exe`}
-        filename=".github/workflows/build-windows.yml"
-      />
-      <div className="mt-4 p-3 bg-slate-800/50 rounded-lg">
-        <p className="text-slate-300 text-sm">
-          <strong className="text-white">Why GitHub Actions?</strong> Tauri recommends GitHub Actions for cross-platform builds because:
-        </p>
-        <ul className="space-y-1 text-slate-300 text-sm list-disc list-inside mt-2">
-          <li>No local toolchain setup required</li>
-          <li>Consistent build environment</li>
-          <li>Automatic artifact generation</li>
-          <li>Works from any operating system</li>
-        </ul>
+          tagName: app-v__VERSION__
+          releaseName: 'App v__VERSION__'
+          releaseDraft: true`
+
+const SIGNED_WORKFLOW = `# .github/workflows/build-windows.yml
+name: Build Windows App
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Tauri app
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: app-v__VERSION__
+          releaseName: 'App v__VERSION__'
+          releaseDraft: true`
+
+/* ---------- visuals ---------- */
+
+const BOX = `${CARD} flex h-12 shrink-0 items-center justify-center px-3 text-center text-[12px] leading-tight text-neutral-800 dark:text-neutral-200`
+
+/** How a Windows build is produced from macOS or Linux. */
+function CrossBuildFlowVisual({ os }: { os: string }) {
+  return (
+    <GridBg>
+      <div className="flex items-center gap-3">
+        <span className={`${BOX} w-28`}>Your {os} machine</span>
+        <Arrow />
+        <span className={`${BOX} w-24`}>npm run deploy</span>
+        <Arrow />
+        <span className={`${BOX} w-40`}>GitHub Actions (windows-latest)</span>
+        <Arrow />
+        <span className={`${BOX} w-32`}>windows-build artifact</span>
       </div>
-    </div>
+    </GridBg>
   )
 }
 
-// ────────────────────────────────────────────────────────────────────────────────
-// Platform Windows Page
-// ────────────────────────────────────────────────────────────────────────────────
-export default function PlatformWindowsPage() {
+/* ---------- shared "create project" block ---------- */
+
+function ScaffoldBlock() {
   return (
-    <div className="min-h-screen bg-black font-sans antialiased overflow-x-hidden">
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute inset-0 bg-black" />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-300 h-200 bg-linear-to-b from-cyan-500/5 via-sky-500/3 to-transparent rounded-full blur-3xl" />
-      </div>
+    <>
+      <H3 className="mt-6 mb-3">Create the Project</H3>
+      <P className="mb-4">
+        Create a new Bini.js project targeting Windows and install its dependencies:
+      </P>
+      <MultiTerminal tabs={CREATE_AND_INSTALL_TABS} />
+      <P className="mb-4">
+        Or use the interactive prompt and select <C>Windows Desktop</C>:
+      </P>
+      <MultiTerminal tabs={INTERACTIVE_TABS} />
+      <PromptOutput
+        lines={[
+          { kind: 'question', text: 'Select target platform:' },
+          { kind: 'option', text: 'Web Application' },
+          { kind: 'option', text: 'Windows Desktop', selected: true },
+          { kind: 'option', text: 'Linux Desktop' },
+          { kind: 'option', text: 'macOS Desktop' },
+          { kind: 'option', text: 'Android' },
+          { kind: 'option', text: 'iOS' },
+          { kind: 'blank' },
+          { kind: 'hint', text: '↑↓ navigate • ⏎ select' },
+        ]}
+      />
+    </>
+  )
+}
 
-      <Header />
+/* ---------- shared CI workflow block (macOS / Linux) ---------- */
 
-      <div className="relative pt-16 lg:pt-20">
-        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 overflow-x-hidden">
-          
-          <DocLayout>
-            <div className="flex gap-10 xl:gap-14">
-              {/* Main content column */}
-              <div className="max-w-4xl min-w-0 flex-1">
+function WorkflowBlock() {
+  return (
+    <>
+      <H3 className="mt-6 mb-3">Add the Build Workflow</H3>
+      <P className="mb-4">
+        The scaffold does not ship with a GitHub Actions workflow. You need to add one manually.
+        Create the file <C>.github/workflows/build-windows.yml</C> inside your project with the
+        following content:
+      </P>
+      <FolderVisual
+        width={300}
+        rows={[
+          { n: '.github' },
+          { n: 'workflows', d: 1 },
+          { n: 'build-windows.yml', d: 2, dot: true },
+          { n: 'src-tauri' },
+          { n: 'package.json' },
+        ]}
+      />
+      <CodeBlock
+        filename=".github/workflows/build-windows.yml"
+        lang="yaml"
+        code={TAURI_ACTION_WORKFLOW}
+      />
 
-                {/* Title + Copy page button */}
-                <m.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex items-start justify-between gap-4 mb-4"
-                >
-                  <div>
-                    <h1 className="text-4xl font-bold text-white mb-2">{PAGE_TITLE}</h1>
-                    <p className="text-slate-400 text-sm">Build native Windows desktop applications with Bini.js.</p>
-                  </div>
-                  <div className="shrink-0 pt-2 hidden sm:block">
-                    <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
-                  </div>
-                </m.div>
-                {/* Copy button on small screens */}
-                <div className="sm:hidden mb-8">
-                  <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
-                </div>
+      <H3 className="mt-6 mb-3">Push to GitHub</H3>
+      <P className="mb-4">
+        Run <C>npm run deploy</C> and choose <C>Windows</C>. This initializes the repo, commits,
+        and pushes everything to GitHub in one step:
+      </P>
+      <MultiTerminal tabs={DEPLOY_TABS} />
+      <P className="mb-4">
+        Once pushed, the workflow runs on a real Windows runner and builds the installer.
+      </P>
 
-                {/* Windows Overview */}
-                <m.section id="windows-overview" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Windows Overview</h2>
-                  <p className="text-slate-300 mb-4">
-                    Bini.js allows you to build native Windows desktop applications using Tauri. Your React app is wrapped in a WebView2 binary, providing a native experience with full system access.
-                  </p>
-                  <div className="grid sm:grid-cols-3 gap-3 mb-6">
-                    <div className="p-4 rounded-xl border border-slate-700 bg-[#0a0a0a]">
-                      <Monitor className="w-5 h-5 text-cyan-400 mb-2" />
-                      <h3 className="text-white font-medium text-sm">Native Binary</h3>
-                      <p className="text-slate-400 text-xs">Windows executable (.exe) with Authenticode signing</p>
-                    </div>
-                    <div className="p-4 rounded-xl border border-slate-700 bg-[#0a0a0a]">
-                      <Shield className="w-5 h-5 text-cyan-400 mb-2" />
-                      <h3 className="text-white font-medium text-sm">Code Signing</h3>
-                      <p className="text-slate-400 text-xs">Authenticode signing support for trusted distribution</p>
-                    </div>
-                    <div className="p-4 rounded-xl border border-slate-700 bg-[#0a0a0a]">
-                      <Zap className="w-5 h-5 text-cyan-400 mb-2" />
-                      <h3 className="text-white font-medium text-sm">Native APIs</h3>
-                      <p className="text-slate-400 text-xs">Full access to Windows APIs via Tauri</p>
-                    </div>
-                  </div>
-                  <Note>
-                    Windows desktop apps are built using Tauri's WebView2 backend. Your app runs in a native window with full system access.
-                  </Note>
-                </m.section>
+      <H3 className="mt-6 mb-3">Download the Installer</H3>
+      <DownloadSteps />
+    </>
+  )
+}
 
-                {/* Requirements */}
-                <m.section id="requirements" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Requirements</h2>
-                  <p className="text-slate-300 mb-4">
-                    Before building Windows apps, make sure you have the following installed:
-                  </p>
-                  <ul className="space-y-2 text-slate-300 mb-4 list-disc list-inside">
-                    <li>Node.js <span className="text-white">20.19.0</span> or higher</li>
-                    <li>Microsoft C++ Build Tools — <a href="https://visualstudio.microsoft.com/visual-cpp-build-tools/" target="_blank" rel="noopener noreferrer" className="text-cyan-400 hover:underline">Download</a></li>
-                    <li>Microsoft Edge WebView2 Runtime — <a href="https://developer.microsoft.com/en-us/microsoft-edge/webview2/" target="_blank" rel="noopener noreferrer" className="text-cyan-400 hover:underline">Download</a></li>
-                  </ul>
-                  <Note>
-                    The C++ Build Tools are required to compile the Tauri backend. Install with "Desktop development with C++" workload.
-                  </Note>
-                </m.section>
+/* ---------- Windows section ---------- */
 
-                {/* Native Windows */}
-                <m.section id="native-windows" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Native Windows</h2>
-                  <p className="text-slate-300 mb-4">
-                    Build natively on Windows using the CLI. The development and build commands run directly on your Windows machine.
-                  </p>
-                  <CodeBlock 
-                    code={`# Create a Windows project
-npx create-bini-app@latest my-app --platform windows
+function WindowsSection() {
+  return (
+    <Section id="native-windows" title="Windows">
+      <P className="mb-4">
+        On Windows you can scaffold, develop, and build the app entirely on your own machine - no
+        CI required.
+      </P>
 
-# Navigate to project
-cd my-app
+      <H3 className="mt-6 mb-3">Step 1: Install the tools</H3>
+      <UL>
+        <li>
+          Node.js{' '}
+          <strong className="font-medium text-neutral-900 dark:text-neutral-100">20.19.0</strong>{' '}
+          or higher
+        </li>
+        <li>
+          Microsoft C++ Build Tools -{' '}
+          <ExtLink href="https://visualstudio.microsoft.com/visual-cpp-build-tools/">
+            Download
+          </ExtLink>{' '}
+          (install the "Desktop development with C++" workload)
+        </li>
+        <li>
+          Microsoft Edge WebView2 Runtime -{' '}
+          <ExtLink href="https://developer.microsoft.com/en-us/microsoft-edge/webview2/">
+            Download
+          </ExtLink>
+        </li>
+        <li>
+          Rust via <ExtLink href="https://rustup.rs/">rustup</ExtLink>
+        </li>
+      </UL>
 
-# Install dependencies
-npm install
+      <H3 className="mt-6 mb-3">Step 2: Create the project</H3>
+      <ScaffoldBlock />
 
-# Run in development mode
-npm run tauri:dev
+      <H3 className="mt-6 mb-3">Step 3: Develop and build</H3>
+      <P className="mb-4">
+        Run <C>tauri:dev</C> to open your app in a native window, then <C>tauri:build</C> to
+        produce the executable and installer:
+      </P>
+      <MultiTerminal tabs={NATIVE_TABS} />
 
-# Build the Windows executable
-npm run tauri:build`}
-                  />
-                  <p className="text-slate-300 mt-4">
-                    The build output is a native Windows executable (<code className="text-cyan-400">.exe</code>) with an installer.
-                  </p>
-                  <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-4 mt-4">
-                    <p className="text-slate-300 text-sm">
-                      <strong className="text-white">Tip:</strong> Use <code className="text-cyan-400">--sign</code> during scaffold to set up Authenticode signing.
-                    </p>
-                  </div>
-                </m.section>
+      <Callout>
+        <strong>Tip:</strong> Use <C>--sign</C> during scaffold to set up Authenticode signing.
+      </Callout>
+    </Section>
+  )
+}
 
-                {/* macOS */}
-                <m.section id="macos" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">macOS</h2>
-                  <p className="text-slate-300 mb-4">
-                    Build Windows apps from macOS using GitHub Actions. This is the recommended approach for cross-platform builds.
-                  </p>
-                  <GitHubActionsWorkflow />
-                  <Note>
-                    GitHub Actions runs on Windows runners to build native Windows executables. This works from any OS.
-                  </Note>
-                </m.section>
+/* ---------- macOS section ---------- */
 
-                {/* Linux */}
-                <m.section id="linux" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Linux</h2>
-                  <p className="text-slate-300 mb-4">
-                    Build Windows apps from Linux using GitHub Actions. This is the recommended approach and is used by Tauri for cross-platform builds.
-                  </p>
-                  <GitHubActionsWorkflow />
-                  <Note>
-                    GitHub Actions with <code>windows-latest</code> runners is the official Tauri-recommended approach for building Windows apps from Linux.
-                  </Note>
-                </m.section>
+function MacosSection() {
+  return (
+    <Section id="macos" title="macOS">
+      <P className="mb-4">
+        A native Windows <C>.exe</C> cannot be produced on macOS - Tauri relies on Windows-only
+        toolchains (MSVC, WebView2, WiX/NSIS). The Tauri team's own recommendation is to build
+        Windows apps on a <C>windows-latest</C> runner in CI.
+      </P>
+      <CrossBuildFlowVisual os="macOS" />
 
-                {/* Creating a Windows App */}
-                <m.section id="creating-windows-app" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Creating a Windows App</h2>
-                  <p className="text-slate-300 mb-4">
-                    Create a new Bini.js project targeting Windows:
-                  </p>
-                  <CodeBlock 
-                    code={`npx create-bini-app@latest my-app --platform windows`}
-                  />
-                  <p className="text-slate-300 mt-4">
-                    Or use the interactive prompt and select <code className="text-cyan-400">windows</code>:
-                  </p>
-                  <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-4 mb-4">
-                    <p className="text-slate-300 text-sm">
-                      <span className="text-white">Prompt:</span> Which platform would you like to target?
-                    </p>
-                    <p className="text-cyan-400 text-sm mt-1">web / windows / macos / linux / android / ios</p>
-                    <p className="text-emerald-400 text-sm mt-2 flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4" />
-                      Select <span className="font-medium">windows</span> and press Enter
-                    </p>
-                  </div>
-                  <CodeBlock 
-                    code={`npx create-bini-app@latest`}
-                  />
-                </m.section>
+      <H3 className="mt-6 mb-3">Step 1: Install the tools</H3>
+      <P className="mb-4">
+        Install Node.js <C>20.19.0</C> or higher and Git. Git comes with the Xcode command line
+        tools - run <C>xcode-select --install</C> if you do not have it yet.
+      </P>
 
-                {/* Development */}
-                <m.section id="development" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Development</h2>
-                  <p className="text-slate-300 mb-4">
-                    Run your Windows app in development mode:
-                  </p>
-                  <CodeBlock 
-                    code={`npm run tauri:dev`}
-                  />
-                  <p className="text-slate-300 mt-4">
-                    This launches your app in a native Windows window with:
-                  </p>
-                  <ul className="space-y-2 text-slate-300 mb-4 list-disc list-inside">
-                    <li>Hot reload for frontend changes</li>
-                    <li>Native window with system tray support</li>
-                    <li>Access to Windows APIs</li>
-                    <li>Devtools for debugging</li>
-                  </ul>
-                </m.section>
+      <H3 className="mt-6 mb-3">Step 2: Create the project</H3>
+      <ScaffoldBlock />
 
-                {/* Building */}
-                <m.section id="building" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Building</h2>
-                  <p className="text-slate-300 mb-4">
-                    Build a distributable Windows executable:
-                  </p>
-                  <CodeBlock 
-                    code={`npm run tauri:build`}
-                  />
-                  <p className="text-slate-300 mt-4">
-                    This creates a signed Windows installer in the <code className="text-cyan-400">src-tauri/target/release/</code> directory.
-                  </p>
-                  <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-4 mb-4">
-                    <h3 className="text-white font-semibold mb-2">Output Files</h3>
-                    <ul className="space-y-1 text-slate-300 text-sm list-disc list-inside">
-                      <li><code className="text-cyan-400">my-app.exe</code> — The main executable</li>
-                      <li><code className="text-cyan-400">my-app.msi</code> — Windows installer</li>
-                      <li><code className="text-cyan-400">my-app.nsis</code> — NSIS installer (if configured)</li>
-                    </ul>
-                  </div>
-                  <Note>
-                    The build output is a native Windows binary that runs without any additional dependencies.
-                  </Note>
-                </m.section>
+      <WorkflowBlock />
 
-                {/* Code Signing */}
-                <m.section id="code-signing" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Code Signing</h2>
-                  <p className="text-slate-300 mb-4">
-                    Bini.js supports Authenticode code signing for Windows binaries. Configure signing in <code className="text-cyan-400">src-tauri/tauri.conf.json</code>:
-                  </p>
-                  <CodeBlock 
-                    code={`{
-  "tauri": {
-    "bundle": {
-      "windows": {
-        "signing": {
-          "certificate": {
-            "path": "certificate.pfx",
-            "password": "your-password"
-          }
-        }
-      }
+      <Callout>
+        <strong>Why not build locally?</strong> Tauri's Windows build needs MSVC and WebView2, which
+        do not exist on macOS. Cross-compiling from macOS to Windows is technically possible but
+        experimental and unreliable. GitHub Actions on <C>windows-latest</C> is the supported path.
+      </Callout>
+    </Section>
+  )
+}
+
+/* ---------- Linux section ---------- */
+
+function LinuxSection() {
+  return (
+    <Section id="linux" title="Linux">
+      <P className="mb-4">
+        A native Windows <C>.exe</C> cannot be produced on Linux - Tauri relies on Windows-only
+        toolchains (MSVC, WebView2, WiX/NSIS). The Tauri team's own recommendation is to build
+        Windows apps on a <C>windows-latest</C> runner in CI.
+      </P>
+      <CrossBuildFlowVisual os="Linux" />
+
+      <H3 className="mt-6 mb-3">Step 1: Install the tools</H3>
+      <P className="mb-4">
+        Install Node.js <C>20.19.0</C> or higher and Git with your package manager, for example{' '}
+        <C>sudo apt install git</C> on Debian and Ubuntu.
+      </P>
+
+      <H3 className="mt-6 mb-3">Step 2: Create the project</H3>
+      <ScaffoldBlock />
+
+      <WorkflowBlock />
+
+      <Callout>
+        <strong>Why not build locally?</strong> Tauri's Windows build needs MSVC and WebView2, which
+        do not exist on Linux. Cross-compiling from Linux to Windows is technically possible but
+        experimental and unreliable. GitHub Actions on <C>windows-latest</C> is the supported path.
+      </Callout>
+    </Section>
+  )
+}
+
+/* ---------- shared download steps ---------- */
+
+function DownloadSteps() {
+  return (
+    <ol className={OL}>
+      <li>
+        Open your repository on GitHub and go to the <strong className={STRONG}>Actions</strong>{' '}
+        tab.
+      </li>
+      <li>
+        Open the latest <C>Build Windows App</C> run.
+      </li>
+      <li>
+        Under <strong className={STRONG}>Artifacts</strong>, download <C>windows-build</C>. Or, if
+        a release was created, download the <C>.exe</C> / <C>.msi</C> from the Releases page.
+      </li>
+    </ol>
+  )
+}
+
+/* ---------- content ---------- */
+
+function Content() {
+  return (
+    <>
+      <Section id="windows-overview" title="Windows Overview">
+        <P className="mb-4">
+          Bini.js allows you to build native Windows desktop applications using Tauri v2. Your
+          React app is wrapped in a WebView2 binary, providing a native experience with full system
+          access.
+        </P>
+        <div className="grid gap-3 sm:grid-cols-3">
+          <FeatureCard
+            title="Native Binary"
+            text="Windows executable (.exe) with Authenticode signing"
+          />
+          <FeatureCard
+            title="Code Signing"
+            text="Authenticode signing support for trusted distribution"
+          />
+          <FeatureCard title="Native APIs" text="Full access to Windows APIs via Tauri" />
+        </div>
+        <Callout>
+          Windows desktop apps are built using Tauri's WebView2 backend. Your app runs in a native
+          window with full system access.
+        </Callout>
+      </Section>
+
+      <Section id="requirements" title="Requirements">
+        <P className="mb-4">
+          Building Windows desktop apps requires different tools depending on your operating
+          system. See the section for your OS below.
+        </P>
+        <UL>
+          <li>
+            <strong className={STRONG}>On Windows:</strong> Node.js, Microsoft C++ Build Tools, the
+            WebView2 Runtime, and Rust - everything runs locally.
+          </li>
+          <li>
+            <strong className={STRONG}>On macOS or Linux:</strong> Node.js, Git, a GitHub account,
+            and the ability to push a repo. The Windows build itself runs on GitHub Actions.
+          </li>
+        </UL>
+        <Callout>
+          You cannot produce a native Windows <C>.exe</C> directly from macOS or Linux. Tauri v2
+          has no supported local cross-compilation path for Windows. The recommended way is GitHub
+          Actions on a <C>windows-latest</C> runner, described in each section below.
+        </Callout>
+      </Section>
+
+      <WindowsSection />
+      <MacosSection />
+      <LinuxSection />
+
+      <Section id="development" title="Development">
+        <P className="mb-4">
+          Running <C>tauri:dev</C> opens your app in a native Windows window. This requires a
+          Windows machine with the requirements installed (see the Windows section):
+        </P>
+        <MultiTerminal tabs={DEV_TABS} />
+        <P className="mb-4">This launches your app in a native Windows window with:</P>
+        <UL>
+          <li>Hot reload for frontend changes</li>
+          <li>Native window with system tray support</li>
+          <li>Access to Windows APIs</li>
+          <li>Devtools for debugging</li>
+        </UL>
+      </Section>
+
+      <Section id="building" title="Building">
+        <P className="mb-4">
+          Build a distributable Windows executable. On Windows this runs locally; on macOS and
+          Linux it runs in GitHub Actions (see those sections):
+        </P>
+        <MultiTerminal tabs={BUILD_TABS} />
+        <P className="mb-4">
+          The build outputs land in <C>src-tauri/target/release/bundle/</C>:
+        </P>
+        <H3 className="mt-6 mb-3">Output Files</H3>
+        <FolderVisual
+          width={320}
+          rows={[
+            { n: 'src-tauri' },
+            { n: 'target', d: 1 },
+            { n: 'release', d: 2 },
+            { n: 'bundle', d: 3 },
+            { n: 'nsis', d: 4 },
+            { n: 'my-app_0.1.0_x64-setup.exe', d: 5, dot: true },
+            { n: 'msi', d: 4 },
+            { n: 'my-app_0.1.0_x64_en-US.msi', d: 5 },
+          ]}
+        />
+        <UL>
+          <li>
+            <C>nsis/*.exe</C> - NSIS installer (recommended for distribution)
+          </li>
+          <li>
+            <C>msi/*.msi</C> - WiX MSI installer
+          </li>
+          <li>
+            <C>release/my-app.exe</C> - The raw executable (before bundling)
+          </li>
+        </UL>
+        <Callout>
+          The build output is a native Windows binary that runs without any additional
+          dependencies.
+        </Callout>
+      </Section>
+
+      <Section id="code-signing" title="Code Signing">
+        <P className="mb-4">
+          Bini.js supports Authenticode code signing for Windows binaries. Configure signing in{' '}
+          <C>src-tauri/tauri.conf.json</C>:
+        </P>
+        <CodeBlock
+          filename="src-tauri/tauri.conf.json"
+          lang="json"
+          code={`{
+  "bundle": {
+    "windows": {
+      "certificateThumbprint": "YOUR_CERT_THUMBPRINT",
+      "digestAlgorithm": "sha256",
+      "timestampUrl": "http://timestamp.digicert.com"
     }
   }
 }`}
-                    filename="src-tauri/tauri.conf.json"
-                  />
-                  <p className="text-slate-300 mt-4">
-                    For GitHub Actions, you can use secrets for secure certificate storage:
-                  </p>
-                  <CodeBlock 
-                    code={`# In GitHub Actions workflow
-- name: Build Windows app
-  env:
-    CERTIFICATE_PASSWORD: \${{ secrets.CERT_PASSWORD }}
-  run: npm run tauri:build`}
-                  />
-                  <Note>
-                    For production distribution, Authenticode signing is recommended to establish trust with Windows users.
-                  </Note>
-                </m.section>
+        />
+        <P className="mb-4">
+          For GitHub Actions, store the certificate and password as secrets and reference them in
+          the workflow. The <C>tauri-action</C> step reads them from environment variables:
+        </P>
+        <H3 className="mb-3">
+          <span className="flex items-center gap-2">
+            <BrandIcon
+              icon={siGithub}
+              size={18}
+              className="shrink-0 text-black dark:text-white"
+            />
+            GitHub Actions workflow with signing
+          </span>
+        </H3>
+        <CodeBlock
+          filename=".github/workflows/build-windows.yml"
+          lang="yaml"
+          code={SIGNED_WORKFLOW}
+        />
+        <Callout>
+          For production distribution, Authenticode signing is recommended to establish trust with
+          Windows users.
+        </Callout>
+      </Section>
+    </>
+  )
+}
 
-                {/* Previous / Next Navigation */}
-                <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
-                  <Link to="/docs/platform-web" className="group flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
-                    <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                    <div>
-                      <div className="text-xs text-slate-500">Previous</div>
-                      <div className="text-sm font-medium">Web</div>
-                    </div>
-                  </Link>
-                  <Link to="/docs/platform-macos" className="group flex items-center gap-2 text-right text-slate-400 hover:text-white transition-colors">
-                    <div>
-                      <div className="text-xs text-slate-500">Next</div>
-                      <div className="text-sm font-medium">macOS</div>
-                    </div>
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                </m.div>
+/* ---------- page ---------- */
 
-              </div>
-
-              {/* Right-hand "On this page" sidebar */}
-              <aside className="hidden xl:block w-56 shrink-0">
-                <TableOfContents items={TOC_ITEMS} editUrl={EDIT_URL} />
-              </aside>
-            </div>
-          </DocLayout>
-          
-        </div>
-      </div>
-    </div>
+export default function PlatformWindowsPage() {
+  return (
+    <DocPage
+      title="Windows"
+      description="Build native Windows desktop applications with Bini.js."
+      url="https://bini.js.org/docs/platform-windows"
+      editUrl="https://github.com/Binidu01/bini-official/edit/main/src/app/docs/platform-windows.tsx"
+      toc={TOC_ITEMS}
+      prev={{ to: '/docs/platform-web', title: 'Web' }}
+      next={{ to: '/docs/platform-macos', title: 'macOS' }}
+    >
+      <Content />
+    </DocPage>
   )
 }

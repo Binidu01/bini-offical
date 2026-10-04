@@ -1,238 +1,167 @@
-// src/pages/docs/not-found/page.tsx
-import React from 'react'
-import { m } from 'framer-motion'
+// src/app/docs/notfound.tsx
 import {
-  ArrowLeft,
-  ArrowRight,
-} from 'lucide-react'
-import { Link } from 'react-router-dom'
-import { Header } from '../../components/Layout'
-import { DocLayout } from '../../components/DocSidebar'
-import { CopyPageButton } from '../../components/CopyPageButton'
-import { TableOfContents, type TocItem } from '../../components/TableOfContents'
+  C,
+  Callout,
+  CodeBlock,
+  DocPage,
+  P,
+  Section,
+  Table,
+  useDocLang,
+} from '../../components/DocBlocks'
+import { RouteVisual } from '../../components/DocVisuals'
+import type { TocItem } from '../../components/TableOfContents'
 
-// ────────────────────────────────────────────────────────────────────────────────
-// "On this page" entries
-// ────────────────────────────────────────────────────────────────────────────────
 const TOC_ITEMS: TocItem[] = [
+  { id: 'overview', label: 'Overview' },
   { id: 'global-404', label: 'Global 404 Page' },
   { id: 'nested-404', label: 'Nested 404 Pages' },
   { id: 'programmatic-404', label: 'Programmatic 404' },
   { id: '404-with-layout', label: '404 with Layout' },
   { id: 'styling-404', label: 'Styling 404 Pages' },
-  { id: 'static-export-404', label: 'Static Export & 404' },
+  { id: 'complete-example', label: 'Complete Example' },
 ]
 
-const PAGE_TITLE = '404 Page'
-const PAGE_URL = 'https://bini.js.org/docs/notfound'
-const EDIT_URL = 'https://github.com/Binidu01/bini-offical/edit/main/src/app/docs/notfound.tsx'
+/* ---------- content (reads the TS/JS choice from DocPage) ---------- */
 
-// ────────────────────────────────────────────────────────────────────────────────
-// Code Block Component with horizontal scrollbar
-// ────────────────────────────────────────────────────────────────────────────────
-function CodeBlock({ code, filename }: { code: string; filename?: string }) {
-  const [copied, setCopied] = React.useState(false)
-  const handleCopy = () => { 
-    const cleanCode = code.replace(/\$ /g, '')
-    navigator.clipboard.writeText(cleanCode)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000) 
-  }
+function Content() {
+  const lang = useDocLang()
+  const e = lang === 'js' ? 'jsx' : 'tsx'
 
   return (
-    <div className="relative group mb-6">
-      {filename && (
-        <div className="flex items-center justify-between px-4 py-2 bg-slate-900 border border-slate-800 border-b-0 rounded-t-lg">
-          <span className="text-sm text-slate-300 font-mono">{filename}</span>
-        </div>
-      )}
-      <button onClick={handleCopy} className="absolute top-2 right-2 p-1.5 rounded-md bg-slate-800 hover:bg-slate-700 transition-colors z-10 opacity-0 group-hover:opacity-100" style={{ top: filename ? '3rem' : '0.5rem' }}>
-        {copied ? (
-          <svg className="w-3.5 h-3.5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
-        ) : (
-          <svg className="w-3.5 h-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-          </svg>
-        )}
-      </button>
-      <div className={`bg-[#0a0a0a] border border-slate-700 ${filename ? 'rounded-t-none' : 'rounded-lg'} overflow-x-auto scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-transparent hover:scrollbar-thumb-slate-500`}>
-        <pre className="p-4 min-w-max">
-          <code className="text-sm font-mono text-slate-200 whitespace-pre">{code}</code>
-        </pre>
-      </div>
-    </div>
-  )
-}
+    <>
+      <Section id="overview" title="Overview">
+        <P>
+          Bini.js ships a built-in 404. Add <C>{`not-found.${e}`}</C> in any folder for custom UI
+          when no route matches. It is a special file - it does not create a URL. Nearest-wins
+          applies.
+        </P>
+        <Table
+          headers={['File', 'Creates URL?', 'Purpose']}
+          rows={[
+            [`app/page.${e}`, 'Yes - /', 'Home page'],
+            [`app/not-found.${e}`, 'No - special file', 'Global 404 fallback'],
+            [`app/blog/not-found.${e}`, 'No - special file', 'Blog-specific 404'],
+          ]}
+        />
+      </Section>
 
-// ────────────────────────────────────────────────────────────────────────────────
-// Table Component
-// ────────────────────────────────────────────────────────────────────────────────
-function Table({ headers, rows }: { headers: string[]; rows: string[][] }) {
+      <Section id="global-404" title="Global 404 Page">
+        <P>
+          Create <C>{`not-found.${e}`}</C> at the root of <C>app/</C> to handle all unmatched
+          routes.
+        </P>
+        <RouteVisual
+          fileWidth={260}
+          rows={[
+            { n: 'app' },
+            { n: `layout.${e}`, d: 1 },
+            { n: `page.${e}`, d: 1, url: '/' },
+            { n: `not-found.${e}`, d: 1, dot: true },
+          ]}
+        />
+        <CodeBlock
+          filename={`app/not-found.${e}`}
+          tsCode={`export default function NotFound() {
   return (
-    <div className="overflow-x-auto rounded-lg border border-slate-700 my-6">
-      <table className="w-full text-sm">
-        <thead className="bg-slate-900 border-b border-slate-800">
-          <tr>{headers.map((h, i) => <th key={i} className="text-left py-3 px-4 font-medium text-white">{h}</th>)}</tr>
-        </thead>
-        <tbody className="divide-y divide-slate-800">
-          {rows.map((row, i) => <tr key={i}>{row.map((cell, j) => <td key={j} className="py-3 px-4 text-slate-300 text-xs">{cell}</td>)}</tr>)}
-        </tbody>
-      </table>
-    </div>
-  )
-}
-
-// ────────────────────────────────────────────────────────────────────────────────
-// 404 Page
-// ────────────────────────────────────────────────────────────────────────────────
-export default function NotFoundPage() {
-  return (
-    <div className="min-h-screen bg-black font-sans antialiased overflow-x-hidden">
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute inset-0 bg-black" />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-300 h-200 bg-linear-to-b from-cyan-500/5 via-sky-500/3 to-transparent rounded-full blur-3xl" />
-      </div>
-
-      <Header />
-
-      <div className="relative pt-16 lg:pt-20">
-        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 overflow-x-hidden">
-          
-          <DocLayout>
-            <div className="flex gap-10 xl:gap-14">
-              {/* Main content column */}
-              <div className="max-w-4xl min-w-0 flex-1">
-
-                {/* Title + Copy page button */}
-                <m.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex items-start justify-between gap-4 mb-4"
-                >
-                  <div>
-                    <h1 className="text-4xl font-bold text-white mb-2">{PAGE_TITLE}</h1>
-                    <p className="text-slate-400 text-sm">Learn how to create custom 404 pages for unmatched routes in Bini.js.</p>
-                  </div>
-                  <div className="shrink-0 pt-2 hidden sm:block">
-                    <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
-                  </div>
-                </m.div>
-                {/* Copy button on small screens */}
-                <div className="sm:hidden mb-8">
-                  <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
-                </div>
-
-                {/* Overview */}
-                <m.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-                  <p className="text-slate-300 mb-6">
-                    Bini.js provides a built-in 404 page, but you can create custom <code className="text-cyan-400">not-found.tsx</code> files to display your own UI when a route is not found.
-                  </p>
-                </m.section>
-
-                {/* Global 404 */}
-                <m.section id="global-404" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Global 404 Page</h2>
-                  <p className="text-slate-300 mb-4">
-                    Create a <code className="text-cyan-400">not-found.tsx</code> file in the root of your <code className="text-cyan-400">app</code> directory to handle all unmatched routes globally.
-                  </p>
-                  <CodeBlock 
-                    code={`src/app/
-├── layout.tsx
-├── page.tsx
-└── not-found.tsx         ← Global 404 page`}
-                  />
-                  <CodeBlock 
-                    code={`// src/app/not-found.tsx
-export default function NotFound() {
-  return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
-      <h1 className="text-4xl font-bold text-white mb-4">404</h1>
-      <p className="text-slate-400 mb-6">The page you're looking for doesn't exist.</p>
-      <Link to="/" className="text-cyan-400 hover:underline">
-        Return Home
-      </Link>
+    <div className="flex min-h-screen flex-col items-center justify-center">
+      <h1 className="text-4xl font-bold">404</h1>
+      <p className="mb-6">The page you&apos;re looking for doesn&apos;t exist.</p>
+      <a href="/">Return Home</a>
     </div>
   )
 }`}
-                    filename="app/not-found.tsx"
-                  />
-                  <p className="text-slate-300 mt-4">
-                    This page will be shown for any unmatched route, such as <code className="text-cyan-400">/non-existent</code> or <code className="text-cyan-400">/blog/invalid-post</code>.
-                  </p>
-                </m.section>
+          jsCode={`export default function NotFound() {
+  return (
+    <div className="flex min-h-screen flex-col items-center justify-center">
+      <h1 className="text-4xl font-bold">404</h1>
+      <p className="mb-6">The page you're looking for doesn't exist.</p>
+      <a href="/">Return Home</a>
+    </div>
+  )
+}`}
+        />
+        <Callout>
+          Shown for unmatched paths like <C>/non-existent</C> or <C>/blog/invalid-post</C> when no
+          closer <C>not-found</C> exists.
+        </Callout>
+      </Section>
 
-                {/* Nested 404 Pages */}
-                <m.section id="nested-404" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Nested 404 Pages</h2>
-                  <p className="text-slate-300 mb-4">
-                    You can create route-specific 404 pages by placing <code className="text-cyan-400">not-found.tsx</code> in subdirectories. The closest 404 page to the matched route will be used.
-                  </p>
-                  <CodeBlock 
-                    code={`src/app/
-├── not-found.tsx             ← Global 404 (fallback)
-├── blog/
-│   ├── not-found.tsx         ← Blog-specific 404
-│   ├── page.tsx
-│   └── [slug]/
-│       └── page.tsx
-└── admin/
-    ├── not-found.tsx         ← Admin-specific 404
-    └── page.tsx`}
-                  />
-                  <CodeBlock 
-                    code={`// src/app/blog/not-found.tsx
-export default function BlogNotFound() {
+      <Section id="nested-404" title="Nested 404 Pages">
+        <P>
+          Place <C>{`not-found.${e}`}</C> in subdirectories for segment-specific 404 UI. The closest
+          file to the unmatched path wins.
+        </P>
+        <RouteVisual
+          fileWidth={280}
+          rows={[
+            { n: 'app' },
+            { n: `not-found.${e}`, d: 1, dot: true },
+            { n: 'blog', d: 1 },
+            { n: `not-found.${e}`, d: 2, dot: true },
+            { n: `page.${e}`, d: 2, url: '/blog' },
+            { n: '[slug]', d: 2 },
+            { n: `page.${e}`, d: 3, url: '/blog/:slug' },
+            { n: 'admin', d: 1 },
+            { n: `not-found.${e}`, d: 2, dot: true },
+            { n: `page.${e}`, d: 2, url: '/admin' },
+          ]}
+        />
+        <CodeBlock
+          filename={`app/blog/not-found.${e}`}
+          tsCode={`export default function BlogNotFound() {
   return (
     <div className="py-12 text-center">
-      <h1 className="text-3xl font-bold text-white mb-3">Post Not Found</h1>
-      <p className="text-slate-400 mb-6">The blog post you're looking for doesn't exist.</p>
-      <Link to="/blog" className="text-cyan-400 hover:underline">
-        View all posts
-      </Link>
+      <h1 className="text-3xl font-bold">Post Not Found</h1>
+      <p className="mb-6">The blog post you&apos;re looking for doesn&apos;t exist.</p>
+      <a href="/blog">View all posts</a>
     </div>
   )
 }`}
-                    filename="app/blog/not-found.tsx"
-                  />
-                  <Table 
-                    headers={['URL', '404 Page Used']}
-                    rows={[
-                      ['/blog/non-existent', 'app/blog/not-found.tsx'],
-                      ['/admin/invalid', 'app/admin/not-found.tsx'],
-                      ['/completely/wrong', 'app/not-found.tsx (global)'],
-                    ]}
-                  />
-                </m.section>
+          jsCode={`export default function BlogNotFound() {
+  return (
+    <div className="py-12 text-center">
+      <h1 className="text-3xl font-bold">Post Not Found</h1>
+      <p className="mb-6">The blog post you're looking for doesn't exist.</p>
+      <a href="/blog">View all posts</a>
+    </div>
+  )
+}`}
+        />
+        <Table
+          headers={['URL', '404 Page Used']}
+          rows={[
+            ['/blog/non-existent', `app/blog/not-found.${e}`],
+            ['/admin/invalid', `app/admin/not-found.${e}`],
+            ['/completely/wrong', `app/not-found.${e} (global)`],
+          ]}
+        />
+      </Section>
 
-                {/* Programmatic 404 */}
-                <m.section id="programmatic-404" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Programmatic 404</h2>
-                  <p className="text-slate-300 mb-4">
-                    You can manually trigger a 404 page from within your components when data is not found.
-                  </p>
-                  <CodeBlock 
-                    code={`// src/app/blog/[slug]/page.tsx
-export default function BlogPost() {
-  const { slug } = useParams()
-  
-  // Fetch post data
-  const post = getPost(slug)
-  
-  // If post doesn't exist, show 404
+      <Section id="programmatic-404" title="Programmatic 404">
+        <P>
+          When a route matches but data is missing, return your own not-found UI from the page
+          component.
+        </P>
+        <CodeBlock
+          filename={`app/blog/[slug]/page.${e}`}
+          tsCode={`export default function BlogPost({
+  params,
+}: {
+  params: { slug: string }
+}) {
+  const post = getPost(params.slug)
+
   if (!post) {
     return (
       <div className="py-12 text-center">
-        <h1 className="text-3xl font-bold text-white mb-3">Post Not Found</h1>
-        <p className="text-slate-400 mb-6">The post "{slug}" doesn't exist.</p>
-        <Link to="/blog" className="text-cyan-400 hover:underline">
-          View all posts
-        </Link>
+        <h1>Post Not Found</h1>
+        <p>The post &quot;{params.slug}&quot; doesn&apos;t exist.</p>
+        <a href="/blog">View all posts</a>
       </div>
     )
   }
-  
+
   return (
     <article>
       <h1>{post.title}</h1>
@@ -240,145 +169,185 @@ export default function BlogPost() {
     </article>
   )
 }`}
-                    filename="app/blog/[slug]/page.tsx"
-                  />
-                </m.section>
+          jsCode={`export default function BlogPost({ params }) {
+  const post = getPost(params.slug)
 
-                {/* 404 with Layout */}
-                <m.section id="404-with-layout" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">404 with Layout</h2>
-                  <p className="text-slate-300 mb-4">
-                    404 pages are automatically wrapped with the layout chain of the route they belong to.
-                  </p>
-                  <CodeBlock 
-                    code={`src/app/
-├── layout.tsx                 ← Root layout (wraps everything)
-├── not-found.tsx              ← Global 404 (wrapped by root layout)
-└── blog/
-    ├── layout.tsx             ← Blog layout
-    ├── not-found.tsx          ← Blog 404 (wrapped by root + blog layouts)
-    └── page.tsx`}
-                  />
-                  <p className="text-slate-300 mt-4">
-                    This means your 404 pages automatically inherit headers, footers, and other shared UI from layouts.
-                  </p>
-                  <CodeBlock 
-                    code={`// src/app/blog/layout.tsx
-export default function BlogLayout() {
+  if (!post) {
+    return (
+      <div className="py-12 text-center">
+        <h1>Post Not Found</h1>
+        <p>The post "{params.slug}" doesn't exist.</p>
+        <a href="/blog">View all posts</a>
+      </div>
+    )
+  }
+
+  return (
+    <article>
+      <h1>{post.title}</h1>
+      <p>{post.content}</p>
+    </article>
+  )
+}`}
+        />
+      </Section>
+
+      <Section id="404-with-layout" title="404 with Layout">
+        <P>
+          <C>{`not-found.${e}`}</C> is rendered inside the layout chain of the segment it belongs
+          to. Headers and sidebars stay visible.
+        </P>
+        <RouteVisual
+          fileWidth={280}
+          rows={[
+            { n: 'app' },
+            { n: `layout.${e}`, d: 1 },
+            { n: `not-found.${e}`, d: 1, dot: true },
+            { n: 'blog', d: 1 },
+            { n: `layout.${e}`, d: 2 },
+            { n: `not-found.${e}`, d: 2, dot: true },
+            { n: `page.${e}`, d: 2, url: '/blog' },
+          ]}
+        />
+        <CodeBlock
+          filename={`app/blog/layout.${e}`}
+          tsCode={`export default function BlogLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
     <div>
       <header className="mb-8">
         <h1 className="text-2xl font-bold">Blog</h1>
       </header>
-      <main><Outlet /></main>
+      <main>{children}</main>
     </div>
   )
-}
-
-// The blog/not-found.tsx will automatically have the "Blog" header!`}
-                    filename="app/blog/layout.tsx"
-                  />
-                </m.section>
-
-                {/* Styling 404 Pages */}
-                <m.section id="styling-404" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Styling 404 Pages</h2>
-                  <p className="text-slate-300 mb-4">
-                    You can create rich, styled 404 pages with images, animations, and interactive elements:
-                  </p>
-                  <CodeBlock 
-                    code={`// src/app/not-found.tsx
-export default function NotFound() {
+}`}
+          jsCode={`export default function BlogLayout({ children }) {
   return (
-    <div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-4">
-      {/* Animated 404 */}
-      <div className="relative mb-8">
-        <h1 className="text-9xl font-bold text-slate-800">404</h1>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-6xl">🔍</span>
-        </div>
-      </div>
-      
-      {/* Message */}
-      <h2 className="text-3xl font-bold text-white mb-3">Page Not Found</h2>
-      <p className="text-slate-400 max-w-md mb-8">
-        The page you're looking for might have been removed, renamed, or doesn't exist.
+    <div>
+      <header className="mb-8">
+        <h1 className="text-2xl font-bold">Blog</h1>
+      </header>
+      <main>{children}</main>
+    </div>
+  )
+}`}
+        />
+        <Callout>
+          <C>blog/not-found</C> still shows the Blog header from <C>blog/layout</C>.
+        </Callout>
+      </Section>
+
+      <Section id="styling-404" title="Styling 404 Pages">
+        <P>Build any UI you want - copy, links, and actions are all client-side.</P>
+        <CodeBlock
+          filename={`app/not-found.${e}`}
+          tsCode={`export default function NotFound() {
+  return (
+    <div className="flex min-h-[60vh] flex-col items-center justify-center px-4 text-center">
+      <h1 className="text-9xl font-bold">404</h1>
+      <h2 className="mb-3 text-3xl font-bold">Page Not Found</h2>
+      <p className="mb-8 max-w-md text-neutral-500">
+        The page you&apos;re looking for might have been removed or doesn&apos;t exist.
       </p>
-      
-      {/* Actions */}
       <div className="flex gap-4">
-        <Link 
-          to="/" 
-          className="px-6 py-3 bg-cyan-500 text-black font-medium rounded-lg hover:bg-cyan-400 transition-colors"
+        <a
+          href="/"
+          className="rounded-lg bg-black px-6 py-3 text-white dark:bg-white dark:text-black"
         >
           Go Home
-        </Link>
-        <button 
-          onClick={() => window.history.back()} 
-          className="px-6 py-3 border border-slate-700 text-white font-medium rounded-lg hover:bg-slate-900 transition-colors"
+        </a>
+        <button
+          onClick={() => window.history.back()}
+          className="rounded-lg border px-6 py-3"
         >
           Go Back
         </button>
       </div>
-      
-      {/* Search suggestion */}
-      <p className="text-slate-500 text-sm mt-8">
-        Looking for something specific? Try using the navigation menu above.
-      </p>
     </div>
   )
 }`}
-                    filename="app/not-found.tsx"
-                  />
-                </m.section>
-
-                {/* Static Export 404 */}
-                <m.section id="static-export-404" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Static Export & 404</h2>
-                  <p className="text-slate-300 mb-4">
-                    When using <code className="text-cyan-400">npm run export</code> for static hosting, Bini.js generates a <code className="text-cyan-400">404.html</code> file:
-                  </p>
-                  <Table 
-                    headers={['Situation', 'Generated 404.html']}
-                    rows={[
-                      ['not-found.tsx exists', 'Copy of index.html with your custom 404 page'],
-                      ['No not-found.tsx', 'Redirect script that preserves the URL and redirects to /'],
-                    ]}
-                  />
-                  <p className="text-slate-300 mt-4">
-                    This ensures your SPA works correctly on static hosts like GitHub Pages, Netlify, and Vercel.
-                  </p>
-                </m.section>
-
-                {/* Previous / Next Navigation */}
-                <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
-                  <Link to="/docs/error-boundaries" className="group flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
-                    <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                    <div>
-                      <div className="text-xs text-slate-500">Previous</div>
-                      <div className="text-sm font-medium">Error Boundaries</div>
-                    </div>
-                  </Link>
-                  <Link to="/docs/metadata" className="group flex items-center gap-2 text-right text-slate-400 hover:text-white transition-colors">
-                    <div>
-                      <div className="text-xs text-slate-500">Next</div>
-                      <div className="text-sm font-medium">Metadata</div>
-                    </div>
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                </m.div>
-
-              </div>
-
-              {/* Right-hand "On this page" sidebar */}
-              <aside className="hidden xl:block w-56 shrink-0">
-                <TableOfContents items={TOC_ITEMS} editUrl={EDIT_URL} />
-              </aside>
-            </div>
-          </DocLayout>
-          
-        </div>
+          jsCode={`export default function NotFound() {
+  return (
+    <div className="flex min-h-[60vh] flex-col items-center justify-center px-4 text-center">
+      <h1 className="text-9xl font-bold">404</h1>
+      <h2 className="mb-3 text-3xl font-bold">Page Not Found</h2>
+      <p className="mb-8 max-w-md text-neutral-500">
+        The page you're looking for might have been removed or doesn't exist.
+      </p>
+      <div className="flex gap-4">
+        <a
+          href="/"
+          className="rounded-lg bg-black px-6 py-3 text-white dark:bg-white dark:text-black"
+        >
+          Go Home
+        </a>
+        <button
+          onClick={() => window.history.back()}
+          className="rounded-lg border px-6 py-3"
+        >
+          Go Back
+        </button>
       </div>
     </div>
+  )
+}`}
+        />
+      </Section>
+
+      <Section id="complete-example" title="Complete Example">
+        <RouteVisual
+          fileWidth={280}
+          rows={[
+            { n: 'app' },
+            { n: `layout.${e}`, d: 1 },
+            { n: `page.${e}`, d: 1, url: '/' },
+            { n: `not-found.${e}`, d: 1, dot: true },
+            { n: 'blog', d: 1 },
+            { n: `layout.${e}`, d: 2 },
+            { n: `not-found.${e}`, d: 2, dot: true },
+            { n: `page.${e}`, d: 2, url: '/blog' },
+            { n: '[slug]', d: 2 },
+            { n: `page.${e}`, d: 3, url: '/blog/:slug' },
+            { n: 'dashboard', d: 1 },
+            { n: `layout.${e}`, d: 2 },
+            { n: `not-found.${e}`, d: 2, dot: true },
+            { n: `page.${e}`, d: 2, url: '/dashboard' },
+            { n: 'settings', d: 2 },
+            { n: `page.${e}`, d: 3, url: '/dashboard/settings' },
+          ]}
+        />
+        <Table
+          headers={['File', 'Creates URL?', 'Purpose']}
+          rows={[
+            [`app/page.${e}`, 'Yes - /', 'Home page'],
+            [`app/not-found.${e}`, 'No', 'Global 404'],
+            [`app/blog/not-found.${e}`, 'No', 'Blog 404'],
+            [`app/dashboard/not-found.${e}`, 'No', 'Dashboard 404'],
+          ]}
+        />
+      </Section>
+    </>
+  )
+}
+
+/* ---------- page ---------- */
+
+export default function NotFoundPage() {
+  return (
+    <DocPage
+      title="Not Found (404)"
+      description="Custom 404 UI with not-found.tsx - special file, no URL, nearest-wins."
+      url="https://bini.js.org/docs/notfound"
+      editUrl="https://github.com/Binidu01/bini-official/edit/main/src/app/docs/notfound.tsx"
+      toc={TOC_ITEMS}
+      prev={{ to: '/docs/defaults', title: 'Default' }}
+      next={{ to: '/docs/metadata', title: 'Metadata' }}
+    >
+      <Content />
+    </DocPage>
   )
 }

@@ -1,154 +1,187 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { m, AnimatePresence } from 'framer-motion';
+// src/components/PluginAnimation.tsx
+import { AnimatePresence, m } from 'framer-motion'
+import { useEffect, useRef, useState } from 'react'
 
-// ─── Reduced-motion hook ────────────────────────────────────────
+/* ─── Reduced-motion hook ─────────────────────────────────────────── */
+
 function usePrefersReducedMotion() {
-  const [prefersReduced, setPrefersReduced] = useState(false);
+  const [prefersReduced, setPrefersReduced] = useState(false)
 
   useEffect(() => {
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setPrefersReduced(mq.matches);
-    const handler = (e: MediaQueryListEvent) => setPrefersReduced(e.matches);
-    mq.addEventListener('change', handler);
-    return () => mq.removeEventListener('change', handler);
-  }, []);
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+    setPrefersReduced(mq.matches)
+    const handler = (e: MediaQueryListEvent) => setPrefersReduced(e.matches)
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [])
 
-  return prefersReduced;
+  return prefersReduced
 }
 
+/* ─── Plugin catalogue ────────────────────────────────────────────── */
+
+const PLUGINS = [
+  { label: 'Route', pkg: 'bini-router' },
+  { label: 'Server', pkg: 'bini-server' },
+  { label: 'Native', pkg: 'bini-native' },
+  { label: 'env', pkg: 'bini-env' },
+  { label: 'Deploy', pkg: 'bini-deploy' },
+  { label: 'Overlay', pkg: 'bini-overlay' },
+  { label: 'Scaffold', pkg: 'create-bini-app' },
+  { label: 'Build', pkg: 'bini-ssg' },
+]
+
+const PLUGIN_COUNT = PLUGINS.length
+const MIDDLE_SLOT = Math.floor(PLUGIN_COUNT / 2)
+const TOP_SLOT = PLUGIN_COUNT - 1
+
+/* ─── Layout constants ────────────────────────────────────────────── */
+
+const DESIGN_WIDTH = 760
+const DESIGN_HEIGHT = 500
+const LAYERS = PLUGIN_COUNT
+
+const WIRE_GRADIENT_LR = 'linear-gradient(90deg, var(--wire-a), var(--wire-b))'
+const WIRE_GRADIENT_RL = 'linear-gradient(90deg, var(--wire-b), var(--wire-a))'
+
+/**
+ * The lower layers of the 3D stack used to render a 4x4 grid of 16 child
+ * <div>s each (112 DOM nodes in total). The same look is drawn here with a
+ * single element: two thin line gradients (the cell borders) on top of the
+ * layer's diagonal gradient.
+ */
+const CELL_LINE = 'rgba(0, 100, 200, 0.2)'
+const LAYER_BACKGROUND_IMAGE = [
+  `linear-gradient(to right, ${CELL_LINE} 1px, transparent 1px)`,
+  `linear-gradient(to bottom, ${CELL_LINE} 1px, transparent 1px)`,
+  'linear-gradient(135deg, var(--wire-a), var(--wire-b))',
+].join(', ')
+const LAYER_BACKGROUND_SIZE = '25% 25%, 25% 25%, 100% 100%'
+
+/** Text alternative for the whole animated diagram (it is purely illustrative). */
+const DIAGRAM_LABEL = `Bini.js ecosystem packages: ${PLUGINS.map((p) => p.pkg).join(', ')}`
+
+/* ─── Main component ──────────────────────────────────────────────── */
+
 const PluginAnimation = () => {
-  const layers = 7;
-  const [offset, setOffset] = useState(0);
-  const [isPaused, setIsPaused] = useState(true);
-  // wrapPhase drives the "card removed from top / re-created at bottom" effect.
-  // { index: <cardIndex>, phase: 'out' | 'in' } while a wrap is happening, otherwise null.
-  const [wrapPhase, setWrapPhase] = useState<{ index: number; phase: 'out' | 'in' } | null>(null);
-  const prevOffsetRef = useRef(0);
+  const [offset, setOffset] = useState(0)
+  const [isPaused, setIsPaused] = useState(true)
+  const [wrapPhase, setWrapPhase] = useState<{ index: number; phase: 'out' | 'in' } | null>(null)
+  const prevOffsetRef = useRef(0)
 
-  // The animation is built at a fixed "design" size (it relies on exact
-  // pixel math for the 3D perspective/rotation). On narrow screens we scale
-  // the whole thing down to fit instead of trying to reflow it.
-  const DESIGN_WIDTH = 760;
-  const DESIGN_HEIGHT = 500;
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(1);
+  const wrapperRef = useRef<HTMLDivElement>(null)
+  const [scale, setScale] = useState(1)
 
-  const prefersReducedMotion = usePrefersReducedMotion();
+  const prefersReducedMotion = usePrefersReducedMotion()
 
   useEffect(() => {
     const updateScale = () => {
-      if (!wrapperRef.current) return;
-      const available = wrapperRef.current.clientWidth;
-      const next = Math.min(1, available / DESIGN_WIDTH);
-      setScale(next);
-    };
+      if (!wrapperRef.current) return
+      const available = wrapperRef.current.clientWidth
+      setScale(Math.min(1, available / DESIGN_WIDTH))
+    }
 
-    updateScale();
-    window.addEventListener('resize', updateScale);
+    updateScale()
 
-    let observer: ResizeObserver | undefined;
+    // ResizeObserver already fires when the wrapper's width changes (including
+    // window resizes), so a separate window "resize" listener is not needed.
+    let observer: ResizeObserver | undefined
     if (typeof ResizeObserver !== 'undefined' && wrapperRef.current) {
-      observer = new ResizeObserver(updateScale);
-      observer.observe(wrapperRef.current);
+      observer = new ResizeObserver(updateScale)
+      observer.observe(wrapperRef.current)
+    } else {
+      window.addEventListener('resize', updateScale)
     }
 
     return () => {
-      window.removeEventListener('resize', updateScale);
-      observer?.disconnect();
-    };
-  }, []);
+      window.removeEventListener('resize', updateScale)
+      observer?.disconnect()
+    }
+  }, [])
 
-  const labels = ['Route', 'Server', 'Native', 'env', 'Deploy', 'Overlay', 'Scaffold'];
-
-  const labelMap: Record<string, string> = {
-    'Route': 'bini-router',
-    'Server': 'bini-server',
-    'Native': 'bini-native',
-    'env': 'bini-env',
-    'Deploy': 'bini-deploy',
-    'Overlay': 'bini-overlay',
-    'Scaffold': 'bini-ssg'
-  };
-
-  // Main cadence: hold each card centered for 2s, then a short window
-  // where the deck advances and the wrapping card fades out/in.
+  // Runs continuously from mount. Nothing here depends on whether the
+  // animation is on screen, so it never pauses or resets when scrolled away.
   useEffect(() => {
-    if (prefersReducedMotion) return;
+    if (prefersReducedMotion) return
 
-    const HOLD_MS = 2000;
-    const TRANSITION_MS = 700;
+    const HOLD_MS = 2000
+    const TRANSITION_MS = 700
+    let holdTimer: ReturnType<typeof setTimeout> | undefined
+
     const interval = setInterval(() => {
-      setIsPaused(true);
-      setTimeout(() => {
-        setOffset(prev => (prev + 1) % 7);
-        setIsPaused(false);
-      }, HOLD_MS);
-    }, HOLD_MS + TRANSITION_MS);
-
-    return () => clearInterval(interval);
-  }, [prefersReducedMotion]);
-
-  // Every time offset changes, figure out which card was sitting at the
-  // very top (position 6) *before* the change - that's the one that wraps
-  // around to the bottom. Fade it out at the top, snap it to the bottom,
-  // then fade it back in there.
-  useEffect(() => {
-    const prevOffset = prevOffsetRef.current;
-    prevOffsetRef.current = offset;
-    if (offset === prevOffset) return;
-
-    const wrappingIndex = (6 - prevOffset + 7) % 7;
-    setWrapPhase({ index: wrappingIndex, phase: 'out' });
-
-    const t1 = setTimeout(() => {
-      setWrapPhase({ index: wrappingIndex, phase: 'in' });
-    }, 300);
-    const t2 = setTimeout(() => {
-      setWrapPhase(null);
-    }, 650);
+      setIsPaused(true)
+      holdTimer = setTimeout(() => {
+        setOffset((prev) => (prev + 1) % PLUGIN_COUNT)
+        setIsPaused(false)
+      }, HOLD_MS)
+    }, HOLD_MS + TRANSITION_MS)
 
     return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-    };
-  }, [offset]);
+      clearInterval(interval)
+      clearTimeout(holdTimer)
+    }
+  }, [prefersReducedMotion])
 
-  // The card currently in the middle (position 3) - fixed label per card,
-  // position derived from offset, so this always resolves correctly.
-  const middleCardIndex = (3 - offset + 7) % 7;
-  const middleLabel = labels[middleCardIndex];
-  const displayText = labelMap[middleLabel] || middleLabel;
+  useEffect(() => {
+    const prevOffset = prevOffsetRef.current
+    prevOffsetRef.current = offset
+    if (offset === prevOffset) return
 
-  const containerHeight = `${DESIGN_HEIGHT}px`;
-  const wireGradientLR = 'linear-gradient(90deg, #00CFFF, #0077FF)';
-  const wireGradientRL = 'linear-gradient(90deg, #0077FF, #00CFFF)';
+    const wrappingIndex = (TOP_SLOT - prevOffset + PLUGIN_COUNT) % PLUGIN_COUNT
+    setWrapPhase({ index: wrappingIndex, phase: 'out' })
 
-  // ─── Static fallback for reduced motion ────────────────────────
+    const t1 = setTimeout(() => {
+      setWrapPhase({ index: wrappingIndex, phase: 'in' })
+    }, 300)
+    const t2 = setTimeout(() => {
+      setWrapPhase(null)
+    }, 650)
+
+    return () => {
+      clearTimeout(t1)
+      clearTimeout(t2)
+    }
+  }, [offset])
+
+  const middleCardIndex = (MIDDLE_SLOT - offset + PLUGIN_COUNT) % PLUGIN_COUNT
+  const middleLabel = PLUGINS[middleCardIndex].pkg
+
+  const containerHeight = `${DESIGN_HEIGHT}px`
+
+  /* ─── Reduced-motion fallback ────────────────────────────────────── */
+
   if (prefersReducedMotion) {
     return (
       <div
         ref={wrapperRef}
-        className="w-full flex items-center justify-center bg-transparent px-2 py-6 sm:p-8"
+        className="flex w-full items-center justify-center bg-transparent px-2 py-6 sm:p-8"
       >
         <div className="flex items-center gap-6">
-          <div className="relative w-20 h-20 flex items-center justify-center">
-            <img src="/logo.svg" alt="Bini.js" width={56} height={56} className="w-14 h-14" />
+          <div className="relative flex h-20 w-20 items-center justify-center">
+            <img src="/logo.svg" alt="Bini.js" width={56} height={56} className="h-14 w-14" />
           </div>
-          <div className="px-6 py-2 rounded-xl bg-[#0a0a12] border border-blue-500/30">
-            <span className="font-mono text-lg tracking-wider text-white">
-              {displayText}
+          <div className="rounded-xl border-2 border-blue-500/40 bg-white px-6 py-2 shadow-sm dark:border-blue-500/30 dark:bg-[#0a0a12] dark:shadow-none">
+            <span className="font-mono text-lg tracking-wider text-neutral-900 dark:text-white">
+              {middleLabel}
             </span>
           </div>
         </div>
       </div>
-    );
+    )
   }
 
+  /* ─── Animated version ───────────────────────────────────────────── */
+
   return (
-    <div ref={wrapperRef} className="w-full flex items-center justify-center bg-transparent px-2 py-6 sm:p-8">
+    <div
+      ref={wrapperRef}
+      role="img"
+      aria-label={DIAGRAM_LABEL}
+      className="flex w-full items-center justify-center bg-transparent px-2 py-6 sm:p-8"
+    >
       <div style={{ width: DESIGN_WIDTH * scale, height: DESIGN_HEIGHT * scale }}>
         <div
-          className="flex items-center relative"
+          className="relative flex items-center"
           style={{
             width: DESIGN_WIDTH,
             height: containerHeight,
@@ -156,207 +189,248 @@ const PluginAnimation = () => {
             transformOrigin: 'top left',
           }}
         >
+          {/* ── Left: 3D stacked block ─────────────────────────────── */}
+          <div
+            className="relative z-10 shrink-0"
+            style={{ width: '200px', height: '260px', perspective: '800px' }}
+          >
+            <div
+              className="absolute inset-0 flex items-center justify-center"
+              style={{ transform: 'rotateX(55deg) rotateZ(45deg)', transformStyle: 'preserve-3d' }}
+            >
+              {Array.from({ length: LAYERS }, (_, layerIndex) => {
+                const isTopLayer = layerIndex === LAYERS - 1
+                const zStep = LAYERS > 8 ? 2 : 3
+                const zPos = layerIndex * zStep
 
-        {/* Left Side - Compressed 3D Block */}
-        <div className="relative flex-shrink-0 z-10" style={{ width: '200px', height: '260px', perspective: '800px' }}>
-          <div className="absolute inset-0 flex items-center justify-center" style={{ transform: 'rotateX(55deg) rotateZ(45deg)', transformStyle: 'preserve-3d' }}>
-            {Array.from({ length: layers }, (_, layerIndex) => {
-              const isTopLayer = layerIndex === layers - 1;
-              const zPos = layerIndex * 3;
-
-              return (
-                <div key={layerIndex} className="absolute" style={{ transform: `translateZ(${zPos}px)`, width: '140px', height: '140px', top: '50%', left: '50%', marginLeft: '-70px', marginTop: '-70px' }}>
-                  <div style={{
-                    width: '100%',
-                    height: '100%',
-                    transform: 'rotate(45deg)',
-                    background: isTopLayer ? '#1a1a2e' : 'linear-gradient(135deg, #00CFFF, #0077FF)',
-                    borderRadius: '18px',
-                    border: isTopLayer ? '2px solid rgba(255, 255, 255, 0.12)' : '1px solid rgba(0, 207, 255, 0.15)',
-                    ...(isTopLayer ? {} : {
-                      display: 'grid',
-                      gridTemplateColumns: 'repeat(4, 1fr)',
-                      gridTemplateRows: 'repeat(4, 1fr)',
-                      gap: '1px',
-                      padding: '2px',
-                      opacity: 0.3 + (layerIndex / layers) * 0.7,
-                    }),
-                    boxShadow: layerIndex === 0 ? '0 15px 40px rgba(0,0,0,0.8), 0 0 30px rgba(0, 207, 255, 0.08)' : '0 2px 8px rgba(0,0,0,0.15)',
-                  }}>
-                    {!isTopLayer && Array.from({ length: 16 }, (_, i) => (
-                      <div key={i} style={{
-                        background: 'linear-gradient(135deg, #00CFFF, #0077FF)',
-                        borderRadius: '6px',
-                        border: '1px solid rgba(0, 207, 255, 0.08)',
-                        boxShadow: 'inset 0 0 4px rgba(0, 207, 255, 0.1)',
-                      }} />
-                    ))}
+                return (
+                  <div
+                    key={layerIndex}
+                    className="absolute"
+                    style={{
+                      transform: `translateZ(${zPos}px)`,
+                      width: '140px',
+                      height: '140px',
+                      top: '50%',
+                      left: '50%',
+                      marginLeft: '-70px',
+                      marginTop: '-70px',
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        transform: 'rotate(45deg)',
+                        borderRadius: '18px',
+                        border: isTopLayer
+                          ? 'var(--chip-top-border)'
+                          : '1px solid rgba(0, 100, 200, 0.28)',
+                        ...(isTopLayer
+                          ? { backgroundColor: 'var(--chip-top)' }
+                          : {
+                              backgroundImage: LAYER_BACKGROUND_IMAGE,
+                              backgroundSize: LAYER_BACKGROUND_SIZE,
+                              opacity: 0.45 + (layerIndex / LAYERS) * 0.55,
+                            }),
+                        boxShadow:
+                          layerIndex === 0
+                            ? '0 15px 40px rgba(0,40,100,0.25), 0 0 30px rgba(0, 119, 255, 0.2)'
+                            : '0 2px 8px rgba(0,40,100,0.1)',
+                      }}
+                    />
                   </div>
-                </div>
-              );
-            })}
+                )
+              })}
 
-            {/* Shadow */}
-            <div className="absolute" style={{ transform: 'translateZ(-5px) translateY(12px) rotateX(90deg)', width: '180px', height: '180px', background: 'radial-gradient(ellipse, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0) 70%)', borderRadius: '50%', filter: 'blur(18px)', opacity: 0.5 }} />
+              <div
+                className="absolute"
+                style={{
+                  transform: 'translateZ(-5px) translateY(12px) rotateX(90deg)',
+                  width: '180px',
+                  height: '180px',
+                  background:
+                    'radial-gradient(ellipse, var(--shadow-core) 0%, rgba(0,0,0,0) 70%)',
+                  borderRadius: '50%',
+                  filter: 'blur(18px)',
+                  opacity: 0.55,
+                }}
+              />
 
-            {/* Logo */}
-            <div className="absolute inset-0 flex items-center justify-center" style={{ transform: `translateZ(${layers * 3 + 6}px)`, zIndex: 100 }}>
-              <img src="/logo.svg" alt="Bini.js" width={56} height={56} className="w-14 h-14" style={{ transform: 'rotate(-45deg)' }} />
+              <div
+                className="absolute inset-0 flex items-center justify-center"
+                style={{
+                  transform: `translateZ(${LAYERS * 3 + 6}px)`,
+                  zIndex: 100,
+                }}
+              >
+                <img
+                  src="/logo.svg"
+                  alt="Bini.js"
+                  width={56}
+                  height={56}
+                  className="h-14 w-14"
+                  style={{ transform: 'rotate(-45deg)' }}
+                />
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Left Wire - stays connected between the block and the pill at all
-            times (no disconnect/reconnect animation). Pulled slightly left
-            with a negative margin so it reaches into the block instead of
-            stopping short of it. */}
-        <div className="relative flex-1 h-px flex items-center z-0" style={{ marginLeft: '-28px' }}>
-          <m.div
-            className="h-[2px] w-full origin-left"
-            style={{ background: wireGradientLR }}
-            animate={{
-              opacity: isPaused ? [0.6, 0.95, 0.6] : 0.6,
-            }}
-            transition={{
-              opacity: isPaused ? { duration: 1, repeat: Infinity } : { duration: 0.3 },
-            }}
-          />
-        </div>
-
-        {/* Center Pill - Package Name */}
-        <div className="relative flex-shrink-0 flex items-center justify-center z-10" style={{ height: containerHeight }}>
-          <m.div
-            key={offset}
-            initial={{ x: 0 }}
-            animate={{ x: [0, -10, 0] }}
-            transition={{ duration: 0.6, ease: 'easeInOut' }}
+          {/* ── Left wire ─────────────────────────────────────────── */}
+          <div
+            className="relative z-0 flex h-px flex-1 items-center"
+            style={{ marginLeft: '-28px' }}
           >
-            <div className="relative px-8 py-2 rounded-xl bg-[#0a0a12] border border-blue-500/30">
-              <m.span
-                className="font-mono text-lg lg:text-xl tracking-wider text-white"
-                key={displayText}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3 }}
-              >
-                {displayText}
-              </m.span>
-            </div>
-          </m.div>
-        </div>
-
-        {/* Right Wire - starts merged into the pill and grows outward
-            TOWARD the cards, reconnecting with the newly-centered card each
-            time the deck advances. Negative margins on both sides close the
-            gaps so it visually touches the pill on the left and the card's
-            gradient border on the right. */}
-        <div className="relative flex-1 h-px flex items-center z-0" style={{ marginLeft: '-10px', marginRight: '-48px' }}>
-          <AnimatePresence mode="wait">
             <m.div
-              key={`right-${offset}`}
-              className="h-[2px] w-full origin-left"
-              style={{ background: wireGradientRL }}
-              initial={{ scaleX: 0, opacity: 0.3 }}
+              className="h-0.5 w-full origin-left"
+              style={{ background: WIRE_GRADIENT_LR }}
               animate={{
-                scaleX: 1,
-                opacity: isPaused ? [0.6, 0.95, 0.6] : 0.6,
+                opacity: isPaused ? [0.7, 1, 0.7] : 0.75,
               }}
-              exit={{ scaleX: 0, opacity: 0, transition: { duration: 0.2 } }}
               transition={{
-                scaleX: { duration: 0.4, ease: 'easeOut' },
                 opacity: isPaused ? { duration: 1, repeat: Infinity } : { duration: 0.3 },
               }}
             />
-          </AnimatePresence>
-        </div>
-
-        {/* Right Side - Animated Cards */}
-        <div className="relative flex-shrink-0 z-10" style={{ width: '200px', height: containerHeight, perspective: '800px' }}>
-          <div className="absolute inset-0 flex items-center justify-center" style={{ transform: 'rotateX(55deg) rotateZ(45deg)', transformStyle: 'preserve-3d' }}>
-            {Array.from({ length: 7 }, (_, cardIndex) => {
-              // Fixed identity: this card always shows the same label.
-              const label = labels[cardIndex];
-
-              // Resting slot (0 = bottom ... 6 = top), driven by offset.
-              const restingPosition = (cardIndex + offset) % 7;
-
-              const isWrapping = wrapPhase && wrapPhase.index === cardIndex;
-              const wrapOut = isWrapping && wrapPhase.phase === 'out';
-
-              // While fading out, keep the card pinned to the top slot (6)
-              // it came from instead of jumping straight to the new slot -
-              // that's what makes it read as "removed from the top" rather
-              // than sliding through the whole stack.
-              const renderPosition = wrapOut ? 6 : restingPosition;
-              const zPos = (renderPosition - 3) * 50;
-
-              const isMiddlePosition = restingPosition === 3;
-
-              const opacity = isWrapping ? (wrapOut ? 0 : 1) : 1;
-              const transition = isWrapping
-                ? 'opacity 0.3s ease-in-out'
-                : 'transform 0.6s ease-in-out, opacity 0.3s ease-in-out';
-
-              return (
-                <m.div
-                  key={cardIndex}
-                  className="absolute"
-                  style={{
-                    transform: `translateZ(${zPos}px)`,
-                    width: '100px',
-                    height: '100px',
-                    top: '50%',
-                    left: '50%',
-                    marginLeft: '-50px',
-                    marginTop: '-50px',
-                    transition,
-                    pointerEvents: 'none',
-                    opacity,
-                  }}
-                  animate={{
-                    borderColor: (isMiddlePosition && isPaused)
-                      ? ['rgba(0,207,255,0.3)', 'rgba(0,119,255,0.8)', 'rgba(0,207,255,0.3)']
-                      : undefined,
-                  }}
-                  transition={{
-                    duration: 1,
-                    repeat: Infinity,
-                  }}
-                >
-                  <div style={{
-                    width: '100%',
-                    height: '100%',
-                    transform: 'rotate(90deg)',
-                    background: '#0a0a15',
-                    borderRadius: '14px',
-                    border: isMiddlePosition ? '3px solid transparent' : '2px solid rgba(255, 255, 255, 0.08)',
-                    backgroundImage: isMiddlePosition ? 'linear-gradient(#0a0a15, #0a0a15), linear-gradient(135deg, #00CFFF, #0077FF)' : 'none',
-                    backgroundOrigin: 'border-box',
-                    backgroundClip: 'padding-box, border-box',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: 'white',
-                    fontSize: '13px',
-                    fontWeight: 'bold',
-                    fontFamily: 'monospace',
-                    textTransform: 'uppercase',
-                    letterSpacing: '1px',
-                    textShadow: '0 0 10px rgba(0, 207, 255, 0.3)',
-                  }}>
-                    <span style={{ transform: 'rotate(-90deg)', whiteSpace: 'nowrap' }}>
-                      {label}
-                    </span>
-                  </div>
-                </m.div>
-              );
-            })}
           </div>
-        </div>
+
+          {/* ── Center pill ───────────────────────────────────────── */}
+          <div
+            className="relative z-10 flex shrink-0 items-center justify-center"
+            style={{ height: containerHeight }}
+          >
+            <m.div
+              key={offset}
+              initial={{ x: 0 }}
+              animate={{ x: [0, -10, 0] }}
+              transition={{ duration: 0.6, ease: 'easeInOut' }}
+            >
+              <div className="relative rounded-xl border-2 border-blue-500/40 bg-white px-8 py-2 shadow-sm dark:border-blue-500/30 dark:bg-[#0a0a12] dark:shadow-none">
+                <m.span
+                  className="font-mono text-lg tracking-wider text-neutral-900 dark:text-white lg:text-xl"
+                  key={middleLabel}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {middleLabel}
+                </m.span>
+              </div>
+            </m.div>
+          </div>
+
+          {/* ── Right wire ────────────────────────────────────────── */}
+          <div
+            className="relative z-0 flex h-px flex-1 items-center"
+            style={{ marginLeft: '-10px', marginRight: '-48px' }}
+          >
+            <AnimatePresence mode="wait">
+              <m.div
+                key={`right-${offset}`}
+                className="h-0.5 w-full origin-left"
+                style={{ background: WIRE_GRADIENT_RL }}
+                initial={{ scaleX: 0, opacity: 0.4 }}
+                animate={{
+                  scaleX: 1,
+                  opacity: isPaused ? [0.7, 1, 0.7] : 0.75,
+                }}
+                exit={{ scaleX: 0, opacity: 0, transition: { duration: 0.2 } }}
+                transition={{
+                  scaleX: { duration: 0.4, ease: 'easeOut' },
+                  opacity: isPaused ? { duration: 1, repeat: Infinity } : { duration: 0.3 },
+                }}
+              />
+            </AnimatePresence>
+          </div>
+
+          {/* ── Right: animated deck ──────────────────────────────── */}
+          <div
+            className="relative z-10 shrink-0"
+            style={{ width: '200px', height: containerHeight, perspective: '800px' }}
+          >
+            <div
+              className="absolute inset-0 flex items-center justify-center"
+              style={{ transform: 'rotateX(55deg) rotateZ(45deg)', transformStyle: 'preserve-3d' }}
+            >
+              {PLUGINS.map((plugin, cardIndex) => {
+                const restingPosition = (cardIndex + offset) % PLUGIN_COUNT
+
+                const isWrapping = wrapPhase?.index === cardIndex
+                const wrapOut = isWrapping && wrapPhase.phase === 'out'
+
+                const renderPosition = wrapOut ? TOP_SLOT : restingPosition
+                const zPos = (renderPosition - MIDDLE_SLOT) * 50
+
+                const isMiddlePosition = restingPosition === MIDDLE_SLOT
+
+                const opacity = isWrapping ? (wrapOut ? 0 : 1) : 1
+                const transition = isWrapping
+                  ? 'opacity 0.3s ease-in-out'
+                  : 'transform 0.6s ease-in-out, opacity 0.3s ease-in-out'
+
+                // Plain <div>: the card wrapper has no border of its own (the
+                // visible border lives on the inner element), so the infinite
+                // borderColor animation that used to run here had no visual
+                // effect. Transform / opacity are driven by the CSS transition.
+                return (
+                  <div
+                    key={cardIndex}
+                    className="absolute"
+                    style={{
+                      transform: `translateZ(${zPos}px)`,
+                      width: '100px',
+                      height: '100px',
+                      top: '50%',
+                      left: '50%',
+                      marginLeft: '-50px',
+                      marginTop: '-50px',
+                      transition,
+                      pointerEvents: 'none',
+                      opacity,
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        transform: 'rotate(90deg)',
+                        background: 'var(--card-bg)',
+                        borderRadius: '14px',
+                        border: isMiddlePosition
+                          ? '3px solid transparent'
+                          : '2px solid var(--card-border)',
+                        backgroundImage: isMiddlePosition
+                          ? 'linear-gradient(var(--card-bg), var(--card-bg)), linear-gradient(135deg, var(--wire-a), var(--wire-b))'
+                          : 'none',
+                        backgroundOrigin: 'border-box',
+                        backgroundClip: 'padding-box, border-box',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: 'var(--card-text)',
+                        fontSize: '13px',
+                        fontWeight: 'bold',
+                        fontFamily: 'monospace',
+                        textTransform: 'uppercase',
+                        letterSpacing: '1px',
+                        textShadow: '0 0 10px var(--card-text-glow)',
+                        boxShadow: isMiddlePosition
+                          ? '0 4px 16px rgba(0, 80, 180, 0.18)'
+                          : '0 2px 8px rgba(15, 23, 42, 0.08)',
+                      }}
+                    >
+                      <span style={{ transform: 'rotate(-90deg)', whiteSpace: 'nowrap' }}>
+                        {plugin.label}
+                      </span>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default PluginAnimation;
+export default PluginAnimation

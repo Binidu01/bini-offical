@@ -1,180 +1,202 @@
-// src/pages/docs/static-export/page.tsx
-import React from 'react'
-import { m } from 'framer-motion'
-import {
-  ArrowLeft,
-  ArrowRight,
-  CheckCircle,
-  Info,
-} from 'lucide-react'
-import { Link } from 'react-router-dom'
-import { Header } from '../../components/Layout'
-import { DocLayout } from '../../components/DocSidebar'
-import { CopyPageButton } from '../../components/CopyPageButton'
-import { TableOfContents, type TocItem } from '../../components/TableOfContents'
+// src/app/docs/static-export.tsx
+import { File, Globe } from 'lucide-react'
 
-// ────────────────────────────────────────────────────────────────────────────────
-// "On this page" entries
-// ────────────────────────────────────────────────────────────────────────────────
+import {
+  C,
+  Callout,
+  CodeBlock,
+  DocPage,
+  MultiTerminal,
+  P,
+  Section,
+  Table,
+  UL,
+  useDocLang,
+} from '../../components/DocBlocks'
+import {
+  Arrow,
+  CARD,
+  FolderVisual,
+  GridBg,
+  ICON,
+  LINE,
+  RouteVisual,
+} from '../../components/DocVisuals'
+import type { TocItem } from '../../components/TableOfContents'
+
 const TOC_ITEMS: TocItem[] = [
   { id: 'overview', label: 'Overview' },
   { id: 'how-it-works', label: 'How It Works' },
   { id: 'render-function', label: 'Your render() Function' },
   { id: 'build-command', label: 'Build Command' },
   { id: 'output-structure', label: 'Output Structure' },
-  { id: 'shell-pages', label: 'Shell Pages & Hydration' },
+  { id: 'shell-pages', label: 'Crawling & Shell Fallback' },
   { id: '404-handling', label: '404 Handling' },
   { id: 'static-hosts', label: 'Works on Any Static Host' },
   { id: 'complete-example', label: 'Complete Example' },
 ]
 
-const PAGE_TITLE = 'Static Export'
-const PAGE_URL = 'https://bini.js.org/docs/static-export'
-const EDIT_URL = 'https://github.com/Binidu01/bini-offical/edit/main/src/app/docs/static-export.tsx'
+const BUILD_TABS = [
+  { id: 'npm', label: 'npm', command: '$ npm run build' },
+  { id: 'pnpm', label: 'pnpm', command: '$ pnpm build' },
+  { id: 'yarn', label: 'yarn', command: '$ yarn build' },
+  { id: 'bun', label: 'bun', command: '$ bun run build' },
+]
 
-// ────────────────────────────────────────────────────────────────────────────────
-// Code Block Component
-// ────────────────────────────────────────────────────────────────────────────────
-function CodeBlock({ code, filename }: { code: string; filename?: string }) {
-  const [copied, setCopied] = React.useState(false)
-  const handleCopy = () => {
-    navigator.clipboard.writeText(code)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
+const Ok = ({ children }: { children: string }) => (
+  <span className="text-emerald-600 dark:text-emerald-400">{children}</span>
+)
 
+/* ---------- visuals ---------- */
+
+const CRAWLED = [
+  { href: '/blog/my-first-post', out: 'dist/blog/my-first-post/index.html' },
+  { href: '/blog/hello-world', out: 'dist/blog/hello-world/index.html' },
+]
+
+/** A rendered page's links on the left, the pages bini-ssg discovers from them on the right. */
+function CrawlVisual() {
+  const head = `flex h-9 items-center gap-2 border-b bg-neutral-50 px-3 text-[11px] font-medium text-neutral-500 dark:bg-neutral-950 dark:text-neutral-400 ${LINE}`
+  const row = `flex h-12 items-center border-b px-3 last:border-0 ${LINE}`
   return (
-    <div className="relative group mb-6">
-      {filename && (
-        <div className="flex items-center justify-between px-4 py-2 bg-slate-900 border border-slate-800 border-b-0 rounded-t-lg">
-          <span className="text-sm text-slate-300 font-mono">{filename}</span>
+    <GridBg>
+      <div className="flex items-start gap-3">
+        <div className={`${CARD} w-72 shrink-0`}>
+          <div className={head}>
+            <File className={ICON} strokeWidth={1.5} />
+            <span>dist/blog/index.html</span>
+          </div>
+          {CRAWLED.map((c) => (
+            <div key={c.href} className={row}>
+              <span className="truncate text-[12px] text-neutral-700 dark:text-neutral-300">
+                {`<a href="${c.href}">`}
+              </span>
+            </div>
+          ))}
         </div>
-      )}
-      <button onClick={handleCopy} className="absolute top-2 right-2 p-1.5 rounded-md bg-slate-800 hover:bg-slate-700 transition-colors z-10 opacity-0 group-hover:opacity-100" style={{ top: filename ? '3rem' : '0.5rem' }}>
-        {copied ? (
-          <svg className="w-3.5 h-3.5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
-        ) : (
-          <svg className="w-3.5 h-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-          </svg>
-        )}
-      </button>
-      <div className={`bg-[#0a0a0a] border border-slate-700 ${filename ? 'rounded-t-none' : 'rounded-lg'} overflow-x-auto scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-transparent hover:scrollbar-thumb-slate-500`}>
-        <pre className="p-4 min-w-max">
-          <code className="text-sm font-mono text-slate-200 whitespace-pre">{code}</code>
-        </pre>
+        <div className="pt-px">
+          <div className="h-9" />
+          {CRAWLED.map((c) => (
+            <div key={c.href} className="flex h-12 items-center">
+              <Arrow />
+            </div>
+          ))}
+        </div>
+        <div className={`${CARD} w-80 shrink-0`}>
+          <div className={head}>Discovered and pre-rendered</div>
+          {CRAWLED.map((c) => (
+            <div key={c.href} className={`${row} flex-col items-start justify-center gap-0.5`}>
+              <span className="flex items-center gap-1.5 text-[12px] text-neutral-800 dark:text-neutral-200">
+                <Globe className={ICON} strokeWidth={1.5} />
+                {c.href}
+              </span>
+              <span className="truncate text-[11px] text-neutral-500">{c.out}</span>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+    </GridBg>
   )
 }
 
-// ────────────────────────────────────────────────────────────────────────────────
-// Table Component
-// ────────────────────────────────────────────────────────────────────────────────
-function Table({ headers, rows }: { headers: string[]; rows: React.ReactNode[][] }) {
-  return (
-    <div className="overflow-x-auto rounded-lg border border-slate-700 my-6">
-      <table className="w-full text-sm">
-        <thead className="bg-slate-900 border-b border-slate-800">
-          <tr>{headers.map((h, i) => <th key={i} className="text-left py-3 px-4 font-medium text-white">{h}</th>)}</tr>
-        </thead>
-        <tbody className="divide-y divide-slate-800">
-          {rows.map((row, i) => <tr key={i}>{row.map((cell, j) => <td key={j} className="py-3 px-4 text-slate-300 text-xs">{cell}</td>)}</tr>)}
-        </tbody>
-      </table>
-    </div>
-  )
-}
+/* ---------- content (reads the TS/JS choice from DocPage) ---------- */
 
-// ────────────────────────────────────────────────────────────────────────────────
-// Note Component
-// ────────────────────────────────────────────────────────────────────────────────
-function Note({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="flex items-start gap-3 p-4 rounded-lg border border-slate-700 bg-slate-900/50 my-6">
-      <Info className="w-5 h-5 text-cyan-400 shrink-0 mt-0.5" />
-      <div className="text-sm text-slate-300 [&>strong]:text-white [&>code]:text-cyan-400 [&>code]:bg-slate-800 [&>code]:px-1 [&>code]:py-0.5 [&>code]:rounded">
-        {children}
-      </div>
-    </div>
-  )
-}
+function Content() {
+  const lang = useDocLang()
+  const x = lang === 'js' ? 'jsx' : 'tsx'
 
-// ────────────────────────────────────────────────────────────────────────────────
-// Static Export Page
-// ────────────────────────────────────────────────────────────────────────────────
-export default function StaticExportPage() {
   return (
-    <div className="min-h-screen bg-black font-sans antialiased overflow-x-hidden">
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute inset-0 bg-black" />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-300 h-200 bg-linear-to-b from-cyan-500/5 via-sky-500/3 to-transparent rounded-full blur-3xl" />
+    <>
+      <div className="mb-12">
+        <P className="mb-4">
+          <C>bini-ssg</C> pre-renders every route - static <em>and</em> dynamic - to static HTML as
+          part of <C>npm run build</C>. It starts from your static routes, then{' '}
+          <strong className="font-medium text-black dark:text-white">
+            crawls every rendered page for internal links
+          </strong>{' '}
+          and pre-renders those too. A blog post at <C>/blog/my-first-post</C> linked from{' '}
+          <C>/blog</C> is fully pre-rendered - no extra config, no <C>getStaticPaths</C>.
+        </P>
+        <P className="mb-6">
+          There is no separate export command or export mode. The output is real server-rendered
+          markup, not a client-only shell, ready for GitHub Pages, S3, Firebase, Surge, and any other
+          static host.
+        </P>
+        <Callout>
+          <strong>Web target only.</strong> Static export applies to the Node.js/web target. Desktop
+          and mobile builds (Windows, macOS, Linux, Android, iOS) do not use <C>bini-ssg</C> - they
+          package the same routes into a native binary instead.
+        </Callout>
       </div>
 
-      <Header />
+      <Section id="how-it-works" title="How It Works">
+        <P className="mb-4">
+          <C>bini-ssg</C> is a Vite build plugin that runs during <C>vite build</C>. It:
+        </P>
+        <RouteVisual
+          fileWidth={300}
+          rows={[
+            { n: 'src' },
+            { n: 'app', d: 1 },
+            { n: `page.${x}`, d: 2, url: '/' },
+            { n: 'blog', d: 2 },
+            { n: `page.${x}`, d: 3, url: '/blog' },
+            { n: '[slug]', d: 3 },
+            { n: `page.${x}`, d: 4, dot: true, url: '/blog/:slug' },
+          ]}
+        />
+        <P className="mb-4">
+          Static routes (<C>/</C>, <C>/blog</C>) come straight from the route list. Dynamic routes
+          like the highlighted <C>/blog/:slug</C> are discovered by crawling.
+        </P>
+        <UL className="space-y-2">
+          <li>
+            <strong className="font-medium text-black dark:text-white">Reads your route list</strong>{' '}
+            from <C>bini-router</C>&apos;s <C>generateRouteManifest()</C>
+          </li>
+          <li>
+            <strong className="font-medium text-black dark:text-white">
+              Calls your <C>render()</C> function
+            </strong>{' '}
+            for every static route
+          </li>
+          <li>
+            <strong className="font-medium text-black dark:text-white">Crawls</strong> each rendered
+            HTML for internal <C>&lt;a href&gt;</C> links and discovers dynamic routes (e.g.{' '}
+            <C>/blog/my-first-post</C> linked from <C>/blog</C>)
+          </li>
+          <li>
+            <strong className="font-medium text-black dark:text-white">Pre-renders</strong> every
+            discovered dynamic route with your <C>render()</C> - full HTML, not a shell
+          </li>
+          <li>
+            <strong className="font-medium text-black dark:text-white">
+              Falls back to shell pages
+            </strong>{' '}
+            only for dynamic routes that were never linked (still valid - hydrated on client)
+          </li>
+          <li>
+            <strong className="font-medium text-black dark:text-white">
+              Writes one <C>index.html</C>
+            </strong>{' '}
+            per route into your output directory
+          </li>
+        </UL>
+        <Callout>
+          <strong>Zero config crawling.</strong> If a page links to <C>/docs/getting-started</C>,{' '}
+          <C>/blog/hello-world</C>, or <C>/users/123</C>, bini-ssg finds it and pre-renders it. You
+          don&apos;t need <C>getStaticPaths</C> or a manifest.
+        </Callout>
+      </Section>
 
-      <div className="relative pt-16 lg:pt-20">
-        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 overflow-x-hidden">
-
-          <DocLayout>
-            <div className="flex gap-10 xl:gap-14">
-              {/* Main content column */}
-              <div className="max-w-4xl min-w-0 flex-1">
-
-                {/* Title + Copy page button */}
-                <m.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex items-start justify-between gap-4 mb-4"
-                >
-                  <div>
-                    <h1 className="text-4xl font-bold text-white mb-2">{PAGE_TITLE}</h1>
-                    <p className="text-slate-400 text-sm">Pre-render your Bini.js app to static HTML with <code className="text-cyan-400 bg-slate-800 px-1 py-0.5 rounded">bini-ssg</code>, ready for any static host.</p>
-                  </div>
-                  <div className="shrink-0 pt-2 hidden sm:block">
-                    <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
-                  </div>
-                </m.div>
-                {/* Copy button on small screens */}
-                <div className="sm:hidden mb-8">
-                  <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
-                </div>
-
-                {/* Overview */}
-                <m.section id="overview" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="scroll-mt-24">
-                  <p className="text-slate-300 mb-6">
-                    <code className="text-cyan-400">bini-ssg</code> pre-renders every route — static and dynamic — to static HTML as part of <code className="text-cyan-400">npm run build</code>. There is no separate export command or export mode. The output is real server-rendered markup, not a client-only shell, ready for GitHub Pages, S3, Firebase, Surge, and any other static host.
-                  </p>
-                  <Note>
-                    <strong>Web target only.</strong> Static export applies to the Node.js/web target. Desktop and mobile builds (Windows, macOS, Linux, Android, iOS) don't use <code>bini-ssg</code> — they package the same routes into a native binary instead.
-                  </Note>
-                </m.section>
-
-                {/* How It Works */}
-                <m.section id="how-it-works" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">How It Works</h2>
-                  <p className="text-slate-300 mb-4">
-                    <code className="text-cyan-400">bini-ssg</code> is a Vite build plugin that runs during <code className="text-cyan-400">vite build</code>. It:
-                  </p>
-                  <ul className="space-y-2 text-slate-300 mb-4 list-disc list-inside">
-                    <li><strong className="text-white">Reads your route list</strong> from <code className="text-cyan-400">bini-router</code>'s <code className="text-cyan-400">generateRouteManifest()</code></li>
-                    <li><strong className="text-white">Calls your <code className="text-cyan-400">render()</code> function</strong> for every static route</li>
-                    <li><strong className="text-white">Creates shell pages</strong> for dynamic routes with a hydration marker</li>
-                    <li><strong className="text-white">Writes one <code className="text-cyan-400">index.html</code></strong> per route into your output directory</li>
-                  </ul>
-                </m.section>
-
-                {/* Your render() Function */}
-                <m.section id="render-function" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Your render() Function</h2>
-                  <p className="text-slate-300 mb-4">
-                    The <code className="text-cyan-400">render()</code> function is exported from <code className="text-cyan-400">src/main.tsx</code> and called by <code className="text-cyan-400">bini-ssg</code> for every static route:
-                  </p>
-                  <CodeBlock
-                    filename="src/main.tsx"
-                    code={`import { createRoot } from 'react-dom/client'
+      <Section id="render-function" title="Your render() Function">
+        <P className="mb-4">
+          The <C>render()</C> function is exported from <C>{`src/main.${x}`}</C> and called by{' '}
+          <C>bini-ssg</C> for every static route:
+        </P>
+        <CodeBlock
+          filename={`src/main.${x}`}
+          tsCode={`import { createRoot } from 'react-dom/client'
 import App from './App'
 
 // Client mount
@@ -192,86 +214,157 @@ export async function render(url: string): Promise<string> {
     </StaticRouter>
   )
 }`}
-                  />
-                  <p className="text-slate-300 mt-4">
-                    This function uses React 19's <code className="text-cyan-400">renderToPipeableStream</code> under the hood with <code className="text-cyan-400">StaticRouter</code> from React Router, producing real server-rendered HTML.
-                  </p>
-                  <Note>
-                    <strong>Already scaffolded:</strong> The <code>render()</code> function is already in your project. You only need to modify it if you need custom server rendering logic.
-                  </Note>
-                </m.section>
+          jsCode={`import { createRoot } from 'react-dom/client'
+import App from './App'
 
-                {/* Build Command */}
-                <m.section id="build-command" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Build Command</h2>
-                  <Table
-                    headers={['Command', 'When to use']}
-                    rows={[
-                      [<code className="text-cyan-400">npm run build</code>, 'Pre-renders every route to static HTML — GitHub Pages, S3, Firebase, Surge, and any static host'],
-                      [<code className="text-cyan-400">npm run start</code>, 'Serves the production build with API routes — Node.js hosts (Railway, Render, Fly.io, VPS)'],
-                    ]}
-                  />
-                  <p className="text-slate-300 mt-4">
-                    <code className="text-cyan-400">npm run build</code> type-checks (TypeScript projects) and then runs <code className="text-cyan-400">vite build</code>. The <code className="text-cyan-400">bini-ssg</code> plugin drives pre-rendering as part of that same build.
-                  </p>
-                </m.section>
+// Client mount
+createRoot(document.getElementById('root')).render(<App />)
 
-                {/* Output Structure */}
-                <m.section id="output-structure" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Output Structure</h2>
-                  <CodeBlock
-                    code={`dist/
-├── index.html                   ← Pre-rendered '/'
-├── about/
-│   └── index.html               ← Pre-rendered '/about'
-├── blog/
-│   └── [slug]/
-│       └── index.html           ← Shell page for '/blog/:slug'
-├── docs/
-│   └── [...slug]/
-│       └── index.html           ← Shell page for '/docs/*'
-├── js/                          ← Your compiled JavaScript files
-│   └── index-[hash].js
-└── css/                         ← Your compiled CSS files
-    └── index-[hash].css`}
-                  />
-                </m.section>
+// SSG render (called by bini-ssg, Node-only)
+export async function render(url) {
+  const { renderToString } = await import('react-dom/server')
+  const { StaticRouter } = await import('react-router-dom/server')
+  const { AppRoutes } = await import('./App')
 
-                {/* Shell Pages & Hydration */}
-                <m.section id="shell-pages" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Shell Pages & Hydration</h2>
-                  <p className="text-slate-300 mb-4">
-                    For dynamic routes (e.g., <code className="text-cyan-400">/blog/:slug</code>), <code className="text-cyan-400">bini-ssg</code> creates a shell page with a marker script:
-                  </p>
-                  <CodeBlock
-                    code={`<script>window.__BINI_SHELL__=true;</script>`}
-                  />
-                  <p className="text-slate-300 mt-4">
-                    Your client entry checks this flag to decide between <code className="text-cyan-400">createRoot</code> and <code className="text-cyan-400">hydrateRoot</code>:
-                  </p>
-                  <CodeBlock
-                    code={`// src/main.tsx
-const root = document.getElementById('root')!
+  return renderToString(
+    <StaticRouter location={url}>
+      <AppRoutes />
+    </StaticRouter>
+  )
+}`}
+        />
+        <P className="mt-4">
+          This function uses React 19&apos;s <C>renderToPipeableStream</C> under the hood with{' '}
+          <C>StaticRouter</C> from React Router, producing real server-rendered HTML.
+        </P>
+        <Callout>
+          <strong>Already scaffolded:</strong> The <C>render()</C> function is already in your
+          project. You only need to modify it if you need custom server rendering logic.
+        </Callout>
+      </Section>
+
+      <Section id="build-command" title="Build Command">
+        <Table
+          headers={['Command', 'When to use']}
+          rows={[
+            [
+              <C key="build">npm run build</C>,
+              'Pre-renders every route to static HTML - GitHub Pages, S3, Firebase, Surge, and any static host',
+            ],
+            [
+              <C key="start">npm run start</C>,
+              'Serves the production build with API routes - Node.js hosts (Railway, Render, Fly.io, VPS)',
+            ],
+          ]}
+        />
+        <P className="mt-4">
+          <C>npm run build</C> type-checks (TypeScript projects) and then runs <C>vite build</C>. The{' '}
+          <C>bini-ssg</C> plugin drives pre-rendering as part of that same build.
+        </P>
+        <MultiTerminal tabs={BUILD_TABS} />
+      </Section>
+
+      <Section id="output-structure" title="Output Structure">
+        <P className="mb-4">
+          Each route becomes its own folder with an <C>index.html</C>. Highlighted files were found
+          by crawling and pre-rendered; the <C>[slug]</C> and <C>[...slug]</C> folders are shell
+          fallbacks for dynamic routes that were never linked.
+        </P>
+        <RouteVisual
+          fileWidth={320}
+          rows={[
+            { n: 'dist' },
+            { n: 'index.html', d: 1, url: '/' },
+            { n: 'about', d: 1 },
+            { n: 'index.html', d: 2, url: '/about' },
+            { n: 'blog', d: 1 },
+            { n: 'index.html', d: 2, url: '/blog' },
+            { n: 'my-first-post', d: 2 },
+            { n: 'index.html', d: 3, dot: true, url: '/blog/my-first-post' },
+            { n: 'hello-world', d: 2 },
+            { n: 'index.html', d: 3, dot: true, url: '/blog/hello-world' },
+            { n: '[slug]', d: 2 },
+            { n: 'index.html', d: 3, url: '/blog/:slug' },
+            { n: 'docs', d: 1 },
+            { n: 'getting-started', d: 2 },
+            { n: 'index.html', d: 3, dot: true, url: '/docs/getting-started' },
+            { n: '[...slug]', d: 2 },
+            { n: 'index.html', d: 3, url: '/docs/*' },
+            { n: 'js', d: 1 },
+            { n: 'index-[hash].js', d: 2 },
+            { n: 'css', d: 1 },
+            { n: 'index-[hash].css', d: 2 },
+          ]}
+        />
+        <Callout>
+          Dynamic routes that are <strong>linked somewhere</strong> in your app are pre-rendered as
+          real HTML. Only routes that were never discovered during crawling get the shell fallback.
+        </Callout>
+      </Section>
+
+      <Section id="shell-pages" title="Crawling & Shell Fallback">
+        <P className="mb-4">
+          After pre-rendering static routes, <C>bini-ssg</C> parses each HTML file for internal
+          links and crawls them:
+        </P>
+        <CrawlVisual />
+        <P className="mb-4">
+          This repeats recursively - if <C>/blog/my-first-post</C> links to <C>/users/123</C>, that
+          page is also pre-rendered. Crawling respects your <C>base</C> path and skips external
+          links, hashes, and <C>/api/*</C>.
+        </P>
+        <P className="mb-4">
+          Only dynamic routes that were{' '}
+          <strong className="font-medium text-black dark:text-white">never discovered</strong>{' '}
+          during crawling get a shell page with a marker script:
+        </P>
+        <CodeBlock lang="text" code={`<script>window.__BINI_SHELL__=true;</script>`} />
+        <P className="mt-4">
+          Your client entry checks this flag to decide between <C>createRoot</C> and{' '}
+          <C>hydrateRoot</C>:
+        </P>
+        <CodeBlock
+          filename={`src/main.${x}`}
+          tsCode={`const root = document.getElementById('root')!
 
 if (window.__BINI_SHELL__) {
   createRoot(root).render(<App />)
 } else {
   hydrateRoot(root, <App />)
 }`}
-                  />
-                  <Note>
-                    <strong>No hydration errors:</strong> The shell marker prevents React from trying to hydrate an empty <code>#root</code> div against your component tree.
-                  </Note>
-                </m.section>
+          jsCode={`const root = document.getElementById('root')
 
-                {/* 404 Handling */}
-                <m.section id="404-handling" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">404 Handling</h2>
-                  <p className="text-slate-300 mb-4">
-                    You can enable <code className="text-cyan-400">404.html</code> generation with the <code className="text-cyan-400">fallback</code> option:
-                  </p>
-                  <CodeBlock
-                    code={`// vite.config.ts
+if (window.__BINI_SHELL__) {
+  createRoot(root).render(<App />)
+} else {
+  hydrateRoot(root, <App />)
+}`}
+        />
+        <Callout>
+          <strong>Best of both worlds.</strong> Linked dynamic routes are fully pre-rendered for SEO
+          and instant loads. Unlinked ones still work via the shell fallback - no 404, hydrated on
+          client. To guarantee pre-rendering, just make sure a page links to it.
+        </Callout>
+      </Section>
+
+      <Section id="404-handling" title="404 Handling">
+        <P className="mb-4">
+          You can enable <C>404.html</C> generation with the <C>fallback</C> option:
+        </P>
+        <FolderVisual
+          width={300}
+          rows={[
+            { n: 'src' },
+            { n: 'app', d: 1 },
+            { n: `not-found.${x}`, d: 2, dot: true },
+            { n: 'dist' },
+            { n: '404.html', d: 1, dot: true },
+            { n: 'index.html', d: 1 },
+          ]}
+        />
+        <CodeBlock
+          filename="vite.config.ts"
+          code={`// vite.config.ts
 import { defineConfig } from 'vite'
 import { biniSSG } from 'bini-ssg'
 
@@ -283,45 +376,56 @@ export default defineConfig({
     }),
   ],
 })`}
-                  />
-                  <Table
-                    headers={['Situation', 'What gets written to 404.html']}
-                    rows={[
-                      [
-                        <span><code className="text-cyan-400">src/app/not-found.tsx</code> exists</span>,
-                        <span>Your custom not-found page is pre-rendered to HTML</span>
-                      ],
-                      ['No custom not-found file', 'Built-in 404 page is used'],
-                    ]}
-                  />
-                  <Note>
-                    <strong>Default:</strong> <code>fallback</code> is <code>false</code>. Enable it to generate <code>404.html</code> for static hosts that support it.
-                  </Note>
-                </m.section>
+        />
+        <Table
+          headers={['Situation', 'What gets written to 404.html']}
+          rows={[
+            [
+              <C key="nf">{`src/app/not-found.${x}`}</C>,
+              'Your custom not-found page is pre-rendered to HTML',
+            ],
+            ['No custom not-found file', 'Built-in 404 page is used'],
+          ]}
+        />
+        <Callout>
+          <strong>Default:</strong> <C>fallback</C> is <C>false</C>. Enable it to generate{' '}
+          <C>404.html</C> for static hosts that support it.
+        </Callout>
+      </Section>
 
-                {/* Works on Any Fully Static Host */}
-                <m.section id="static-hosts" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Works on Any Fully Static Host</h2>
-                  <Table
-                    headers={['Host', 'Static routes', 'Dynamic routes']}
-                    rows={[
-                      ['GitHub Pages', <span className="flex items-center gap-1"><CheckCircle className="w-3.5 h-3.5 text-emerald-400" /> pre-rendered</span>, <span className="flex items-center gap-1"><CheckCircle className="w-3.5 h-3.5 text-emerald-400" /> shell pages</span>],
-                      ['AWS S3 + CloudFront', <span className="flex items-center gap-1"><CheckCircle className="w-3.5 h-3.5 text-emerald-400" /> pre-rendered</span>, <span className="flex items-center gap-1"><CheckCircle className="w-3.5 h-3.5 text-emerald-400" /> shell pages</span>],
-                      ['Firebase Hosting', <span className="flex items-center gap-1"><CheckCircle className="w-3.5 h-3.5 text-emerald-400" /> pre-rendered</span>, <span className="flex items-center gap-1"><CheckCircle className="w-3.5 h-3.5 text-emerald-400" /> shell pages</span>],
-                      ['Surge.sh', <span className="flex items-center gap-1"><CheckCircle className="w-3.5 h-3.5 text-emerald-400" /> pre-rendered</span>, <span className="flex items-center gap-1"><CheckCircle className="w-3.5 h-3.5 text-emerald-400" /> shell pages</span>],
-                    ]}
-                  />
-                </m.section>
+      <Section id="static-hosts" title="Works on Any Fully Static Host">
+        <Table
+          headers={['Host', 'Static routes', 'Dynamic routes']}
+          rows={[
+            [
+              'GitHub Pages',
+              <Ok key="a1">✓ pre-rendered</Ok>,
+              <Ok key="a2">✓ crawled + pre-rendered, shell fallback</Ok>,
+            ],
+            [
+              'AWS S3 + CloudFront',
+              <Ok key="b1">✓ pre-rendered</Ok>,
+              <Ok key="b2">✓ crawled + pre-rendered, shell fallback</Ok>,
+            ],
+            [
+              'Firebase Hosting',
+              <Ok key="c1">✓ pre-rendered</Ok>,
+              <Ok key="c2">✓ crawled + pre-rendered, shell fallback</Ok>,
+            ],
+            [
+              'Surge.sh',
+              <Ok key="d1">✓ pre-rendered</Ok>,
+              <Ok key="d2">✓ crawled + pre-rendered, shell fallback</Ok>,
+            ],
+          ]}
+        />
+      </Section>
 
-                {/* Complete Example */}
-                <m.section id="complete-example" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Complete Example</h2>
-                  <p className="text-slate-300 mb-4">
-                    A full setup for deploying to GitHub Pages with true SSG:
-                  </p>
-                  <CodeBlock
-                    filename="vite.config.ts"
-                    code={`import { defineConfig } from 'vite'
+      <Section id="complete-example" title="Complete Example">
+        <P className="mb-4">A full setup for deploying to GitHub Pages with true SSG:</P>
+        <CodeBlock
+          filename="vite.config.ts"
+          code={`import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { biniroute } from 'bini-router'
 import { biniEnv } from 'bini-env'
@@ -338,41 +442,31 @@ export default defineConfig({
     }),
   ],
 })`}
-                  />
-                  <p className="text-slate-300 mt-4">
-                    Run <code className="text-cyan-400">npm run build</code>, then push the contents of <code className="text-cyan-400">dist/</code> to your GitHub Pages branch (or upload them through the GitHub Pages UI).
-                  </p>
-                </m.section>
+        />
+        <P className="mt-4">
+          Run <C>npm run build</C>, then push the contents of <C>dist/</C> to your GitHub Pages
+          branch (or upload them through the GitHub Pages UI).
+        </P>
+        <MultiTerminal tabs={BUILD_TABS} />
+      </Section>
+    </>
+  )
+}
 
-                {/* Previous / Next Navigation */}
-                <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
-                  <Link to="/docs/production-server" className="group flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
-                    <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                    <div>
-                      <div className="text-xs text-slate-500">Previous</div>
-                      <div className="text-sm font-medium">Production Server</div>
-                    </div>
-                  </Link>
-                  <Link to="/docs/hosting" className="group flex items-center gap-2 text-right text-slate-400 hover:text-white transition-colors">
-                    <div>
-                      <div className="text-xs text-slate-500">Next</div>
-                      <div className="text-sm font-medium">Hosting Providers</div>
-                    </div>
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                </m.div>
+/* ---------- page ---------- */
 
-              </div>
-
-              {/* Right-hand "On this page" sidebar */}
-              <aside className="hidden xl:block w-56 shrink-0">
-                <TableOfContents items={TOC_ITEMS} editUrl={EDIT_URL} />
-              </aside>
-            </div>
-          </DocLayout>
-
-        </div>
-      </div>
-    </div>
+export default function StaticExportPage() {
+  return (
+    <DocPage
+      title="Static Export"
+      description="Pre-render your Bini.js app to static HTML with bini-ssg, ready for any static host."
+      url="https://bini.js.org/docs/static-export"
+      editUrl="https://github.com/Binidu01/bini-official/edit/main/src/app/docs/static-export.tsx"
+      toc={TOC_ITEMS}
+      prev={{ to: '/docs/production-server', title: 'Production Server' }}
+      next={{ to: '/docs/hosting', title: 'Hosting Providers' }}
+    >
+      <Content />
+    </DocPage>
   )
 }

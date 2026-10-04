@@ -1,30 +1,25 @@
-// src/pages/docs/platform-web/page.tsx
-import React from 'react'
-import { m } from 'framer-motion'
+// src/app/docs/platform-web.tsx
 import {
-  ArrowLeft,
-  ArrowRight,
-  Globe,
-  Server,
-  Cloud,
-  Terminal,
-  Zap,
-  Shield,
-  Gauge,
-  CheckCircle,
-  Info,
-} from 'lucide-react'
-import { Link } from 'react-router-dom'
-import { Header } from '../../components/Layout'
-import { DocLayout } from '../../components/DocSidebar'
-import { CopyPageButton } from '../../components/CopyPageButton'
-import { TableOfContents, type TocItem } from '../../components/TableOfContents'
+  C,
+  Callout,
+  CodeBlock,
+  DocPage,
+  H3,
+  MultiTerminal,
+  P,
+  PromptOutput,
+  Section,
+  Table,
+  UL,
+  useDocLang,
+  type TerminalTab,
+} from '../../components/DocBlocks'
+import { FeatureCard, RouteVisual } from '../../components/DocVisuals'
+import type { TocItem } from '../../components/TableOfContents'
 
-// ────────────────────────────────────────────────────────────────────────────────
-// "On this page" entries
-// ────────────────────────────────────────────────────────────────────────────────
 const TOC_ITEMS: TocItem[] = [
   { id: 'web-overview', label: 'Web Overview' },
+  { id: 'requirements', label: 'Requirements' },
   { id: 'windows', label: 'Windows' },
   { id: 'macos', label: 'macOS' },
   { id: 'linux', label: 'Linux' },
@@ -34,328 +29,346 @@ const TOC_ITEMS: TocItem[] = [
   { id: 'deployment', label: 'Deployment' },
 ]
 
-const PAGE_TITLE = 'Web'
-const PAGE_URL = 'https://bini.js.org/docs/platform-web'
-const EDIT_URL = 'http://github.com/Binidu01/bini-offical/edit/main/src/app/docs/platform-web.tsx'
+const STRONG = 'font-medium text-neutral-900 dark:text-neutral-100'
 
-// ────────────────────────────────────────────────────────────────────────────────
-// Code Block Component with horizontal scrollbar
-// ────────────────────────────────────────────────────────────────────────────────
-function CodeBlock({ code, filename }: { code: string; filename?: string }) {
-  const [copied, setCopied] = React.useState(false)
-  const handleCopy = () => { 
-    const cleanCode = code.replace(/\$ /g, '')
-    navigator.clipboard.writeText(cleanCode)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000) 
-  }
+/* ---------- terminal tabs ---------- */
+
+const CREATE_AND_INSTALL_TABS: TerminalTab[] = [
+  {
+    id: 'npm',
+    label: 'npm',
+    command: `$ npx create-bini-app@latest my-app --platform web
+$ cd my-app
+$ npm install`,
+  },
+  {
+    id: 'pnpm',
+    label: 'pnpm',
+    command: `$ pnpm dlx create-bini-app@latest my-app --platform web
+$ cd my-app
+$ pnpm install`,
+  },
+  {
+    id: 'yarn',
+    label: 'yarn',
+    command: `$ yarn dlx create-bini-app@latest my-app --platform web
+$ cd my-app
+$ yarn install`,
+  },
+  {
+    id: 'bun',
+    label: 'bun',
+    command: `$ bunx create-bini-app@latest my-app --platform web
+$ cd my-app
+$ bun install`,
+  },
+]
+
+const INTERACTIVE_TABS: TerminalTab[] = [
+  { id: 'npm', label: 'npm', command: `$ npx create-bini-app@latest` },
+  { id: 'pnpm', label: 'pnpm', command: `$ pnpm dlx create-bini-app@latest` },
+  { id: 'yarn', label: 'yarn', command: `$ yarn dlx create-bini-app@latest` },
+  { id: 'bun', label: 'bun', command: `$ bunx create-bini-app@latest` },
+]
+
+const DEV_TABS: TerminalTab[] = [
+  { id: 'npm', label: 'npm', command: `$ npm run dev` },
+  { id: 'pnpm', label: 'pnpm', command: `$ pnpm dev` },
+  { id: 'yarn', label: 'yarn', command: `$ yarn dev` },
+  { id: 'bun', label: 'bun', command: `$ bun run dev` },
+]
+
+const BUILD_TABS: TerminalTab[] = [
+  { id: 'npm', label: 'npm', command: `$ npm run build` },
+  { id: 'pnpm', label: 'pnpm', command: `$ pnpm build` },
+  { id: 'yarn', label: 'yarn', command: `$ yarn build` },
+  { id: 'bun', label: 'bun', command: `$ bun run build` },
+]
+
+const BUILD_START_TABS: TerminalTab[] = [
+  { id: 'npm', label: 'npm', command: `$ npm run build\n$ npm start` },
+  { id: 'pnpm', label: 'pnpm', command: `$ pnpm build\n$ pnpm start` },
+  { id: 'yarn', label: 'yarn', command: `$ yarn build\n$ yarn start` },
+  { id: 'bun', label: 'bun', command: `$ bun run build\n$ bun run start` },
+]
+
+const DEPLOY_TABS: TerminalTab[] = [
+  { id: 'npm', label: 'npm', command: `$ npm run deploy` },
+  { id: 'pnpm', label: 'pnpm', command: `$ pnpm deploy` },
+  { id: 'yarn', label: 'yarn', command: `$ yarn deploy` },
+  { id: 'bun', label: 'bun', command: `$ bun run deploy` },
+]
+
+const NODE_TABS: TerminalTab[] = [
+  { id: 'npm', label: 'npm', command: `$ npm run build && npm start` },
+  { id: 'pnpm', label: 'pnpm', command: `$ pnpm build && pnpm start` },
+  { id: 'yarn', label: 'yarn', command: `$ yarn build && yarn start` },
+  { id: 'bun', label: 'bun', command: `$ bun run build && bun run start` },
+]
+
+/* ---------- shared "create project" block ---------- */
+
+function ScaffoldBlock() {
+  return (
+    <>
+      <H3 className="mt-6 mb-3">Create the Project</H3>
+      <P className="mb-4">
+        Create a new Bini.js project targeting Web and install its dependencies:
+      </P>
+      <MultiTerminal tabs={CREATE_AND_INSTALL_TABS} />
+      <P className="mb-4">
+        Or use the interactive prompt and select <C>Web Application</C>:
+      </P>
+      <MultiTerminal tabs={INTERACTIVE_TABS} />
+      <PromptOutput
+        lines={[
+          { kind: 'question', text: 'Select target platform:' },
+          { kind: 'option', text: 'Web Application', selected: true },
+          { kind: 'option', text: 'Windows Desktop' },
+          { kind: 'option', text: 'Linux Desktop' },
+          { kind: 'option', text: 'macOS Desktop' },
+          { kind: 'option', text: 'Android' },
+          { kind: 'option', text: 'iOS' },
+          { kind: 'blank' },
+          { kind: 'hint', text: '↑↓ navigate • ⏎ select' },
+        ]}
+      />
+    </>
+  )
+}
+
+/* ---------- Windows / macOS / Linux sections ---------- */
+
+function WindowsSection() {
+  return (
+    <Section id="windows" title="Windows">
+      <P className="mb-4">
+        On Windows you can scaffold, develop, and build the app entirely on your own machine - no
+        CI required. Web apps are pure JavaScript/TypeScript, so no native toolchain is needed.
+      </P>
+
+      <H3 className="mt-6 mb-3">Step 1: Install the tools</H3>
+      <UL>
+        <li>
+          Node.js <strong className={STRONG}>20.19.0</strong> or higher
+        </li>
+        <li>
+          Git for Windows - <C>winget install --id Git.Git</C> or download from <C>git-scm.com</C>
+        </li>
+      </UL>
+
+      <H3 className="mt-6 mb-3">Step 2: Create the project</H3>
+      <ScaffoldBlock />
+
+      <H3 className="mt-6 mb-3">Step 3: Develop</H3>
+      <P className="mb-4">
+        Run <C>dev</C> to start the Vite dev server with HMR:
+      </P>
+      <MultiTerminal tabs={DEV_TABS} />
+
+      <Callout>
+        <strong>Tip:</strong> Web is the default platform - <C>--platform web</C> is optional.
+      </Callout>
+    </Section>
+  )
+}
+
+function MacosSection() {
+  return (
+    <Section id="macos" title="macOS">
+      <P className="mb-4">
+        On macOS you can scaffold, develop, and build the app entirely on your own machine - no
+        CI required. Web apps are pure JavaScript/TypeScript, so no native toolchain is needed.
+      </P>
+
+      <H3 className="mt-6 mb-3">Step 1: Install the tools</H3>
+      <UL>
+        <li>
+          Node.js <strong className={STRONG}>20.19.0</strong> or higher
+        </li>
+        <li>
+          Git - comes with Xcode Command Line Tools. Run <C>xcode-select --install</C> if you do
+          not have it yet.
+        </li>
+      </UL>
+
+      <H3 className="mt-6 mb-3">Step 2: Create the project</H3>
+      <ScaffoldBlock />
+
+      <H3 className="mt-6 mb-3">Step 3: Develop</H3>
+      <P className="mb-4">
+        Run <C>dev</C> to start the Vite dev server with HMR:
+      </P>
+      <MultiTerminal tabs={DEV_TABS} />
+
+      <Callout>
+        <strong>Tip:</strong> Web is the default platform - <C>--platform web</C> is optional.
+      </Callout>
+    </Section>
+  )
+}
+
+function LinuxSection() {
+  return (
+    <Section id="linux" title="Linux">
+      <P className="mb-4">
+        On Linux you can scaffold, develop, and build the app entirely on your own machine - no
+        CI required. Web apps are pure JavaScript/TypeScript, so no native toolchain is needed.
+      </P>
+
+      <H3 className="mt-6 mb-3">Step 1: Install the tools</H3>
+      <UL>
+        <li>
+          Node.js <strong className={STRONG}>20.19.0</strong> or higher
+        </li>
+        <li>
+          Git with your package manager, for example <C>sudo apt install git</C> on Debian and
+          Ubuntu.
+        </li>
+      </UL>
+
+      <H3 className="mt-6 mb-3">Step 2: Create the project</H3>
+      <ScaffoldBlock />
+
+      <H3 className="mt-6 mb-3">Step 3: Develop</H3>
+      <P className="mb-4">
+        Run <C>dev</C> to start the Vite dev server with HMR:
+      </P>
+      <MultiTerminal tabs={DEV_TABS} />
+
+      <Callout>
+        <strong>Tip:</strong> Web is the default platform - <C>--platform web</C> is optional.
+      </Callout>
+    </Section>
+  )
+}
+
+/* ---------- content ---------- */
+
+function Content() {
+  const lang = useDocLang()
+  const t = lang === 'js' ? 'js' : 'ts' // plain .ts / .js files
+  const e = lang === 'js' ? 'jsx' : 'tsx' // React files
 
   return (
-    <div className="relative group mb-6">
-      {filename && (
-        <div className="flex items-center justify-between px-4 py-2 bg-slate-900 border border-slate-800 border-b-0 rounded-t-lg">
-          <span className="text-sm text-slate-300 font-mono">{filename}</span>
+    <>
+      <Section id="web-overview" title="Web Overview">
+        <P className="mb-4">
+          Web is the default platform target in Bini.js. It is a standard Vite + React SPA with
+          file-based routing, pre-rendering support, and a Hono API layer. Your application runs in
+          the browser and can be deployed to any hosting platform.
+        </P>
+        <div className="grid gap-3 sm:grid-cols-3">
+          <FeatureCard title="SPA" text="Single-page application with client-side routing" />
+          <FeatureCard title="API Layer" text="Hono-powered API routes in src/app/api/" />
+          <FeatureCard title="Pre-rendering" text="Static HTML with bini-ssg" />
         </div>
-      )}
-      <button onClick={handleCopy} className="absolute top-2 right-2 p-1.5 rounded-md bg-slate-800 hover:bg-slate-700 transition-colors z-10 opacity-0 group-hover:opacity-100" style={{ top: filename ? '3rem' : '0.5rem' }}>
-        {copied ? (
-          <svg className="w-3.5 h-3.5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
-        ) : (
-          <svg className="w-3.5 h-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-          </svg>
-        )}
-      </button>
-      <div className={`bg-[#0a0a0a] border border-slate-700 ${filename ? 'rounded-t-none' : 'rounded-lg'} overflow-x-auto scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-transparent hover:scrollbar-thumb-slate-500`}>
-        <pre className="p-4 min-w-max">
-          <code className="text-sm font-mono text-slate-200 whitespace-pre">{code}</code>
-        </pre>
-      </div>
-    </div>
-  )
-}
+        <Callout>
+          Web is the default platform on every OS - no <C>--platform</C> flag required.
+        </Callout>
+      </Section>
 
-// ────────────────────────────────────────────────────────────────────────────────
-// Table Component
-// ────────────────────────────────────────────────────────────────────────────────
-function Table({ headers, rows }: { headers: string[]; rows: React.ReactNode[][] }) {
-  return (
-    <div className="overflow-x-auto rounded-lg border border-slate-700 my-6">
-      <table className="w-full text-sm">
-        <thead className="bg-slate-900 border-b border-slate-800">
-          <tr>{headers.map((h, i) => <th key={i} className="text-left py-3 px-4 font-medium text-white">{h}</th>)}</tr>
-        </thead>
-        <tbody className="divide-y divide-slate-800">
-          {rows.map((row, i) => <tr key={i}>{row.map((cell, j) => <td key={j} className="py-3 px-4 text-slate-300 text-xs">{cell}</td>)}</tr>)}
-        </tbody>
-      </table>
-    </div>
-  )
-}
+      <Section id="requirements" title="Requirements">
+        <P className="mb-4">
+          Web apps are pure JavaScript/TypeScript, so no native toolchain is needed. The only
+          prerequisites are Node.js and Git - they work the same on every OS.
+        </P>
+        <UL>
+          <li>
+            Node.js <strong className={STRONG}>20.19.0</strong> or higher
+          </li>
+          <li>
+            Git - comes with Xcode Command Line Tools on macOS, <C>sudo apt install git</C> on
+            Linux, and <C>winget install --id Git.Git</C> on Windows
+          </li>
+        </UL>
+        <Callout>
+          You do not need Rust, Xcode, MSVC, or any platform-specific SDK to build a web app. Those
+          are only required when targeting native desktop or mobile platforms.
+        </Callout>
+      </Section>
 
-// ────────────────────────────────────────────────────────────────────────────────
-// Note Component
-// ────────────────────────────────────────────────────────────────────────────────
-function Note({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="flex items-start gap-3 p-4 rounded-lg border border-slate-700 bg-slate-900/50 my-6">
-      <Info className="w-5 h-5 text-cyan-400 shrink-0 mt-0.5" />
-      <div className="text-sm text-slate-300 [&>strong]:text-white [&>code]:text-cyan-400 [&>code]:bg-slate-800 [&>code]:px-1 [&>code]:py-0.5 [&>code]:rounded">{children}</div>
-    </div>
-  )
-}
+      <WindowsSection />
+      <MacosSection />
+      <LinuxSection />
 
-// ────────────────────────────────────────────────────────────────────────────────
-// Platform Web Page
-// ────────────────────────────────────────────────────────────────────────────────
-export default function PlatformWebPage() {
-  return (
-    <div className="min-h-screen bg-black font-sans antialiased overflow-x-hidden">
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute inset-0 bg-black" />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-300 h-200 bg-linear-to-b from-cyan-500/5 via-sky-500/3 to-transparent rounded-full blur-3xl" />
-      </div>
+      <Section id="development-server" title="Development Server">
+        <P className="mb-4">
+          Start the development server with HMR (Hot Module Replacement). This command is the same
+          on every OS:
+        </P>
+        <MultiTerminal tabs={DEV_TABS} />
+        <P className="mb-4">The dev server provides:</P>
+        <UL>
+          <li>Fast refresh with HMR</li>
+          <li>File-based routing with live updates</li>
+          <li>
+            API routes served at <C>/api/*</C>
+          </li>
+          <li>
+            Environment variables from <C>.env</C> files
+          </li>
+          <li>
+            Error overlay with <C>bini-overlay</C>
+          </li>
+        </UL>
+      </Section>
 
-      <Header />
+      <Section id="production-server" title="Production Server">
+        <P className="mb-4">Build and serve your application in production mode:</P>
+        <MultiTerminal tabs={BUILD_START_TABS} />
+        <P className="mb-4">
+          <C>bini-server</C> is a zero-dependency production server that includes:
+        </P>
+        <UL>
+          <li>Static file serving with ETag/304 caching</li>
+          <li>
+            API routes from <C>src/app/api/</C>
+          </li>
+          <li>SPA fallback for client-side routing</li>
+          <li>Graceful shutdown</li>
+          <li>Configurable timeouts and body limits</li>
+        </UL>
+      </Section>
 
-      <div className="relative pt-16 lg:pt-20">
-        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 overflow-x-hidden">
-          
-          <DocLayout>
-            <div className="flex gap-10 xl:gap-14">
-              {/* Main content column */}
-              <div className="max-w-4xl min-w-0 flex-1">
+      <Section id="prerendering" title="Pre-rendering">
+        <P className="mb-4">
+          Every route is pre-rendered to static HTML during <C>npm run build</C>. There is no
+          separate export command or export mode - <C>bini-ssg</C> drives pre-rendering as part of
+          the same build.
+        </P>
 
-                {/* Title + Copy page button */}
-                <m.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex items-start justify-between gap-4 mb-4"
-                >
-                  <div>
-                    <h1 className="text-4xl font-bold text-white mb-2">{PAGE_TITLE}</h1>
-                    <p className="text-slate-400 text-sm">Build web applications with Bini.js — the default platform target.</p>
-                  </div>
-                  <div className="shrink-0 pt-2 hidden sm:block">
-                    <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
-                  </div>
-                </m.div>
-                {/* Copy button on small screens */}
-                <div className="sm:hidden mb-8">
-                  <CopyPageButton pageUrl={PAGE_URL} pageTitle={PAGE_TITLE} />
-                </div>
+        <H3 className="mt-6 mb-3">How It Works</H3>
+        <P className="mb-4">
+          <C>npm run build</C> type-checks (TypeScript projects) and then runs <C>vite build</C>.
+          The <C>bini-ssg</C> plugin drives pre-rendering as part of that same build:
+        </P>
+        <UL>
+          <li>
+            <strong className={STRONG}>Static routes</strong> (e.g., <C>/</C>, <C>/about</C>) are
+            rendered to real server-rendered HTML
+          </li>
+          <li>
+            <strong className={STRONG}>Dynamic routes</strong> (e.g., <C>/blog/:slug</C>) get a
+            shell page with hydration
+          </li>
+          <li>
+            <strong className={STRONG}>React 19</strong> <C>renderToPipeableStream</C> is used for
+            server rendering
+          </li>
+          <li>
+            <strong className={STRONG}>StaticRouter</strong> from React Router provides the routing
+            context
+          </li>
+        </UL>
 
-                {/* Web Overview */}
-                <m.section id="web-overview" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Web Overview</h2>
-                  <p className="text-slate-300 mb-4">
-                    Web is the default platform target in Bini.js. It's a standard Vite + React SPA with file-based routing, pre-rendering support, and a Hono API layer. Your application runs in the browser and can be deployed to any hosting platform.
-                  </p>
-                  <div className="grid sm:grid-cols-3 gap-3 mb-6">
-                    <div className="p-4 rounded-xl border border-slate-700 bg-[#0a0a0a]">
-                      <Globe className="w-5 h-5 text-cyan-400 mb-2" />
-                      <h3 className="text-white font-medium text-sm">SPA</h3>
-                      <p className="text-slate-400 text-xs">Single-page application with client-side routing</p>
-                    </div>
-                    <div className="p-4 rounded-xl border border-slate-700 bg-[#0a0a0a]">
-                      <Server className="w-5 h-5 text-cyan-400 mb-2" />
-                      <h3 className="text-white font-medium text-sm">API Layer</h3>
-                      <p className="text-slate-400 text-xs">Hono-powered API routes in <code className="text-cyan-400">src/app/api/</code></p>
-                    </div>
-                    <div className="p-4 rounded-xl border border-slate-700 bg-[#0a0a0a]">
-                      <Zap className="w-5 h-5 text-cyan-400 mb-2" />
-                      <h3 className="text-white font-medium text-sm">Pre-rendering</h3>
-                      <p className="text-slate-400 text-xs">Static HTML with <code className="text-cyan-400">bini-ssg</code></p>
-                    </div>
-                  </div>
-                </m.section>
-
-                {/* Windows */}
-                <m.section id="windows" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Windows</h2>
-                  <p className="text-slate-300 mb-4">
-                    Create a web application on Windows using the CLI. Web is the default platform, so you don't need to specify it.
-                  </p>
-                  
-                  <h3 className="text-lg font-semibold text-white mt-6 mb-3">Interactive Mode</h3>
-                  <p className="text-slate-300 mb-4">
-                    Run the CLI and select <code className="text-cyan-400">web</code> when prompted:
-                  </p>
-                  <CodeBlock 
-                    code={`npx create-bini-app@latest`}
-                  />
-                  <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-4 mb-4">
-                    <p className="text-slate-300 text-sm">
-                      <span className="text-white">Prompt:</span> Which platform would you like to target?
-                    </p>
-                    <p className="text-cyan-400 text-sm mt-1">web / windows / macos / linux / android / ios</p>
-                    <p className="text-emerald-400 text-sm mt-2 flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4" />
-                      Select <span className="font-medium">web</span> and press Enter
-                    </p>
-                  </div>
-
-                  <h3 className="text-lg font-semibold text-white mt-6 mb-3">With --platform Flag</h3>
-                  <CodeBlock 
-                    code={`npx create-bini-app@latest my-app --platform web`}
-                  />
-
-                  <h3 className="text-lg font-semibold text-white mt-6 mb-3">Default (No Flag)</h3>
-                  <CodeBlock 
-                    code={`npx create-bini-app@latest my-app`}
-                  />
-                  <Note>
-                    Web is the default platform on Windows. All commands work the same way as on other operating systems.
-                  </Note>
-                </m.section>
-
-                {/* macOS */}
-                <m.section id="macos" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">macOS</h2>
-                  <p className="text-slate-300 mb-4">
-                    Create a web application on macOS using the CLI. Web is the default platform, so you don't need to specify it.
-                  </p>
-                  
-                  <h3 className="text-lg font-semibold text-white mt-6 mb-3">Interactive Mode</h3>
-                  <p className="text-slate-300 mb-4">
-                    Run the CLI and select <code className="text-cyan-400">web</code> when prompted:
-                  </p>
-                  <CodeBlock 
-                    code={`npx create-bini-app@latest`}
-                  />
-                  <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-4 mb-4">
-                    <p className="text-slate-300 text-sm">
-                      <span className="text-white">Prompt:</span> Which platform would you like to target?
-                    </p>
-                    <p className="text-cyan-400 text-sm mt-1">web / windows / macos / linux / android / ios</p>
-                    <p className="text-emerald-400 text-sm mt-2 flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4" />
-                      Select <span className="font-medium">web</span> and press Enter
-                    </p>
-                  </div>
-
-                  <h3 className="text-lg font-semibold text-white mt-6 mb-3">With --platform Flag</h3>
-                  <CodeBlock 
-                    code={`npx create-bini-app@latest my-app --platform web`}
-                  />
-
-                  <h3 className="text-lg font-semibold text-white mt-6 mb-3">Default (No Flag)</h3>
-                  <CodeBlock 
-                    code={`npx create-bini-app@latest my-app`}
-                  />
-                  <Note>
-                    Web is the default platform on macOS. All commands work the same way as on other operating systems.
-                  </Note>
-                </m.section>
-
-                {/* Linux */}
-                <m.section id="linux" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Linux</h2>
-                  <p className="text-slate-300 mb-4">
-                    Create a web application on Linux using the CLI. Web is the default platform, so you don't need to specify it.
-                  </p>
-                  
-                  <h3 className="text-lg font-semibold text-white mt-6 mb-3">Interactive Mode</h3>
-                  <p className="text-slate-300 mb-4">
-                    Run the CLI and select <code className="text-cyan-400">web</code> when prompted:
-                  </p>
-                  <CodeBlock 
-                    code={`npx create-bini-app@latest`}
-                  />
-                  <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-4 mb-4">
-                    <p className="text-slate-300 text-sm">
-                      <span className="text-white">Prompt:</span> Which platform would you like to target?
-                    </p>
-                    <p className="text-cyan-400 text-sm mt-1">web / windows / macos / linux / android / ios</p>
-                    <p className="text-emerald-400 text-sm mt-2 flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4" />
-                      Select <span className="font-medium">web</span> and press Enter
-                    </p>
-                  </div>
-
-                  <h3 className="text-lg font-semibold text-white mt-6 mb-3">With --platform Flag</h3>
-                  <CodeBlock 
-                    code={`npx create-bini-app@latest my-app --platform web`}
-                  />
-
-                  <h3 className="text-lg font-semibold text-white mt-6 mb-3">Default (No Flag)</h3>
-                  <CodeBlock 
-                    code={`npx create-bini-app@latest my-app`}
-                  />
-                  <Note>
-                    Web is the default platform on Linux. All commands work the same way as on other operating systems.
-                  </Note>
-                </m.section>
-
-                {/* Development Server */}
-                <m.section id="development-server" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Development Server</h2>
-                  <p className="text-slate-300 mb-4">
-                    Start the development server with HMR (Hot Module Replacement):
-                  </p>
-                  <CodeBlock 
-                    code={`npm run dev`}
-                  />
-                  <p className="text-slate-300 mt-4">
-                    The dev server provides:
-                  </p>
-                  <ul className="space-y-2 text-slate-300 mb-4 list-disc list-inside">
-                    <li>Fast refresh with HMR</li>
-                    <li>File-based routing with live updates</li>
-                    <li>API routes served at <code className="text-cyan-400">/api/*</code></li>
-                    <li>Environment variables from <code className="text-cyan-400">.env</code> files</li>
-                    <li>Error overlay with <code className="text-cyan-400">bini-overlay</code></li>
-                  </ul>
-                </m.section>
-
-                {/* Production Server */}
-                <m.section id="production-server" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Production Server</h2>
-                  <p className="text-slate-300 mb-4">
-                    Build and serve your application in production mode:
-                  </p>
-                  <CodeBlock 
-                    code={`npm run build
-npm start`}
-                  />
-                  <p className="text-slate-300 mt-4">
-                    <code className="text-cyan-400">bini-server</code> is a zero-dependency production server that includes:
-                  </p>
-                  <ul className="space-y-2 text-slate-300 mb-4 list-disc list-inside">
-                    <li>Static file serving with ETag/304 caching</li>
-                    <li>API routes from <code className="text-cyan-400">src/app/api/</code></li>
-                    <li>SPA fallback for client-side routing</li>
-                    <li>Graceful shutdown</li>
-                    <li>Configurable timeouts and body limits</li>
-                  </ul>
-                </m.section>
-
-                {/* Pre-rendering */}
-                <m.section id="prerendering" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Pre-rendering</h2>
-                  <p className="text-slate-300 mb-4">
-                    Every route is pre-rendered to static HTML during <code className="text-cyan-400">npm run build</code>. There is no separate export command or export mode — <code className="text-cyan-400">bini-ssg</code> drives pre-rendering as part of the same build.
-                  </p>
-                  
-                  <h3 className="text-lg font-semibold text-white mt-6 mb-3">How It Works</h3>
-                  <p className="text-slate-300 mb-4">
-                    <code className="text-cyan-400">npm run build</code> type-checks (TypeScript projects) and then runs <code className="text-cyan-400">vite build</code>. The <code className="text-cyan-400">bini-ssg</code> plugin drives pre-rendering as part of that same build:
-                  </p>
-                  <ul className="space-y-2 text-slate-300 mb-4 list-disc list-inside">
-                    <li><strong className="text-white">Static routes</strong> (e.g., <code className="text-cyan-400">/</code>, <code className="text-cyan-400">/about</code>) are rendered to real server-rendered HTML</li>
-                    <li><strong className="text-white">Dynamic routes</strong> (e.g., <code className="text-cyan-400">/blog/:slug</code>) get a shell page with hydration</li>
-                    <li><strong className="text-white">React 19</strong> <code className="text-cyan-400">renderToPipeableStream</code> is used for server rendering</li>
-                    <li><strong className="text-white">StaticRouter</strong> from React Router provides the routing context</li>
-                  </ul>
-                  
-                  <h3 className="text-lg font-semibold text-white mt-6 mb-3">Your render() Function</h3>
-                  <p className="text-slate-300 mb-4">
-                    The <code className="text-cyan-400">render()</code> function is exported from <code className="text-cyan-400">src/main.tsx</code>:
-                  </p>
-                  <CodeBlock 
-                    code={`// src/main.tsx
+        <H3 className="mt-6 mb-3">Your render() Function</H3>
+        <P className="mb-4">
+          The <C>render()</C> function is exported from <C>{`src/main.${e}`}</C>:
+        </P>
+        <CodeBlock
+          filename={`src/main.${e}`}
+          tsCode={`// src/main.tsx
 import { createRoot } from 'react-dom/client'
 import App from './App'
 
@@ -374,48 +387,92 @@ export async function render(url: string): Promise<string> {
     </StaticRouter>
   )
 }`}
-                    filename="src/main.tsx"
-                  />
+          jsCode={`// src/main.jsx
+import { createRoot } from 'react-dom/client'
+import App from './App'
 
-                  <h3 className="text-lg font-semibold text-white mt-6 mb-3">Build Command</h3>
-                  <CodeBlock 
-                    code={`npm run build`}
-                  />
-                  
-                  <p className="text-slate-300 mt-4">
-                    The output is real server-rendered markup, not a client-only shell. The client then hydrates it with <code className="text-cyan-400">hydrateRoot</code> on load.
-                  </p>
-                  
-                  <h3 className="text-lg font-semibold text-white mt-6 mb-3">Output Structure</h3>
-                  <div className="bg-[#0a0a0a] border border-slate-700 rounded-lg p-4 mb-6 font-mono text-sm">
-                    <div className="text-slate-200 whitespace-pre">{`dist/
-├── index.html                   ← Pre-rendered '/'
-├── about/
-│   └── index.html               ← Pre-rendered '/about'
-├── blog/
-│   └── [slug]/
-│       └── index.html           ← Shell page for '/blog/:slug'
-├── docs/
-│   └── [...slug]/
-│       └── index.html           ← Shell page for '/docs/*'
-├── js/                          ← Your compiled JavaScript files
-│   └── index-[hash].js
-└── css/                         ← Your compiled CSS files
-    └── index-[hash].css`}</div>
-                  </div>
-                  
-                  <h3 className="text-lg font-semibold text-white mt-6 mb-3">Hydration and Shell Pages</h3>
-                  <p className="text-slate-300 mb-4">
-                    For dynamic routes, <code className="text-cyan-400">bini-ssg</code> injects a marker script:
-                  </p>
-                  <CodeBlock 
-                    code={`<script>window.__BINI_SHELL__=true;</script>`}
-                  />
-                  <p className="text-slate-300 mt-4">
-                    Your client entry checks this flag:
-                  </p>
-                  <CodeBlock 
-                    code={`// src/main.tsx
+// Client mount
+createRoot(document.getElementById('root')).render(<App />)
+
+// SSG render (called by bini-ssg, Node-only)
+export async function render(url) {
+  const { renderToString } = await import('react-dom/server')
+  const { StaticRouter } = await import('react-router-dom/server')
+  const { AppRoutes } = await import('./App')
+
+  return renderToString(
+    <StaticRouter location={url}>
+      <AppRoutes />
+    </StaticRouter>
+  )
+}`}
+        />
+
+        <H3 className="mt-6 mb-3">Build Command</H3>
+        <MultiTerminal tabs={BUILD_TABS} />
+        <P className="mb-4">
+          The output is real server-rendered markup, not a client-only shell. The client then
+          hydrates it with <C>hydrateRoot</C> on load.
+        </P>
+
+        <H3 className="mt-6 mb-3">Output Structure</H3>
+        <P className="mb-4">
+          Each route gets its own <C>index.html</C> in <C>dist/</C>:
+        </P>
+        <RouteVisual
+          fileWidth={300}
+          rows={[
+            { n: 'dist' },
+            { n: 'index.html', d: 1, dot: true, url: '/' },
+            { n: 'about', d: 1 },
+            { n: 'index.html', d: 2, dot: true, url: '/about' },
+            { n: 'blog', d: 1 },
+            { n: '[slug]', d: 2 },
+            { n: 'index.html', d: 3, url: '/blog/:slug' },
+            { n: 'docs', d: 1 },
+            { n: '[...slug]', d: 2 },
+            { n: 'index.html', d: 3, url: '/docs/*' },
+            { n: 'js', d: 1 },
+            { n: 'index-[hash].js', d: 2 },
+            { n: 'css', d: 1 },
+            { n: 'index-[hash].css', d: 2 },
+          ]}
+        />
+        <UL>
+          <li>
+            Highlighted files are fully pre-rendered pages for <C>/</C> and <C>/about</C>
+          </li>
+          <li>
+            <C>/blog/:slug</C> and <C>/docs/*</C> are shell pages
+          </li>
+          <li>
+            <C>js/</C> and <C>css/</C> hold your compiled JavaScript and CSS files
+          </li>
+        </UL>
+
+        <H3 className="mt-6 mb-3">Hydration and Shell Pages</H3>
+        <P className="mb-4">
+          For dynamic routes, <C>bini-ssg</C> injects a marker script:
+        </P>
+        <CodeBlock
+          filename="dist/blog/[slug]/index.html"
+          lang="text"
+          code={`<!-- injected by bini-ssg -->
+<script>window.__BINI_SHELL__=true;</script>`}
+        />
+        <P className="mb-4">Your client entry checks this flag:</P>
+        <CodeBlock
+          filename={`src/main.${e}`}
+          tsCode={`// src/main.tsx
+import { createRoot, hydrateRoot } from 'react-dom/client'
+import App from './App'
+
+declare global {
+  interface Window {
+    __BINI_SHELL__?: boolean
+  }
+}
+
 const root = document.getElementById('root')!
 
 if (window.__BINI_SHELL__) {
@@ -423,97 +480,101 @@ if (window.__BINI_SHELL__) {
 } else {
   hydrateRoot(root, <App />)
 }`}
-                  />
-                </m.section>
+          jsCode={`// src/main.jsx
+import { createRoot, hydrateRoot } from 'react-dom/client'
+import App from './App'
 
-                {/* Deployment */}
-                <m.section id="deployment" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="scroll-mt-24">
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Deployment</h2>
-                  <p className="text-slate-300 mb-4">
-                    <code className="text-cyan-400">bini-deploy</code> is bundled into every scaffold and exposed as <code className="text-cyan-400">npm run deploy</code>.
-                  </p>
-                  
-                  <h3 className="text-lg font-semibold text-white mt-6 mb-3">Deploy Command</h3>
-                  <CodeBlock 
-                    code={`npm run deploy`}
-                  />
-                  
-                  <p className="text-slate-300 mt-4">
-                    For web, <code className="text-cyan-400">npm run deploy</code> prompts for a hosting target and generates the appropriate configuration:
-                  </p>
-                  <Table 
-                    headers={['Platform', 'Runtime', 'File Generated']}
-                    rows={[
-                      ['Node.js', 'Node.js', '— (bini-server reads src/app/api/ directly)'],
-                      ['Netlify', 'Edge Functions (Deno)', 'netlify/edge-functions/api.ts + netlify.toml'],
-                      ['Vercel', 'Edge Runtime', 'api/index.ts + vercel.json'],
-                      ['Cloudflare', 'Workers', 'worker.ts + wrangler.toml'],
-                      ['Deno', 'Deno', 'server/index.ts'],
-                    ]}
-                  />
-                  
-                  <h3 className="text-lg font-semibold text-white mt-6 mb-3">Deployment Options</h3>
-                  <ul className="space-y-2 text-slate-300 mb-4 list-disc list-inside">
-                    <li><strong className="text-white">SPA + API Server:</strong> Build with <code className="text-cyan-400">npm run build</code>, deploy with <code className="text-cyan-400">npm start</code> (requires Node.js)</li>
-                    <li><strong className="text-white">Pre-rendered Static:</strong> Build with <code className="text-cyan-400">npm run build</code>, deploy the <code className="text-cyan-400">dist/</code> folder to any static hosting</li>
-                    <li><strong className="text-white">Edge/Serverless:</strong> Use <code className="text-cyan-400">npm run deploy</code> to generate platform-specific entry files</li>
-                  </ul>
-                  
-                  <h3 className="text-lg font-semibold text-white mt-6 mb-3">Node.js Deployment</h3>
-                  <p className="text-slate-300 mb-4">
-                    For Node.js hosts (Railway, Render, Fly.io, a VPS):
-                  </p>
-                  <CodeBlock 
-                    code={`npm run build && npm start`}
-                  />
-                  <p className="text-slate-300 mt-4">
-                    <code className="text-cyan-400">bini-server</code> reads handlers directly from <code className="text-cyan-400">src/app/api/</code>, so deploy the whole project — not just <code className="text-cyan-400">dist/</code>. Use <code className="text-cyan-400">pm2</code> on a bare VPS.
-                  </p>
-                  
-                  <h3 className="text-lg font-semibold text-white mt-6 mb-3">GitHub Pages / Subpaths</h3>
-                  <p className="text-slate-300 mb-4">
-                    Set <code className="text-cyan-400">base: '/my-repo/'</code> in <code className="text-cyan-400">vite.config.ts</code>, then <code className="text-cyan-400">npm run build</code> for a fully pre-rendered, subpath-aware <code className="text-cyan-400">dist/</code>.
-                  </p>
-                  <CodeBlock 
-                    code={`// vite.config.ts
-import { defineConfig } from 'vite'
+const root = document.getElementById('root')
+
+if (window.__BINI_SHELL__) {
+  createRoot(root).render(<App />)
+} else {
+  hydrateRoot(root, <App />)
+}`}
+        />
+      </Section>
+
+      <Section id="deployment" title="Deployment">
+        <P className="mb-4">
+          <C>bini-deploy</C> is bundled into every scaffold and exposed as <C>npm run deploy</C>.
+          For web, it prompts for a hosting target and generates the appropriate configuration.
+        </P>
+
+        <H3 className="mt-6 mb-3">Deploy Command</H3>
+        <MultiTerminal tabs={DEPLOY_TABS} />
+
+        <H3 className="mt-6 mb-3">Generated Files</H3>
+        <P className="mb-4">The target you choose determines what <C>bini-deploy</C> creates:</P>
+        <Table
+          headers={['Platform', 'Runtime', 'File Generated']}
+          rows={[
+            ['Node.js', 'Node.js', '- (bini-server reads src/app/api/ directly)'],
+            ['Netlify', 'Edge Functions (Deno)', 'netlify/edge-functions/api.ts + netlify.toml'],
+            ['Vercel', 'Edge Runtime', 'api/index.ts + vercel.json'],
+            ['Cloudflare', 'Workers', 'worker.ts + wrangler.toml'],
+            ['Deno', 'Deno', 'server/index.ts'],
+          ]}
+        />
+
+        <H3 className="mt-6 mb-3">Deployment Options</H3>
+        <UL>
+          <li>
+            <strong className={STRONG}>SPA + API Server:</strong> Build with <C>npm run build</C>,
+            deploy with <C>npm start</C> (requires Node.js)
+          </li>
+          <li>
+            <strong className={STRONG}>Pre-rendered Static:</strong> Build with{' '}
+            <C>npm run build</C>, deploy the <C>dist/</C> folder to any static hosting
+          </li>
+          <li>
+            <strong className={STRONG}>Edge/Serverless:</strong> Use <C>npm run deploy</C> to
+            generate platform-specific entry files
+          </li>
+        </UL>
+
+        <H3 className="mt-6 mb-3">Node.js Deployment</H3>
+        <P className="mb-4">For Node.js hosts (Railway, Render, Fly.io, a VPS):</P>
+        <MultiTerminal tabs={NODE_TABS} />
+        <P className="mb-4">
+          <C>bini-server</C> reads handlers directly from <C>src/app/api/</C>, so deploy the whole
+          project - not just <C>dist/</C>. Use <C>pm2</C> on a bare VPS.
+        </P>
+
+        <H3 className="mt-6 mb-3">GitHub Pages / Subpaths</H3>
+        <P className="mb-4">
+          Set <C>base: '/my-repo/'</C> in <C>{`vite.config.${t}`}</C>, then <C>npm run build</C>{' '}
+          for a fully pre-rendered, subpath-aware <C>dist/</C>.
+        </P>
+        <CodeBlock
+          filename="vite.config.ts"
+          code={`import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import { biniroute } from 'bini-router'
 
 export default defineConfig({
   base: '/my-repo/',  // GitHub Pages subpath
+  plugins: [react(), biniroute()],
 })`}
-                    filename="vite.config.ts"
-                  />
-                </m.section>
+        />
+      </Section>
+    </>
+  )
+}
 
-                {/* Previous / Next Navigation */}
-                <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800">
-                  <Link to="/docs/css-modules" className="group flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
-                    <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                    <div>
-                      <div className="text-xs text-slate-500">Previous</div>
-                      <div className="text-sm font-medium">CSS Modules</div>
-                    </div>
-                  </Link>
-                  <Link to="/docs/platform-windows" className="group flex items-center gap-2 text-right text-slate-400 hover:text-white transition-colors">
-                    <div>
-                      <div className="text-xs text-slate-500">Next</div>
-                      <div className="text-sm font-medium">Windows</div>
-                    </div>
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                </m.div>
+/* ---------- page ---------- */
 
-              </div>
-
-              {/* Right-hand "On this page" sidebar */}
-              <aside className="hidden xl:block w-56 shrink-0">
-                <TableOfContents items={TOC_ITEMS} editUrl={EDIT_URL} />
-              </aside>
-            </div>
-          </DocLayout>
-          
-        </div>
-      </div>
-    </div>
+export default function PlatformWebPage() {
+  return (
+    <DocPage
+      title="Web"
+      description="Build web applications with Bini.js - the default platform target."
+      url="https://bini.js.org/docs/platform-web"
+      editUrl="https://github.com/Binidu01/bini-official/edit/main/src/app/docs/platform-web.tsx"
+      toc={TOC_ITEMS}
+      prev={{ to: '/docs/css-modules', title: 'CSS Modules' }}
+      next={{ to: '/docs/platform-windows', title: 'Windows' }}
+    >
+      <Content />
+    </DocPage>
   )
 }
