@@ -3,6 +3,7 @@ import { Menu, X, ChevronRight, ExternalLink, Star, Search, Sun, Monitor, Moon }
 import { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { siGithub, siNpm, siReddit, siDiscord } from 'simple-icons'
+import type { SearchSuggestion } from '../data/search'
 
 function SimpleIcon({
   icon,
@@ -97,106 +98,6 @@ const applyTheme = (theme: Theme) => {
   root.classList.toggle('dark', shouldUseDark)
 }
 
-/* ---------------------------------- search index ---------------------------------- */
-/*
- * Every route from the docs sidebar, the plugins sidebar, and the top-level
- * navigation is listed here. Add a page to the sidebar → add one line here.
- */
-const searchSuggestions = [
-  // ─── Docs · Getting Started ─────────────────────────────────────────
-  { label: 'Introduction', path: '/docs', type: 'docs', keywords: ['start', 'begin', 'intro', 'guide', 'overview'] },
-  { label: 'Installation', path: '/docs/installation', type: 'docs', keywords: ['install', 'setup', 'npm', 'create-bini-app'] },
-  { label: 'Project Structure', path: '/docs/project-structure', type: 'docs', keywords: ['structure', 'folders', 'files', 'organization'] },
-  { label: 'Layouts and Pages', path: '/docs/layouts-and-pages', type: 'docs', keywords: ['layout', 'pages', 'nested', 'structure'] },
-  { label: 'Linking and Navigating', path: '/docs/linking-and-navigating', type: 'docs', keywords: ['link', 'navigation', 'router', 'navigate'] },
-
-  // ─── Docs · Defining Routes ─────────────────────────────────────────
-  { label: 'Folder-Based Routing', path: '/docs/folder-based-routing', type: 'docs', keywords: ['folder', 'directory', 'structure', 'routing'] },
-  { label: 'File-Based Routing', path: '/docs/file-based-routing', type: 'docs', keywords: ['file', 'pages', 'routes', 'flat'] },
-  { label: 'Dynamic Routes', path: '/docs/dynamic-routes', type: 'docs', keywords: ['dynamic', 'params', 'slug', 'id'] },
-  { label: 'Parallel Routes', path: '/docs/parallel-routes', type: 'docs', keywords: ['parallel', 'slot', 'named', 'routes'] },
-  { label: 'Catch-All Routes', path: '/docs/catch-all-routes', type: 'docs', keywords: ['catch-all', 'wildcard', 'slug', 'rest'] },
-  { label: 'MDX & Markdown Pages', path: '/docs/mdx-markdown', type: 'docs', keywords: ['mdx', 'markdown', 'content', 'md'] },
-
-  // ─── Docs · Special Files ───────────────────────────────────────────
-  { label: 'Loading UI', path: '/docs/load', type: 'docs', keywords: ['loading', 'suspense', 'fallback', 'ui'] },
-  { label: 'Error Boundaries', path: '/docs/error-boundaries', type: 'docs', keywords: ['error', 'boundary', 'crash', 'reset'] },
-  { label: 'Template', path: '/docs/templates', type: 'docs', keywords: ['template', 'transition', 'wrapper'] },
-  { label: 'Default', path: '/docs/defaults', type: 'docs', keywords: ['default', 'fallback', 'slot', 'parallel'] },
-  { label: 'Not Found', path: '/docs/notfound', type: 'docs', keywords: ['404', 'not found', 'error page'] },
-
-  // ─── Docs · Metadata ────────────────────────────────────────────────
-  { label: 'Metadata & SEO', path: '/docs/metadata', type: 'docs', keywords: ['metadata', 'seo', 'title', 'description'] },
-  { label: 'Open Graph & Twitter', path: '/docs/og-twitter', type: 'docs', keywords: ['og', 'open graph', 'twitter', 'social', 'card'] },
-  { label: 'Icons & Favicons', path: '/docs/icons', type: 'docs', keywords: ['icons', 'favicon', 'apple touch', 'manifest'] },
-
-  // ─── Docs · API Routes ──────────────────────────────────────────────
-  { label: 'API Routes Overview', path: '/docs/api-routes', type: 'docs', keywords: ['api', 'routes', 'endpoints', 'overview'] },
-  { label: 'Plain Function Handlers', path: '/docs/api-plain', type: 'docs', keywords: ['handlers', 'functions', 'plain', 'request'] },
-  { label: 'Hono Integration', path: '/docs/api-hono', type: 'docs', keywords: ['hono', 'integration', 'middleware', 'framework'] },
-  { label: 'Dynamic API Routes', path: '/docs/api-dynamic', type: 'docs', keywords: ['dynamic', 'api', 'params', 'rest'] },
-  { label: 'CORS', path: '/docs/api-cors', type: 'docs', keywords: ['cors', 'cross-origin', 'preflight', 'headers'] },
-
-  // ─── Docs · Environment Variables ───────────────────────────────────
-  { label: 'Environment Variables', path: '/docs/environment-variables', type: 'docs', keywords: ['.env', 'environment', 'variables', 'secrets'] },
-  { label: 'Prefixes & Client Exposure', path: '/docs/env-prefixes', type: 'docs', keywords: ['bini_', 'vite_', 'prefix', 'client'] },
-  { label: 'Using in API Routes', path: '/docs/env-api', type: 'docs', keywords: ['getenv', 'requireenv', 'hono context'] },
-
-  // ─── Docs · Styling ─────────────────────────────────────────────────
-  { label: 'CSS Overview', path: '/docs/css', type: 'docs', keywords: ['css', 'styling', 'overview', 'styles'] },
-  { label: 'Tailwind CSS', path: '/docs/tailwind', type: 'docs', keywords: ['tailwind', 'css', 'utility', 'classes'] },
-  { label: 'CSS Modules', path: '/docs/css-modules', type: 'docs', keywords: ['modules', 'css', 'scoped', 'styles'] },
-
-  // ─── Docs · Platforms ───────────────────────────────────────────────
-  { label: 'Web Platform', path: '/docs/platform-web', type: 'docs', keywords: ['web', 'platform', 'spa', 'browser'] },
-  { label: 'Windows Platform', path: '/docs/platform-windows', type: 'docs', keywords: ['windows', 'desktop', 'tauri', 'webview2'] },
-  { label: 'macOS Platform', path: '/docs/platform-macos', type: 'docs', keywords: ['macos', 'mac', 'desktop', 'tauri', 'wkwebview'] },
-  { label: 'Linux Platform', path: '/docs/platform-linux', type: 'docs', keywords: ['linux', 'desktop', 'tauri', 'appimage', 'webkitgtk'] },
-  { label: 'Android Platform', path: '/docs/platform-android', type: 'docs', keywords: ['android', 'mobile', 'apk', 'tauri'] },
-  { label: 'iOS Platform', path: '/docs/platform-ios', type: 'docs', keywords: ['ios', 'mobile', 'xcode', 'tauri', 'wkwebview'] },
-
-  // ─── Docs · Deployment ──────────────────────────────────────────────
-  { label: 'Deployment Overview', path: '/docs/deploying', type: 'docs', keywords: ['deploy', 'deployment', 'production', 'hosting'] },
-  { label: 'Production Server', path: '/docs/production-server', type: 'docs', keywords: ['bini-server', 'production', 'node', 'etag'] },
-  { label: 'Static Export', path: '/docs/static-export', type: 'docs', keywords: ['static', 'export', 'spa', 'build', 'bini-ssg'] },
-  { label: 'Hosting Providers', path: '/docs/hosting', type: 'docs', keywords: ['bini-deploy', 'netlify', 'vercel', 'cloudflare', 'deno'] },
-
-  // ─── Plugins ────────────────────────────────────────────────────────
-  { label: 'Plugins Overview', path: '/plugins', type: 'plugin', keywords: ['plugins', 'ecosystem', 'packages'] },
-  { label: 'create-bini-app', path: '/plugins/create-bini-app', type: 'plugin', keywords: ['create', 'bini', 'app', 'scaffold', 'cli'] },
-  { label: 'bini-deploy', path: '/plugins/bini-deploy', type: 'plugin', keywords: ['deploy', 'hosting', 'cli', 'github'] },
-  { label: 'bini-router', path: '/plugins/bini-router', type: 'plugin', keywords: ['router', 'routing', 'file-based', 'api', 'hono', 'vite', 'mdx'] },
-  { label: 'bini-env', path: '/plugins/bini-env', type: 'plugin', keywords: ['env', 'environment', 'variables', 'secrets', 'getenv', 'requireenv', 'hono'] },
-  { label: 'bini-native', path: '/plugins/bini-native', type: 'plugin', keywords: ['native', 'tauri', 'plugin', 'wiring', 'rust', 'cargo', 'android', 'ios', 'desktop', 'mobile'] },
-  { label: 'bini-server', path: '/plugins/bini-server', type: 'plugin', keywords: ['server', 'production', 'static', 'etag', 'spa'] },
-  { label: 'bini-overlay', path: '/plugins/bini-overlay', type: 'plugin', keywords: ['overlay', 'error', 'loading', 'development', 'badge'] },
-  { label: 'bini-ssg', path: '/plugins/bini-ssg', type: 'plugin', keywords: ['ssg', 'static', 'pre-render', 'build', 'shell pages', 'hydration'] },
-
-  // ─── Vite / Hono ecosystem ──────────────────────────────────────────
-  { label: '@vitejs/plugin-react', path: '/plugins', type: 'plugin', keywords: ['react', 'fast refresh', 'vite'] },
-  { label: '@tailwindcss/vite', path: '/plugins', type: 'plugin', keywords: ['tailwind', 'css', 'vite', 'styling'] },
-  { label: 'vite-plugin-pwa', path: '/plugins', type: 'plugin', keywords: ['pwa', 'service worker', 'offline', 'manifest'] },
-  { label: 'vite-plugin-svgr', path: '/plugins', type: 'plugin', keywords: ['svg', 'react components', 'transform', 'import'] },
-  { label: 'vite-plugin-compression', path: '/plugins', type: 'plugin', keywords: ['compression', 'gzip', 'brotli', 'bundle'] },
-  { label: 'rollup-plugin-visualizer', path: '/plugins', type: 'plugin', keywords: ['visualizer', 'bundle', 'analysis', 'size'] },
-  { label: 'hono/cors', path: '/plugins', type: 'plugin', keywords: ['cors', 'cross-origin', 'middleware', 'hono'] },
-  { label: 'hono/jwt', path: '/plugins', type: 'plugin', keywords: ['jwt', 'authentication', 'token', 'auth', 'hono'] },
-  { label: 'hono/logger', path: '/plugins', type: 'plugin', keywords: ['logger', 'logging', 'requests', 'hono'] },
-  { label: '@hono/zod-validator', path: '/plugins', type: 'plugin', keywords: ['zod', 'validation', 'validator', 'schema', 'hono'] },
-
-  // ─── Top-level pages ────────────────────────────────────────────────
-  { label: 'Showcase', path: '/showcase', type: 'page', keywords: ['showcase', 'sites', 'apps', 'built with', 'examples', 'projects'] },
-  { label: 'Home', path: '/', type: 'page', keywords: ['home', 'landing'] },
-
-  // ─── External ───────────────────────────────────────────────────────
-  { label: 'GitHub Repository', href: 'https://github.com/Binidu01/bini-cli', type: 'github', keywords: ['repo', 'source', 'code'] },
-  { label: 'Issues', href: 'https://github.com/Binidu01/bini-cli/issues', type: 'github', keywords: ['bugs', 'problems', 'report'] },
-  { label: 'Discussions', href: 'https://github.com/Binidu01/bini-cli/discussions', type: 'github', keywords: ['community', 'forum', 'questions'] },
-  { label: 'Contributing', href: 'https://github.com/Binidu01/bini-cli/blob/main/CONTRIBUTING.md', type: 'github', keywords: ['contribute', 'development', 'guidelines'] },
-  { label: 'Releases', href: 'https://github.com/Binidu01/bini-cli/releases', type: 'github', keywords: ['releases', 'changelog', 'versions'] },
-  { label: 'npm Package', href: 'https://www.npmjs.com/package/create-bini-app', type: 'package', keywords: ['npm', 'package', 'install'] },
-]
-
 export const Header = () => {
   const navigate = useNavigate()
 
@@ -204,6 +105,8 @@ export const Header = () => {
   const [searchOpen, setSearchOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedIndex, setSelectedIndex] = useState(0)
+  const [searchSuggestions, setSearchSuggestions] = useState<SearchSuggestion[]>([])
+  const [searchLoading, setSearchLoading] = useState(false)
 
   // Platform-dependent hint. Starts as "Ctrl K" (same on server and client),
   // then switches to ⌘K on Apple devices after mount, so hydration always matches.
@@ -216,6 +119,20 @@ export const Header = () => {
     const platform = navigator.platform || navigator.userAgent || ''
     if (/Mac|iPhone|iPad|iPod/i.test(platform)) setShortcutHint('⌘ K')
   }, [])
+
+  const openSearch = async () => {
+    setSearchOpen(true)
+
+    if (searchSuggestions.length === 0 && !searchLoading) {
+      setSearchLoading(true)
+      try {
+        const { searchSuggestions: suggestions } = await import('../data/search')
+        setSearchSuggestions(suggestions)
+      } finally {
+        setSearchLoading(false)
+      }
+    }
+  }
 
   const filteredSuggestions = (() => {
     if (!searchQuery) {
@@ -238,7 +155,7 @@ export const Header = () => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault()
-        setSearchOpen(true)
+        openSearch()
       }
 
       if (e.key === 'Escape' && searchOpen) {
@@ -251,7 +168,7 @@ export const Header = () => {
     return () => {
       document.removeEventListener('keydown', handleKeyDown)
     }
-  }, [searchOpen])
+  }, [searchOpen, searchSuggestions.length, searchLoading])
 
   useEffect(() => {
     if (searchOpen && searchInputRef.current) {
@@ -281,7 +198,7 @@ export const Header = () => {
     setSelectedIndex(0)
   }, [searchQuery])
 
-  const openSuggestion = (suggestion: (typeof searchSuggestions)[number]) => {
+  const openSuggestion = (suggestion: SearchSuggestion) => {
     if (suggestion.href) {
       window.open(suggestion.href, '_blank', 'noopener,noreferrer')
     } else if (suggestion.path) {
@@ -357,7 +274,7 @@ export const Header = () => {
 
             <button
               type="button"
-              onClick={() => setSearchOpen(true)}
+              onClick={() => openSearch()}
               aria-label="Search documentation"
               className="hidden w-64 items-center justify-between gap-4 rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-1.5 text-sm text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-700 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-500 dark:hover:bg-neutral-900 dark:hover:text-neutral-400 md:flex md:w-80 lg:w-96"
             >
@@ -394,7 +311,7 @@ export const Header = () => {
 
               <button
                 type="button"
-                onClick={() => setSearchOpen(true)}
+                onClick={() => openSearch()}
                 className="rounded-lg p-2 text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-black dark:text-neutral-400 dark:hover:bg-neutral-900 dark:hover:text-white sm:hidden"
                 aria-label="Search"
               >
@@ -440,7 +357,7 @@ export const Header = () => {
               <button
                 type="button"
                 onClick={() => {
-                  setSearchOpen(true)
+                  openSearch()
                   setMobileMenuOpen(false)
                 }}
                 className="mb-2 flex items-center justify-between gap-3 rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-2.5 text-sm text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-700 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-500 dark:hover:bg-neutral-900 dark:hover:text-neutral-400"
@@ -547,7 +464,13 @@ export const Header = () => {
                   </div>
                 </div>
 
-                {filteredSuggestions.length > 0 && (
+                {searchLoading && searchSuggestions.length === 0 ? (
+                  <div className="px-4 py-12 text-center">
+                    <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                      Loading suggestions...
+                    </p>
+                  </div>
+                ) : filteredSuggestions.length > 0 ? (
                   <div className="max-h-96 overflow-y-auto overflow-x-hidden px-2 py-2">
                     {filteredSuggestions.map((suggestion, index) => {
                       const isActive = index === selectedIndex
@@ -609,9 +532,7 @@ export const Header = () => {
                       )
                     })}
                   </div>
-                )}
-
-                {filteredSuggestions.length === 0 && (
+                ) : (
                   <div className="px-4 py-12 text-center">
                     <p className="text-sm text-neutral-600 dark:text-neutral-400">
                       No results found for "{searchQuery}"

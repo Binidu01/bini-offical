@@ -1,5 +1,4 @@
 // src/app/page.tsx
-import { AnimatePresence, m } from 'framer-motion'
 import {
   ArrowRight,
   Check,
@@ -486,13 +485,7 @@ const Home = () => {
       >
         <SectionDivider />
         <div className="mx-auto max-w-7xl">
-          <m.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="mb-12 text-center"
-          >
+          <div className="mb-12 text-center">
             <Eyebrow>Stack</Eyebrow>
             <h2 className="mb-3 text-3xl font-bold text-black md:text-4xl dark:text-white">
               Built on a foundation of fast, production-grade tooling
@@ -500,7 +493,7 @@ const Home = () => {
             <p className="mx-auto max-w-2xl text-lg text-neutral-600 dark:text-neutral-400">
               Every tool is carefully chosen and pre-configured so you can focus on building.
             </p>
-          </m.div>
+          </div>
 
           <div className="flex min-h-130 w-full items-center justify-center lg:min-h-150">
             <InView className="w-full">
@@ -514,13 +507,7 @@ const Home = () => {
       <section className="relative overflow-x-clip px-4 py-20 sm:px-6 sm:py-24 lg:px-8 lg:py-28">
         <SectionDivider />
         <div className="mx-auto max-w-7xl">
-          <m.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="mb-16 text-center"
-          >
+          <div className="mb-16 text-center">
             <Eyebrow>Motivation</Eyebrow>
             <h2 className="mb-4 text-3xl font-bold text-black md:text-4xl dark:text-white">
               Why Bini?
@@ -529,19 +516,15 @@ const Home = () => {
               Most starters give you a bundler and call it a day. Bini.js gives you a framework -
               wired together and configured correctly from the first commit.
             </p>
-          </m.div>
+          </div>
 
           <div className="grid gap-6 md:grid-cols-2">
             {WHY_BINI.map((item, i) => {
               const Icon = item.icon
               const col = COLOR[item.color as keyof typeof COLOR]
               return (
-                <m.div
+                <div
                   key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: i * 0.08 }}
                   className="relative rounded-2xl border border-neutral-200 bg-white p-6 transition-colors hover:border-neutral-300 lg:p-8 dark:border-slate-800 dark:bg-[#0a0a0a] dark:hover:border-slate-700"
                 >
                   <div className="flex items-start gap-4">
@@ -570,7 +553,7 @@ const Home = () => {
                       </div>
                     </div>
                   </div>
-                </m.div>
+                </div>
               )
             })}
           </div>
@@ -581,13 +564,7 @@ const Home = () => {
       <section className="relative overflow-x-clip px-4 py-20 sm:px-6 sm:py-24 lg:px-8 lg:py-28">
         <SectionDivider />
         <div className="mx-auto max-w-7xl">
-          <m.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="mb-16 text-center"
-          >
+          <div className="mb-16 text-center">
             <Eyebrow>Architecture</Eyebrow>
             <h2 className="mb-4 text-3xl font-bold text-black md:text-4xl dark:text-white">
               What makes it different?
@@ -596,18 +573,14 @@ const Home = () => {
               Complexity stays invisible. You write normal React and normal web APIs - the
               framework handles the rest.
             </p>
-          </m.div>
+          </div>
 
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {DIFFERENTIATORS.map((item, i) => {
               const Icon = item.icon
               return (
-                <m.div
+                <div
                   key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: i * 0.06 }}
                   className="group rounded-2xl border border-neutral-200 bg-white p-6 transition-colors hover:border-neutral-300 dark:border-slate-800 dark:bg-[#0a0a0a] dark:hover:border-slate-700"
                 >
                   <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl border border-cyan-500/30 bg-cyan-500/10 transition-colors group-hover:border-cyan-500/50">
@@ -619,7 +592,7 @@ const Home = () => {
                   <p className="text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
                     {item.desc}
                   </p>
-                </m.div>
+                </div>
               )
             })}
           </div>
@@ -630,13 +603,7 @@ const Home = () => {
       <section className="relative overflow-x-clip px-4 py-20 sm:px-6 sm:py-24 lg:px-8 lg:py-28">
         <SectionDivider />
         <div className="mx-auto max-w-7xl">
-          <m.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="mb-16 text-center"
-          >
+          <div className="mb-16 text-center">
             <Eyebrow>Targets</Eyebrow>
             <h2 className="mb-4 text-3xl font-bold text-black md:text-4xl dark:text-white">
               One codebase. Six platforms.
@@ -648,21 +615,17 @@ const Home = () => {
               picks the target - each scaffold gets exactly the dependencies, scripts, and config
               it needs.
             </p>
-          </m.div>
+          </div>
 
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {PLATFORMS.map((platform, i) => {
+            {PLATFORMS.map((platform) => {
               const col = COLOR[platform.color as keyof typeof COLOR]
               const commands = PLATFORM_COMMANDS[platform.name] || []
               const isHovered = hoveredPlatform === platform.name
 
               return (
-                <m.div
+                <div
                   key={platform.name}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: i * 0.07 }}
                   className="relative cursor-default rounded-2xl border border-neutral-200 bg-white p-6 transition-all hover:border-neutral-300 dark:border-slate-800 dark:bg-[#0a0a0a] dark:hover:border-slate-700"
                   onMouseEnter={() => setHoveredPlatform(platform.name)}
                   onMouseLeave={() => setHoveredPlatform(null)}
@@ -686,22 +649,14 @@ const Home = () => {
                     {platform.desc}
                   </p>
 
-                  <AnimatePresence>
-                    {isHovered && (
-                      <m.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.2 }}
-                        className="overflow-hidden"
-                      >
-                        <div className="border-t border-neutral-200 pt-3 dark:border-slate-800">
-                          <MiniTerminal commands={commands} />
-                        </div>
-                      </m.div>
-                    )}
-                  </AnimatePresence>
-                </m.div>
+                  {isHovered && (
+                    <div className="overflow-hidden">
+                      <div className="border-t border-neutral-200 pt-3 dark:border-slate-800">
+                        <MiniTerminal commands={commands} />
+                      </div>
+                    </div>
+                  )}
+                </div>
               )
             })}
           </div>
@@ -712,13 +667,7 @@ const Home = () => {
       <section className="relative overflow-x-clip px-4 py-8 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
         <SectionDivider />
         <div className="mx-auto max-w-7xl">
-          <m.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="mb-6 text-center sm:mb-8"
-          >
+          <div className="mb-6 text-center sm:mb-8">
             <Eyebrow>Ecosystem</Eyebrow>
             <h2 className="mb-3 text-3xl font-bold text-black md:text-4xl dark:text-white">
               Eight packages. One framework.
@@ -726,7 +675,7 @@ const Home = () => {
             <p className="mx-auto max-w-2xl text-lg text-neutral-600 dark:text-neutral-400">
               Every package is purpose-built and works seamlessly together - or standalone.
             </p>
-          </m.div>
+          </div>
 
           <InView style={{ aspectRatio: '760 / 500' }}>
             <PluginAnimation />
@@ -738,13 +687,7 @@ const Home = () => {
       <section className="relative overflow-x-clip px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
         <SectionDivider />
         <div className="mx-auto max-w-7xl">
-          <m.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="text-center"
-          >
+          <div className="text-center">
             <Eyebrow>License</Eyebrow>
             <h2 className="mb-3 text-2xl font-bold text-black md:text-3xl dark:text-white">
               Free &amp; open source
@@ -763,7 +706,7 @@ const Home = () => {
               <Heart className="h-4 w-4" />
               Become a sponsor
             </a>
-          </m.div>
+          </div>
         </div>
       </section>
 
@@ -771,12 +714,7 @@ const Home = () => {
       <section className="relative overflow-x-clip px-4 py-20 sm:px-6 sm:py-24 lg:px-8">
         <SectionDivider />
         <div className="mx-auto max-w-4xl text-center">
-          <m.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-          >
+          <div>
             <div className="mb-6 flex justify-center">
               <img src="/logo.svg" alt="Bini.js" className="h-16 w-16" />
             </div>
@@ -810,7 +748,7 @@ const Home = () => {
                 </span>
               </a>
             </div>
-          </m.div>
+          </div>
         </div>
       </section>
       </main>
