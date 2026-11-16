@@ -14,11 +14,12 @@ export const searchSuggestions: SearchSuggestion[] = [
   { label: 'Layouts and Pages', path: '/docs/layouts-and-pages', type: 'docs', keywords: ['layout', 'pages', 'nested', 'structure'] },
   { label: 'Linking and Navigating', path: '/docs/linking-and-navigating', type: 'docs', keywords: ['link', 'navigation', 'router', 'navigate'] },
 
-  // ─── Docs · Defining Routes ─────────────────────────────────────────
+  // ─── Docs · Routing ─────────────────────────────────────────────────
   { label: 'Folder-Based Routing', path: '/docs/folder-based-routing', type: 'docs', keywords: ['folder', 'directory', 'structure', 'routing'] },
   { label: 'File-Based Routing', path: '/docs/file-based-routing', type: 'docs', keywords: ['file', 'pages', 'routes', 'flat'] },
   { label: 'Dynamic Routes', path: '/docs/dynamic-routes', type: 'docs', keywords: ['dynamic', 'params', 'slug', 'id'] },
   { label: 'Parallel Routes', path: '/docs/parallel-routes', type: 'docs', keywords: ['parallel', 'slot', 'named', 'routes'] },
+  { label: 'Intercepting Routes', path: '/docs/intercepting-routes', type: 'docs', keywords: ['intercepting', 'modal', 'overlay', 'routes'] },
   { label: 'Catch-All Routes', path: '/docs/catch-all-routes', type: 'docs', keywords: ['catch-all', 'wildcard', 'slug', 'rest'] },
   { label: 'MDX & Markdown Pages', path: '/docs/mdx-markdown', type: 'docs', keywords: ['mdx', 'markdown', 'content', 'md'] },
 
@@ -28,6 +29,11 @@ export const searchSuggestions: SearchSuggestion[] = [
   { label: 'Template', path: '/docs/templates', type: 'docs', keywords: ['template', 'transition', 'wrapper'] },
   { label: 'Default', path: '/docs/defaults', type: 'docs', keywords: ['default', 'fallback', 'slot', 'parallel'] },
   { label: 'Not Found', path: '/docs/notfound', type: 'docs', keywords: ['404', 'not found', 'error page'] },
+
+  // ─── Docs · Data Fetching ───────────────────────────────────────────
+  { label: 'Loaders', path: '/docs/loaders', type: 'docs', keywords: ['loaders', 'data fetching', 'server', 'preload'] },
+  { label: 'Actions', path: '/docs/actions', type: 'docs', keywords: ['actions', 'mutations', 'form', 'submit'] },
+  { label: 'Accessing Route Data', path: '/docs/accessing-route-data', type: 'docs', keywords: ['route data', 'useLoaderData', 'params', 'access'] },
 
   // ─── Docs · Metadata ────────────────────────────────────────────────
   { label: 'Metadata & SEO', path: '/docs/metadata', type: 'docs', keywords: ['metadata', 'seo', 'title', 'description'] },
@@ -39,7 +45,6 @@ export const searchSuggestions: SearchSuggestion[] = [
   { label: 'Plain Function Handlers', path: '/docs/api-plain', type: 'docs', keywords: ['handlers', 'functions', 'plain', 'request'] },
   { label: 'Hono Integration', path: '/docs/api-hono', type: 'docs', keywords: ['hono', 'integration', 'middleware', 'framework'] },
   { label: 'Dynamic API Routes', path: '/docs/api-dynamic', type: 'docs', keywords: ['dynamic', 'api', 'params', 'rest'] },
-  { label: 'CORS', path: '/docs/api-cors', type: 'docs', keywords: ['cors', 'cross-origin', 'preflight', 'headers'] },
 
   // ─── Docs · Environment Variables ───────────────────────────────────
   { label: 'Environment Variables', path: '/docs/environment-variables', type: 'docs', keywords: ['.env', 'environment', 'variables', 'secrets'] },
@@ -65,8 +70,8 @@ export const searchSuggestions: SearchSuggestion[] = [
   { label: 'Static Export', path: '/docs/static-export', type: 'docs', keywords: ['static', 'export', 'spa', 'build', 'bini-ssg'] },
   { label: 'Hosting Providers', path: '/docs/hosting', type: 'docs', keywords: ['bini-deploy', 'netlify', 'vercel', 'cloudflare', 'deno'] },
 
-  // ─── Plugins ────────────────────────────────────────────────────────
-  { label: 'Plugins Overview', path: '/plugins', type: 'plugin', keywords: ['plugins', 'ecosystem', 'packages'] },
+  // ─── Plugins (matches PluginSidebar exactly) ────────────────────────
+  { label: 'overview', path: '/plugins', type: 'plugin', keywords: ['plugins', 'ecosystem', 'packages', 'overview'] },
   { label: 'create-bini-app', path: '/plugins/create-bini-app', type: 'plugin', keywords: ['create', 'bini', 'app', 'scaffold', 'cli'] },
   { label: 'bini-deploy', path: '/plugins/bini-deploy', type: 'plugin', keywords: ['deploy', 'hosting', 'cli', 'github'] },
   { label: 'bini-router', path: '/plugins/bini-router', type: 'plugin', keywords: ['router', 'routing', 'file-based', 'api', 'hono', 'vite', 'mdx'] },
@@ -75,18 +80,8 @@ export const searchSuggestions: SearchSuggestion[] = [
   { label: 'bini-server', path: '/plugins/bini-server', type: 'plugin', keywords: ['server', 'production', 'static', 'etag', 'spa'] },
   { label: 'bini-overlay', path: '/plugins/bini-overlay', type: 'plugin', keywords: ['overlay', 'error', 'loading', 'development', 'badge'] },
   { label: 'bini-ssg', path: '/plugins/bini-ssg', type: 'plugin', keywords: ['ssg', 'static', 'pre-render', 'build', 'shell pages', 'hydration'] },
-
-  // ─── Vite / Hono ecosystem ──────────────────────────────────────────
-  { label: '@vitejs/plugin-react', path: '/plugins', type: 'plugin', keywords: ['react', 'fast refresh', 'vite'] },
-  { label: '@tailwindcss/vite', path: '/plugins', type: 'plugin', keywords: ['tailwind', 'css', 'vite', 'styling'] },
-  { label: 'vite-plugin-pwa', path: '/plugins', type: 'plugin', keywords: ['pwa', 'service worker', 'offline', 'manifest'] },
-  { label: 'vite-plugin-svgr', path: '/plugins', type: 'plugin', keywords: ['svg', 'react components', 'transform', 'import'] },
-  { label: 'vite-plugin-compression', path: '/plugins', type: 'plugin', keywords: ['compression', 'gzip', 'brotli', 'bundle'] },
-  { label: 'rollup-plugin-visualizer', path: '/plugins', type: 'plugin', keywords: ['visualizer', 'bundle', 'analysis', 'size'] },
-  { label: 'hono/cors', path: '/plugins', type: 'plugin', keywords: ['cors', 'cross-origin', 'middleware', 'hono'] },
-  { label: 'hono/jwt', path: '/plugins', type: 'plugin', keywords: ['jwt', 'authentication', 'token', 'auth', 'hono'] },
-  { label: 'hono/logger', path: '/plugins', type: 'plugin', keywords: ['logger', 'logging', 'requests', 'hono'] },
-  { label: '@hono/zod-validator', path: '/plugins', type: 'plugin', keywords: ['zod', 'validation', 'validator', 'schema', 'hono'] },
+  { label: 'vite plugins', href: 'https://vite.dev/plugins/', type: 'plugin', keywords: ['vite', 'plugins', 'ecosystem'] },
+  { label: 'hono plugins', href: 'https://hono.dev/docs/', type: 'plugin', keywords: ['hono', 'plugins', 'middleware', 'ecosystem'] },
 
   // ─── Top-level pages ────────────────────────────────────────────────
   { label: 'Showcase', path: '/showcase', type: 'page', keywords: ['showcase', 'sites', 'apps', 'built with', 'examples', 'projects'] },
